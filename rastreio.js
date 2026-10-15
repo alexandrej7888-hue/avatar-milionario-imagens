@@ -1,7 +1,7 @@
 /* Avatar Milionário - contador de visitas, cliques, tempo na página e cliques no checkout.
    A página define antes: window.AM_AFILIADO = 'nome-do-afiliado' (vazio na página principal). */
 (function () {
-  var API = '';
+  var API = 'https://script.google.com/macros/s/AKfycbyw-PCFL5Ed1hpDJp18ZlNqYBeUs3GD_D3gMnNuYYyof5XHwb54WJCqd70FAVkwBSL_/exec';
   if (!API) return;
 
   function id() { return Math.random().toString(36).slice(2, 10) + Date.now().toString(36); }
