@@ -2,7 +2,8 @@
    A página define antes: window.AM_AFILIADO = 'nome-do-afiliado' (vazio na página principal). */
 (function () {
   var API = 'https://script.google.com/macros/s/AKfycbyw-PCFL5Ed1hpDJp18ZlNqYBeUs3GD_D3gMnNuYYyof5XHwb54WJCqd70FAVkwBSL_/exec';
-  if (!API) return;
+  /* Só conta visitas no site de verdade (ignora pré-visualizações e testes) */
+  if (!API || !/(^|\.)avatarmilionario\.com$/.test(location.hostname)) return;
 
   function id() { return Math.random().toString(36).slice(2, 10) + Date.now().toString(36); }
   var visitante = '';
