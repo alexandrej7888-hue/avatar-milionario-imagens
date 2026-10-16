@@ -251,6 +251,9 @@ function enviarBoasVindas_(email, nome, curso, bump) {
 /* Rode esta função uma vez no editor (botão Executar) para autorizar o envio de e-mail.
    Ela manda um e-mail de exemplo para a sua própria conta. */
 function testarEmail() {
+  /* Chamadas diretas para o Google pedir todas as permissões de uma vez */
+  UrlFetchApp.fetch('https://api.brevo.com/v3/account', { muteHttpExceptions: true, headers: { 'api-key': BREVO_KEY } });
+  MailApp.getRemainingDailyQuota();
   enviarBoasVindas_(Session.getEffectiveUser().getEmail(), 'Teste', true, true);
 }
 
