@@ -194,7 +194,7 @@ function linhaTab(cols,lista,vazio){
     lista.map(x=>'<tr>'+cols.map(c=>`<td class="${c[2]?'n':''}">${c[1](x)}</td>`).join('')+'</tr>').join('');
 }
 const COLS=[
- ['Visitas',x=>num(x.visitas),1],['Pessoas',x=>num(x.visitantes),1],['Cliques',x=>num(x.cliques),1],
+ ['Visitas',x=>num(x.visitas),1],['Pessoas',x=>num(x.visitantes),1],
  ['Tempo médio',x=>tempo(x.tempoMedio),1],['Checkout',x=>`<b class="ok">${num(x.pessoasCheckout)}</b>`,1],['Conv. checkout',x=>x.conversao.toLocaleString('pt-BR')+'%',1]
 ];
 /* ---------- FILTRO POR AFILIADO ---------- */
@@ -211,7 +211,7 @@ function desenharAfi(){
   const {a,v,convV}=dadosAfi(PER);
   $('relTopo').innerHTML=`<h2>Relatório do afiliado: <span>${esc(nomeAfi(AFI))}</span></h2><p>${PERNOME[PER]} · gerado em ${new Date().toLocaleString('pt-BR',{dateStyle:'short',timeStyle:'short'})} · Avatar Milionário</p>`;
   $('kpis').innerHTML=[
-   ['Visitas',num(a.visitas)],['Pessoas únicas',num(a.visitantes)],['Cliques',num(a.cliques)],['Tempo médio',tempo(a.tempoMedio)],
+   ['Visitas',num(a.visitas)],['Pessoas únicas',num(a.visitantes)],['Tempo médio',tempo(a.tempoMedio)],
    ['Cliques no checkout',num(a.pessoasCheckout),1],['Conversão checkout',a.conversao.toLocaleString('pt-BR')+'%',1],
    ['Vendas',num(v.vendas),1],['Conversão em vendas',convV.toLocaleString('pt-BR')+'%',1]
   ].map(k=>`<div class="card kpi ${k[2]?'dest':''}"><small>${k[0]}</small><b>${k[1]}</b></div>`).join('');
@@ -245,7 +245,7 @@ function desenhar(){
   if(AFI){desenharAfi();return}
   const s=STATS[PER],t=s.total,vt=(s.vendas&&s.vendas.total)||{vendas:0,conversao:0};
   $('kpis').innerHTML=[
-   ['Visitas',num(t.visitas)],['Pessoas únicas',num(t.visitantes)],['Cliques',num(t.cliques)],
+   ['Visitas',num(t.visitas)],['Pessoas únicas',num(t.visitantes)],
    ['Tempo médio',tempo(t.tempoMedio)],['Cliques no checkout',num(t.pessoasCheckout),1],['Conversão checkout',t.conversao.toLocaleString('pt-BR')+'%',1],
    ['Vendas',num(vt.vendas),1],['Conversão em vendas',(vt.conversao||0).toLocaleString('pt-BR')+'%',1]
   ].map(k=>`<div class="card kpi ${k[2]?'dest':''}"><small>${k[0]}</small><b>${k[1]}</b></div>`).join('');
