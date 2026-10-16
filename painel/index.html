@@ -124,6 +124,7 @@ h2{font-size:17px;font-weight:800;margin:22px 0 10px}
     <button class="btn" onclick="acao('liberar')">Liberar</button>
     <button class="btn r" onclick="acao('bloquear')">Bloquear</button>
    </div>
+   <label style="display:flex;gap:8px;align-items:center;margin-top:12px;font-size:14px;cursor:pointer"><input type="checkbox" id="aBump" style="width:18px;height:18px;accent-color:var(--g)"> Com acesso ao Vídeos Virais (order bump)</label>
    <div class="msg" id="msgAluno"></div>
   </div>
   <h2 style="display:flex;justify-content:space-between;align-items:center;gap:10px">Alunos <span class="mut" id="contAlunos"></span></h2>
@@ -222,7 +223,7 @@ function listaAlunos(){
   const l=ALUNOS.filter(a=>!q||String(a.email).toLowerCase().includes(q)||String(a.nome).toLowerCase().includes(q));
   $('contAlunos').innerText=ALUNOS.filter(a=>a.acesso==='ativo').length+' com acesso';
   if(!l.length){$('tAl').innerHTML='<tr><td class="mut">Nenhum aluno ainda.</td></tr>';return}
-  $('tAl').innerHTML='<tr><th>Aluno</th><th>Acesso</th>'+(TEM_BUMP?'<th>Order bump</th>':'')+'<th>Origem</th><th>Quando</th><th></th></tr>'+l.map(a=>{
+  $('tAl').innerHTML='<tr><th>Aluno</th><th>Acesso</th>'+(TEM_BUMP?'<th>Vídeos Virais</th>':'')+'<th>Origem</th><th>Quando</th><th></th></tr>'+l.map(a=>{
     const e=esc(a.email);
     return `<tr><td><b>${esc(a.nome)||'—'}</b><br><span class="mut">${e}</span></td><td>${pill(a.acesso)}</td>
     ${TEM_BUMP?`<td>${pill(a.bump)} <button class="btn o s" onclick="acao('${a.bump==='ativo'?'bloquear_bump':'liberar_bump'}','${e}')">${a.bump==='ativo'?'Tirar':'Dar'}</button></td>`:''}
@@ -234,10 +235,14 @@ function acao(tipo,email){
   const em=(email||$('aEmail').value).trim();
   if(!em){$('msgAluno').innerText='Digite o e-mail.';return}
   $('tAlunos').classList.add('carregando');$('msgAluno').innerText='';
-  chamar({acao:tipo,email:em,nome:email?'':$('aNome').value}).then(r=>{
+  /* Pelo formulário: liberar/bloquear também liga ou desliga o bump conforme a caixinha */
+  const extra=email?'':tipo==='bloquear'?'bloquear_bump':tipo==='liberar'&&$('aBump').checked?'liberar_bump':'';
+  chamar({acao:tipo,email:em,nome:email?'':$('aNome').value})
+  .then(r=>!r.ok||!extra?r:chamar({acao:extra,email:em}))
+  .then(r=>{
     if(!r.ok){$('msgAluno').innerText=r.erro==='senha'?'Sessão expirou, entre de novo.':r.erro;return}
     ALUNOS=r.alunos;TEM_BUMP=r.bump;listaAlunos();
-    if(!email){$('aEmail').value='';$('aNome').value=''}
+    if(!email){$('msgAluno').style.color='var(--g3)';$('msgAluno').innerText=(tipo==='liberar'?'Acesso liberado para ':'Acesso bloqueado para ')+em+(tipo==='liberar'&&$('aBump').checked?' (com Vídeos Virais)':'');setTimeout(()=>{$('msgAluno').innerText='';$('msgAluno').style.color=''},4000);$('aEmail').value='';$('aNome').value='';$('aBump').checked=false}
   }).catch(()=>$('msgAluno').innerText='Não foi possível salvar. Tente de novo.')
   .finally(()=>$('tAlunos').classList.remove('carregando'));
 }
