@@ -19,7 +19,7 @@ const TOKEN_KIWIFY = '';
 /* Senha do seu painel de alunos. Vazio = painel desligado. */
 const SENHA_PAINEL = '';
 /* Parte do nome (ou o ID) do produto do order bump na Kiwify, ex.: 'TikTok Shop'. Vazio = sem bump. */
-const PRODUTO_BUMP = '';
+const PRODUTO_BUMP = 'Virais';
 
 const ABA = 'Alunos';
 const CABECALHO = ['email', 'nome', 'acesso', 'bump', 'evento', 'pedido', 'atualizado em'];
@@ -118,6 +118,7 @@ function painel_(d) {
     salvar_(email, mudancas);
   }
   if (d.acao === 'visitas') return json_({ ok: true, stats: estatisticas_() });
+  if (d.acao === 'aovivo') return json_({ ok: true, aoVivo: aoVivo_() });
   return json_({ ok: true, bump: !!PRODUTO_BUMP, alunos: listar_() });
 }
 
@@ -156,8 +157,71 @@ function abaEv_() {
 
 const corta_ = (v, n) => String(v || '').slice(0, n);
 
+/* ---------- AO VIVO ----------
+   Cada página aberta manda um "ping" a cada 45s. Guardamos no cache (sem escrever na planilha)
+   quem mandou ping no último 1min30: isso é quem está na página agora. */
+const VIVO_SEG = 90;
+function vivoLer_() {
+  const c = CacheService.getScriptCache().get('vivo');
+  try { return c ? JSON.parse(c) : {}; } catch (x) { return {}; }
+}
+function vivoPing_(d) {
+  const lock = LockService.getScriptLock();
+  if (!lock.tryLock(3000)) return;
+  try {
+    const agora = Date.now(), m = vivoLer_(), novo = {};
+    Object.keys(m).forEach(k => { if (agora - m[k][0] < VIVO_SEG * 1000) novo[k] = m[k]; });
+    novo[corta_(d.visita, 24) || Math.random()] = [agora, corta_(d.afiliado, 40).toLowerCase(), corta_(d.pagina, 60)];
+    CacheService.getScriptCache().put('vivo', JSON.stringify(novo), 600);
+  } finally { lock.releaseLock(); }
+}
+function aoVivo_() {
+  const agora = Date.now(), m = vivoLer_(), por = {};
+  let total = 0;
+  Object.keys(m).forEach(k => {
+    if (agora - m[k][0] >= VIVO_SEG * 1000) return;
+    total++;
+    const a = m[k][1] || '(sem afiliado)';
+    por[a] = (por[a] || 0) + 1;
+  });
+  return { total: total, afiliados: Object.keys(por).map(k => ({ nome: k, pessoas: por[k] })).sort((a, b) => b.pessoas - a.pessoas) };
+}
+
+/* ---------- VENDAS ---------- */
+const ABA_VENDAS = 'Vendas';
+const CAB_VENDAS = ['data', 'status', 'produto', 'valor', 'sua comissao', 'afiliado', 'pagina', 'origem', 'campanha', 'email', 'pedido'];
+function abaVendas_() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sh = ss.getSheetByName(ABA_VENDAS);
+  if (!sh) { sh = ss.insertSheet(ABA_VENDAS); sh.appendRow(CAB_VENDAS); sh.setFrozenRows(1); }
+  return sh;
+}
+/* A Kiwify manda valores em centavos (ex.: 4700 = R$ 47,00) */
+const reais_ = v => { const n = Number(String(v == null ? '' : v).replace(',', '.')); return isFinite(n) ? (Number.isInteger(n) ? n / 100 : n) : 0; };
+function registrarVenda_(d, novo, email) {
+  const com = d.Commissions || d.commissions || {};
+  const tr = d.TrackingParameters || d.tracking_parameters || {};
+  const prod = (d.Product && (d.Product.product_name || d.Product.name)) || '';
+  /* Afiliado que a Kiwify comissionou (se houver) */
+  const lojas = com.commissioned_stores || [];
+  const afi = lojas.filter(s => /affiliate|afiliad/i.test(s.type || '')).map(s => s.custom_name || s.email || s.id)[0] || '';
+  const src = String(tr.src || '').toLowerCase();
+  const linha = [
+    new Date(), novo === 'ativo' ? 'aprovada' : 'reembolsada', prod,
+    reais_(com.charge_amount != null ? com.charge_amount : d.charge_amount),
+    reais_(com.my_commission != null ? com.my_commission : ''),
+    src && src !== 'principal' ? src : (afi ? String(afi).toLowerCase() : ''),
+    src, String(tr.utm_source || '').toLowerCase(), String(tr.utm_campaign || ''), email,
+    d.order_id || d.order_ref || ''
+  ];
+  const lock = LockService.getScriptLock();
+  lock.waitLock(10000);
+  try { abaVendas_().appendRow(linha); } finally { lock.releaseLock(); }
+}
+
 /* Evento enviado pelas páginas: { ev, pagina, afiliado, origem, visitante, visita, segundos, cliques } */
 function registrar_(d) {
+  if (d.ev === 'ping') { vivoPing_(d); return json_({ ok: true }); }
   if (TIPOS.indexOf(d.ev) < 0) return json_({ ok: false });
   const linha = [
     new Date(), d.ev, corta_(d.pagina, 80), corta_(d.afiliado, 40).toLowerCase(), corta_(d.origem, 60).toLowerCase(),
@@ -227,6 +291,41 @@ function estatisticas_() {
     if (r[1] === 'checkout') dias[i].checkouts++;
   });
   saida.dias = dias.map(d => ({ dia: d.dia, visitas: d.visitas, checkouts: d.checkouts }));
+
+  /* Vendas por período, afiliado e origem, com conversão sobre as visitas */
+  const shV = abaVendas_();
+  const nv = shV.getLastRow();
+  const vendas = nv < 2 ? [] : shV.getRange(2, 1, nv - 1, CAB_VENDAS.length).getValues();
+  const tempo = x => x instanceof Date ? x.getTime() : new Date(x).getTime();
+  Object.keys(periodos).forEach(p => {
+    const ini = periodos[p];
+    const soma = { vendas: 0, valor: 0, comissao: 0, reembolsos: 0 };
+    const afi = {}, ori = {};
+    const conta = (obj, k, r) => {
+      const a = obj[k] = obj[k] || { vendas: 0, valor: 0, comissao: 0, reembolsos: 0 };
+      if (r[1] === 'aprovada') { a.vendas++; a.valor += +r[3] || 0; a.comissao += +r[4] || 0; } else a.reembolsos++;
+    };
+    vendas.forEach(r => {
+      if (tempo(r[0]) < ini) return;
+      if (r[1] === 'aprovada') { soma.vendas++; soma.valor += +r[3] || 0; soma.comissao += +r[4] || 0; } else soma.reembolsos++;
+      conta(afi, r[5] || '(sem afiliado)', r);
+      conta(ori, r[7] || '(direto)', r);
+    });
+    const vis = saida[p].total.visitas;
+    soma.conversao = vis ? Math.round(soma.vendas / vis * 1000) / 10 : 0;
+    const visAfi = {}; saida[p].afiliados.forEach(a => { visAfi[a.nome] = a.visitas; });
+    const lista = (obj, comVis) => Object.keys(obj).map(k => {
+      const o = Object.assign({ nome: k }, obj[k]);
+      if (comVis) { o.visitas = visAfi[k] || 0; o.conversao = o.visitas ? Math.round(o.vendas / o.visitas * 1000) / 10 : 0; }
+      return o;
+    }).sort((a, b) => b.valor - a.valor);
+    saida[p].vendas = { total: soma, afiliados: lista(afi, true), origens: lista(ori, false) };
+  });
+  saida.ultimasVendas = vendas.slice(-20).reverse().map(r => ({
+    quando: r[0] instanceof Date ? r[0].toISOString() : String(r[0]), status: r[1], produto: r[2], valor: r[3],
+    afiliado: r[5], origem: r[7], email: r[9]
+  }));
+  saida.aoVivo = aoVivo_();
   return saida;
 }
 
@@ -258,11 +357,12 @@ function doPost(e) {
   const temBump = prods.some(ehBump);
   const temCurso = !prods.length || prods.some(p => !ehBump(p));
 
-  const nome = cli.full_name || cli.name || [cli.first_name, cli.last_name].filter(String).join(' ') || '';
+  const nome = cli.full_name || cli.name || [cli.first_name, cli.last_name].filter(Boolean).join(' ') || '';
   const campos = { nome: nome, evento: evento || status, pedido: d.order_id || d.order_ref || d.id || '' };
   if (temCurso) campos.acesso = novo;
   if (temBump) campos.bump = novo;
   salvar_(email, campos);
+  registrarVenda_(d, novo, email);
   return json_({ ok: true, email: email, acesso: campos.acesso || null, bump: campos.bump || null });
 }
 

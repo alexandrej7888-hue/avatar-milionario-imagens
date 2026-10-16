@@ -1,5 +1,22 @@
 /* Avatar Milionário - contador de visitas, cliques, tempo na página e cliques no checkout.
    A página define antes: window.AM_AFILIADO = 'nome-do-afiliado' (vazio na página principal). */
+
+/* Contagem regressiva na faixa do topo: a oferta "acaba" à meia-noite (horário de Brasília) e recomeça todo dia */
+(function () {
+  var faixa = document.getElementById('topIn');
+  if (!faixa) return;
+  var bloco = '<span>🔥 <b>Último dia</b></span><span>A oferta acaba em <b class="am-cd">--:--:--</b></span>';
+  faixa.innerHTML = new Array(9).join(bloco);
+  function tic() {
+    var agora = new Date(), br = new Date(agora.getTime() + (agora.getTimezoneOffset() - 180) * 60000);
+    var falta = 86400 - (br.getHours() * 3600 + br.getMinutes() * 60 + br.getSeconds());
+    var t = [Math.floor(falta / 3600), Math.floor(falta % 3600 / 60), falta % 60].map(function (n) { return (n < 10 ? '0' : '') + n; }).join(':');
+    [].forEach.call(document.querySelectorAll('.am-cd'), function (e) { e.textContent = t; });
+  }
+  tic();
+  setInterval(tic, 1000);
+})();
+
 (function () {
   var API = 'https://script.google.com/macros/s/AKfycbyw-PCFL5Ed1hpDJp18ZlNqYBeUs3GD_D3gMnNuYYyof5XHwb54WJCqd70FAVkwBSL_/exec';
   /* Só conta visitas no site de verdade (ignora pré-visualizações e testes) */
@@ -32,6 +49,22 @@
   }
 
   envia('visita');
+
+  /* Ao vivo: avisa a cada 45s que a página continua aberta (só enquanto está na tela) */
+  function ping() { if (document.visibilityState === 'visible') envia('ping'); }
+  ping();
+  setInterval(ping, 45000);
+
+  /* Leva a página e a origem para o checkout da Kiwify (aparece na venda: src e utm_source) */
+  [].forEach.call(document.querySelectorAll('a[href*="pay.kiwify.com.br"]'), function (a) {
+    try {
+      var u = new URL(a.href);
+      u.searchParams.set('src', (window.AM_AFILIADO || 'principal').toLowerCase());
+      if (!u.searchParams.get('utm_source')) u.searchParams.set('utm_source', origem);
+      ['utm_medium', 'utm_campaign', 'utm_content'].forEach(function (k) { if (q.get(k)) u.searchParams.set(k, q.get(k)); });
+      a.href = u.toString();
+    } catch (e) {}
+  });
 
   /* Cliques na página e cliques que vão para o checkout */
   var cliques = 0, checkout = false;

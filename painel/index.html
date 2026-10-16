@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Painel | Avatar Milionário</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#050907;--bg2:#08100b;--card:#0d1611;--card2:#111d16;--line:#1a2a20;--line2:#24392c;--txt:#ecf5ef;--mut:#93a89b;--g:#22c55e;--g2:#16a34a;--g3:#4ade80;--gl:rgba(34,197,94,.12);--gold:#facc15;--red:#f87171}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:var(--bg);color:var(--txt);line-height:1.45;-webkit-font-smoothing:antialiased}
+button,input,select{font:inherit;color:inherit}
+.wrap{max-width:1100px;margin:0 auto;padding:24px 16px 60px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:22px}
+.top h1{font-size:22px;font-weight:800}.top h1 span{color:var(--g3)}
+.tabs{display:flex;gap:6px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:4px}
+.tabs button{border:0;background:none;padding:9px 16px;border-radius:9px;font-weight:700;color:var(--mut);cursor:pointer}
+.tabs button.on{background:var(--g);color:#03150a}
+.card{background:linear-gradient(180deg,var(--card2),var(--card));border:1px solid var(--line);border-radius:16px;padding:18px}
+.per{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+.per button{border:1px solid var(--line2);background:var(--card);padding:8px 14px;border-radius:30px;font-weight:700;font-size:14px;cursor:pointer;color:var(--mut)}
+.per button.on{border-color:var(--g);color:var(--g3);background:var(--gl)}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:16px}
+.kpi b{overflow-wrap:anywhere}
+.kpi small{display:block;color:var(--mut);font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+.kpi b{display:block;font-size:26px;font-weight:800;margin-top:4px}
+.kpi.dest b{color:var(--g3)}
+h2{font-size:17px;font-weight:800;margin:22px 0 10px}
+.tbl{width:100%;border-collapse:collapse;font-size:14px}
+.tbl th{text-align:left;color:var(--mut);font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;padding:10px 10px;border-bottom:1px solid var(--line2)}
+.tbl td{padding:11px 10px;border-bottom:1px solid var(--line)}
+.tbl td.n,.tbl th.n{text-align:right;font-variant-numeric:tabular-nums}
+.tbl tr:last-child td{border-bottom:0}
+.scroll{overflow-x:auto}
+.ok{color:var(--g3)}.no{color:var(--red)}
+.graf{display:flex;align-items:flex-end;gap:3px;height:140px;padding-top:10px}
+.graf div{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:2px;height:100%;position:relative}
+.graf i{display:block;width:100%;background:linear-gradient(180deg,var(--g3),var(--g2));border-radius:4px 4px 0 0;min-height:2px}
+.graf i.c{background:var(--gold)}
+.graf span{font-size:9px;color:var(--mut);white-space:nowrap}
+.leg{display:flex;gap:16px;font-size:12px;color:var(--mut);margin-top:8px}
+.leg b{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+.inp{background:var(--bg2);border:1px solid var(--line2);border-radius:10px;padding:11px 12px;width:100%;outline:none}
+.inp:focus{border-color:var(--g)}
+.btn{border:0;border-radius:10px;padding:11px 16px;font-weight:800;cursor:pointer;background:var(--g);color:#03150a;white-space:nowrap}
+.btn.o{background:var(--card2);color:var(--txt);border:1px solid var(--line2)}
+.btn.r{background:rgba(248,113,113,.12);color:var(--red);border:1px solid rgba(248,113,113,.35)}
+.btn.s{padding:6px 10px;font-size:13px}
+.form{display:grid;grid-template-columns:2fr 1.5fr auto auto;gap:8px}
+.login{max-width:380px;margin:12vh auto 0;text-align:center}
+.login h1{font-size:22px;margin-bottom:6px}.login p{color:var(--mut);margin-bottom:18px;font-size:14px}
+.login .btn{width:100%;margin-top:10px}
+.msg{color:var(--red);font-size:14px;margin-top:10px;min-height:20px}
+.mut{color:var(--mut);font-size:13px}
+.pill{display:inline-block;font-size:12px;font-weight:800;padding:3px 9px;border-radius:20px}
+.pill.ok{background:var(--gl);color:var(--g3)}.pill.no{background:rgba(248,113,113,.12);color:var(--red)}.pill.x{background:var(--card2);color:var(--mut)}
+.carregando{opacity:.5;pointer-events:none}
+.vivo{display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--line2);border-radius:30px;padding:8px 14px;font-size:14px;color:var(--mut)}
+.vivo b{color:var(--txt);font-size:16px}
+.vivo i{width:10px;height:10px;border-radius:50%;background:#ef4444;box-shadow:0 0 0 0 rgba(239,68,68,.6);animation:pulsa 1.6s infinite}
+@keyframes pulsa{70%{box-shadow:0 0 0 9px rgba(239,68,68,0)}100%{box-shadow:0 0 0 0 rgba(239,68,68,0)}}
+@media (max-width:860px){.kpis{grid-template-columns:repeat(2,1fr)}.top{gap:10px}.form{grid-template-columns:1fr 1fr}.form .inp{grid-column:1/-1}.graf span{display:none}}
+</style>
+</head>
+<body>
+
+<div id="entrar" class="wrap login">
+ <h1>Painel Avatar Milionário</h1>
+ <p>Digite a senha do painel.</p>
+ <form onsubmit="logar(event)">
+  <input class="inp" type="password" id="senha" placeholder="Senha" autocomplete="current-password" required>
+  <button class="btn" id="btnLogin">Entrar</button>
+ </form>
+ <div class="msg" id="msgLogin"></div>
+</div>
+
+<div id="app" class="wrap" style="display:none">
+ <div class="top">
+  <h1>Avatar <span>Milionário</span></h1>
+  <div class="vivo" id="vivo" title="Pessoas com a página aberta agora"><i></i><b id="vivoN">0</b> ao vivo agora</div>
+  <div class="tabs"><button data-t="visitas" class="on">Visitas</button><button data-t="vendas">Vendas</button><button data-t="alunos">Alunos</button></div>
+ </div>
+ <div class="mut" id="vivoAfi" style="margin:-12px 0 18px"></div>
+
+ <section id="tVendas" style="display:none">
+  <div class="per" id="perV">
+   <button data-p="hoje">Hoje</button><button data-p="7d" class="on">7 dias</button><button data-p="30d">30 dias</button><button data-p="total">Total</button>
+   <button data-p="r" style="margin-left:auto">↻ Atualizar</button>
+  </div>
+  <div class="kpis" id="kpisV"></div>
+  <h2>Vendas por afiliado</h2>
+  <div class="card scroll"><table class="tbl" id="tVAfi"></table></div>
+  <h2>Vendas por origem do tráfego</h2>
+  <div class="card scroll"><table class="tbl" id="tVOri"></table></div>
+  <h2>Últimas vendas</h2>
+  <div class="card scroll"><table class="tbl" id="tVUlt"></table></div>
+ </section>
+
+ <section id="tVisitas">
+  <div class="per" id="per">
+   <button data-p="hoje">Hoje</button><button data-p="7d" class="on">7 dias</button><button data-p="30d">30 dias</button><button data-p="total">Total</button>
+   <button data-p="r" style="margin-left:auto">↻ Atualizar</button>
+  </div>
+  <div class="kpis" id="kpis"></div>
+  <div class="card"><b style="font-size:14px">Últimos 30 dias</b><div class="graf" id="graf"></div>
+   <div class="leg"><span><b style="background:var(--g3)"></b>Visitas</span><span><b style="background:var(--gold)"></b>Cliques no checkout</span></div></div>
+  <h2>Por afiliado</h2>
+  <div class="card scroll"><table class="tbl" id="tAfi"></table></div>
+  <h2>De onde veio o tráfego</h2>
+  <div class="card scroll"><table class="tbl" id="tOri"></table></div>
+  <h2>Por página</h2>
+  <div class="card scroll"><table class="tbl" id="tPag"></table></div>
+ </section>
+
+ <section id="tAlunos" style="display:none">
+  <div class="card">
+   <b style="font-size:15px">Liberar acesso na mão</b>
+   <p class="mut" style="margin:4px 0 12px">Quem compra pela Kiwify entra sozinho aqui. Use isto para liberar ou bloquear alguém manualmente.</p>
+   <div class="form">
+    <input class="inp" id="aEmail" type="email" placeholder="E-mail do aluno">
+    <input class="inp" id="aNome" placeholder="Nome (opcional)">
+    <button class="btn" onclick="acao('liberar')">Liberar</button>
+    <button class="btn r" onclick="acao('bloquear')">Bloquear</button>
+   </div>
+   <div class="msg" id="msgAluno"></div>
+  </div>
+  <h2 style="display:flex;justify-content:space-between;align-items:center;gap:10px">Alunos <span class="mut" id="contAlunos"></span></h2>
+  <input class="inp" id="busca" placeholder="Buscar por e-mail ou nome" style="margin-bottom:10px">
+  <div class="card scroll"><table class="tbl" id="tAl"></table></div>
+ </section>
+</div>
+
+<script>
+/* URL do script da planilha (termina em /exec) */
+const API='https://script.google.com/macros/s/AKfycbyw-PCFL5Ed1hpDJp18ZlNqYBeUs3GD_D3gMnNuYYyof5XHwb54WJCqd70FAVkwBSL_/exec';
+
+let SENHA='',STATS=null,PER='7d',ALUNOS=[],TEM_BUMP=false;
+const $=id=>document.getElementById(id);
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const num=n=>(+n||0).toLocaleString('pt-BR');
+const tempo=s=>{s=+s||0;const m=Math.floor(s/60);return m?m+'min '+String(s%60).padStart(2,'0')+'s':s+'s'};
+
+function chamar(corpo){
+  return fetch(API,{method:'POST',body:JSON.stringify(Object.assign({senha:SENHA},corpo))}).then(r=>r.json());
+}
+
+function logar(e){
+  e.preventDefault();
+  if(!API){$('msgLogin').innerText='O painel ainda não foi ligado na planilha.';return}
+  SENHA=$('senha').value;$('btnLogin').classList.add('carregando');$('msgLogin').innerText='';
+  chamar({acao:'visitas'}).then(r=>{
+    if(!r.ok){$('msgLogin').innerText=r.erro==='senha'?'Senha errada.':'Erro: '+r.erro;return}
+    try{sessionStorage.am_painel=SENHA}catch(x){}
+    $('entrar').style.display='none';$('app').style.display='block';
+    STATS=r.stats;desenhar();carregarAlunos();vivo(STATS.aoVivo);setInterval(atualizarVivo,30000);
+  }).catch(()=>$('msgLogin').innerText='Não foi possível conectar. Tente de novo.')
+  .finally(()=>$('btnLogin').classList.remove('carregando'));
+}
+
+/* ---------- VISITAS ---------- */
+function linhaTab(cols,lista,vazio){
+  if(!lista.length)return `<tr><td class="mut">${vazio}</td></tr>`;
+  return '<tr>'+cols.map(c=>`<th class="${c[2]?'n':''}">${c[0]}</th>`).join('')+'</tr>'+
+    lista.map(x=>'<tr>'+cols.map(c=>`<td class="${c[2]?'n':''}">${c[1](x)}</td>`).join('')+'</tr>').join('');
+}
+const COLS=[
+ ['Visitas',x=>num(x.visitas),1],['Pessoas',x=>num(x.visitantes),1],['Cliques',x=>num(x.cliques),1],
+ ['Tempo médio',x=>tempo(x.tempoMedio),1],['Checkout',x=>`<b class="ok">${num(x.pessoasCheckout)}</b>`,1],['Conversão',x=>x.conversao.toLocaleString('pt-BR')+'%',1]
+];
+function desenhar(){
+  const s=STATS[PER],t=s.total;
+  $('kpis').innerHTML=[
+   ['Visitas',num(t.visitas)],['Pessoas únicas',num(t.visitantes)],['Cliques',num(t.cliques)],
+   ['Tempo médio',tempo(t.tempoMedio)],['Cliques no checkout',num(t.pessoasCheckout),1],['Conversão',t.conversao.toLocaleString('pt-BR')+'%',1]
+  ].map(k=>`<div class="card kpi ${k[2]?'dest':''}"><small>${k[0]}</small><b>${k[1]}</b></div>`).join('');
+  $('tAfi').innerHTML=linhaTab([['Afiliado',x=>x.nome==='(sem afiliado)'?'<span class="mut">Página principal (sua)</span>':`<b>${esc(x.nome)}</b>`],...COLS],s.afiliados,'Nenhuma visita nesse período.');
+  $('tOri').innerHTML=linhaTab([['Origem',x=>esc(x.nome)],...COLS],s.origens,'Nenhuma visita nesse período.');
+  $('tPag').innerHTML=linhaTab([['Página',x=>esc(x.nome)],...COLS],s.paginas,'Nenhuma visita nesse período.');
+  const max=Math.max(1,...STATS.dias.map(d=>d.visitas));
+  desenharVendas();
+  $('graf').innerHTML=STATS.dias.map(d=>`<div title="${d.dia}: ${d.visitas} visitas, ${d.checkouts} no checkout"><i style="height:${d.visitas/max*100}%"></i>${d.checkouts?`<i class="c" style="height:${Math.max(3,d.checkouts/max*100)}%;position:absolute;bottom:14px;width:40%"></i>`:''}<span>${d.dia.slice(0,2)}</span></div>`).join('');
+}
+/* ---------- AO VIVO ---------- */
+function vivo(v){if(!v)return;$('vivoN').innerText=num(v.total);
+  $('vivoAfi').innerHTML=v.total?'Agora: '+v.afiliados.map(a=>`${a.nome==='(sem afiliado)'?'página principal':esc(a.nome)} <b style="color:var(--txt)">${a.pessoas}</b>`).join(' · '):''}
+function atualizarVivo(){if(document.visibilityState==='visible')chamar({acao:'aovivo'}).then(r=>{if(r.ok)vivo(r.aoVivo)}).catch(()=>{})}
+
+/* ---------- VENDAS ---------- */
+let PERV='7d';
+const brl=n=>(+n||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+function desenharVendas(){
+  const v=STATS[PERV].vendas;if(!v)return;const t=v.total;
+  $('kpisV').innerHTML=[
+   ['Vendas',num(t.vendas),1],['Faturamento',brl(t.valor),1],['Sua comissão',brl(t.comissao)],
+   ['Ticket médio',brl(t.vendas?t.valor/t.vendas:0)],['Conversão',t.conversao.toLocaleString('pt-BR')+'%',1],['Reembolsos',num(t.reembolsos)]
+  ].map(k=>`<div class="card kpi ${k[2]?'dest':''}"><small>${k[0]}</small><b>${k[1]}</b></div>`).join('');
+  $('tVAfi').innerHTML=linhaTab([['Afiliado',x=>x.nome==='(sem afiliado)'||x.nome==='principal'?'<span class="mut">Página principal (sua)</span>':`<b>${esc(x.nome)}</b>`],
+   ['Visitas',x=>num(x.visitas),1],['Vendas',x=>`<b class="ok">${num(x.vendas)}</b>`,1],['Faturamento',x=>brl(x.valor),1],['Conversão',x=>x.conversao.toLocaleString('pt-BR')+'%',1],['Reembolsos',x=>num(x.reembolsos),1]],v.afiliados,'Nenhuma venda nesse período.');
+  $('tVOri').innerHTML=linhaTab([['Origem',x=>esc(x.nome)],['Vendas',x=>`<b class="ok">${num(x.vendas)}</b>`,1],['Faturamento',x=>brl(x.valor),1],['Reembolsos',x=>num(x.reembolsos),1]],v.origens,'Nenhuma venda nesse período.');
+  $('tVUlt').innerHTML=linhaTab([['Quando',x=>new Date(x.quando).toLocaleString('pt-BR',{dateStyle:'short',timeStyle:'short'})],['Produto',x=>esc(x.produto)],
+   ['Valor',x=>brl(x.valor),1],['Afiliado',x=>esc(x.afiliado||'—')],['Origem',x=>esc(x.origem||'direto')],['Status',x=>x.status==='aprovada'?'<span class="pill ok">aprovada</span>':'<span class="pill no">reembolso</span>']],STATS.ultimasVendas||[],'Nenhuma venda ainda.');
+}
+$('perV').onclick=e=>{
+  const p=e.target.dataset.p;if(!p)return;
+  if(p==='r'){e.target.classList.add('carregando');chamar({acao:'visitas'}).then(r=>{if(r.ok){STATS=r.stats;desenhar();vivo(STATS.aoVivo)}}).finally(()=>e.target.classList.remove('carregando'));return}
+  PERV=p;document.querySelectorAll('#perV [data-p]').forEach(b=>b.classList.toggle('on',b.dataset.p===p));desenharVendas();
+};
+
+$('per').onclick=e=>{
+  const p=e.target.dataset.p;if(!p)return;
+  if(p==='r'){e.target.classList.add('carregando');chamar({acao:'visitas'}).then(r=>{if(r.ok){STATS=r.stats;desenhar()}}).finally(()=>e.target.classList.remove('carregando'));return}
+  PER=p;document.querySelectorAll('#per [data-p]').forEach(b=>b.classList.toggle('on',b.dataset.p===p));desenhar();
+};
+
+/* ---------- ALUNOS ---------- */
+function carregarAlunos(){chamar({acao:'listar'}).then(r=>{if(r.ok){ALUNOS=r.alunos;TEM_BUMP=r.bump;listaAlunos()}})}
+const pill=v=>v==='ativo'?'<span class="pill ok">ativo</span>':v==='bloqueado'?'<span class="pill no">bloqueado</span>':'<span class="pill x">—</span>';
+function listaAlunos(){
+  const q=$('busca').value.trim().toLowerCase();
+  const l=ALUNOS.filter(a=>!q||String(a.email).toLowerCase().includes(q)||String(a.nome).toLowerCase().includes(q));
+  $('contAlunos').innerText=ALUNOS.filter(a=>a.acesso==='ativo').length+' com acesso';
+  if(!l.length){$('tAl').innerHTML='<tr><td class="mut">Nenhum aluno ainda.</td></tr>';return}
+  $('tAl').innerHTML='<tr><th>Aluno</th><th>Acesso</th>'+(TEM_BUMP?'<th>Order bump</th>':'')+'<th>Origem</th><th>Quando</th><th></th></tr>'+l.map(a=>{
+    const e=esc(a.email);
+    return `<tr><td><b>${esc(a.nome)||'—'}</b><br><span class="mut">${e}</span></td><td>${pill(a.acesso)}</td>
+    ${TEM_BUMP?`<td>${pill(a.bump)} <button class="btn o s" onclick="acao('${a.bump==='ativo'?'bloquear_bump':'liberar_bump'}','${e}')">${a.bump==='ativo'?'Tirar':'Dar'}</button></td>`:''}
+    <td class="mut">${a.evento==='manual'?'manual':'Kiwify'}</td><td class="mut">${a.quando?new Date(a.quando).toLocaleString('pt-BR',{dateStyle:'short',timeStyle:'short'}):''}</td>
+    <td>${a.acesso==='ativo'?`<button class="btn r s" onclick="acao('bloquear','${e}')">Bloquear</button>`:`<button class="btn s" onclick="acao('liberar','${e}')">Liberar</button>`}</td></tr>`}).join('');
+}
+$('busca').oninput=listaAlunos;
+function acao(tipo,email){
+  const em=(email||$('aEmail').value).trim();
+  if(!em){$('msgAluno').innerText='Digite o e-mail.';return}
+  $('tAlunos').classList.add('carregando');$('msgAluno').innerText='';
+  chamar({acao:tipo,email:em,nome:email?'':$('aNome').value}).then(r=>{
+    if(!r.ok){$('msgAluno').innerText=r.erro==='senha'?'Sessão expirou, entre de novo.':r.erro;return}
+    ALUNOS=r.alunos;TEM_BUMP=r.bump;listaAlunos();
+    if(!email){$('aEmail').value='';$('aNome').value=''}
+  }).catch(()=>$('msgAluno').innerText='Não foi possível salvar. Tente de novo.')
+  .finally(()=>$('tAlunos').classList.remove('carregando'));
+}
+
+/* Abas */
+document.querySelector('.tabs').onclick=e=>{
+  const t=e.target.dataset.t;if(!t)return;
+  document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('on',b.dataset.t===t));
+  $('tVisitas').style.display=t==='visitas'?'':'none';$('tAlunos').style.display=t==='alunos'?'':'none';$('tVendas').style.display=t==='vendas'?'':'none';
+};
+
+/* Lembra a senha só enquanto a aba estiver aberta */
+try{const s=sessionStorage.am_painel;if(s){$('senha').value=s;logar(new Event('submit'))}}catch(x){}
+</script>
+</body>
+</html>
