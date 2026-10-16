@@ -116,7 +116,13 @@ function painel_(d) {
     if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return json_({ ok: false, erro: 'e-mail inválido' });
     mudancas.nome = String(d.nome || '').trim();
     mudancas.evento = 'manual';
+    const antes = estado_(email);
     salvar_(email, mudancas);
+    /* Liberou pelo painel: a pessoa recebe o mesmo e-mail de boas-vindas da compra (só na primeira vez) */
+    try {
+      if (d.acao === 'liberar' && antes.acesso !== 'ativo') enviarBoasVindas_(email, mudancas.nome, true, antes.bump === 'ativo');
+      if (d.acao === 'liberar_bump' && antes.bump !== 'ativo') enviarBoasVindas_(email, mudancas.nome, false, true);
+    } catch (x) { console.log('e-mail painel: ' + x); }
   }
   if (d.acao === 'visitas') return json_({ ok: true, stats: estatisticas_() });
   if (d.acao === 'aovivo') return json_({ ok: true, aoVivo: aoVivo_() });
