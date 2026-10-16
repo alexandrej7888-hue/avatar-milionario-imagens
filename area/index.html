@@ -532,7 +532,11 @@ inicio:()=>`
   <div class="card"><div class="ico-box">${ic('users')}</div><h3>Grupo de networking <span class="pill gold">EM BREVE</span></h3><p>Abre em 7 dias. Só para quem é aluno.</p><a href="#networking" class="btn btn-o">Ver detalhes</a></div>
  </div>
  ${TEM_BUMP?`<div class="sec-h"><h2>Vídeos virais <span class="pill">LIBERADO</span></h2><a href="#virais">Ver mais ${ic('arrow')}</a></div>
- <div class="vgrid">${VIRAIS.slice(0,5).map(vid).join('')}</div>`:''}
+ <div class="vgrid">${VIRAIS.slice(0,5).map(vid).join('')}</div>`:`<div class="sec-h"><h2>Vídeos virais <span class="pill gold">BÔNUS</span></h2></div>
+ <div class="card" style="display:flex;gap:18px;align-items:center;flex-wrap:wrap;border-color:rgba(250,204,21,.35)">
+  <div class="ico-box" style="margin:0">${ic('lock')}</div>
+  <div style="flex:1;min-width:220px"><h3>Pack Vídeos Virais</h3><p style="margin:0">Vídeos que já viralizaram, prontos para baixar e colocar o seu avatar. Libere agora e poste todo dia sem procurar ideia.</p></div>
+  <a href="${CHECKOUT_VIRAIS}" target="_blank" rel="noopener" class="btn btn-g">Liberar por R$ 19,90 ${ic('arrow')}</a></div>`}
  <div class="sec-h"><h2>Prompts</h2><a href="#prompts">Ver mais ${ic('arrow')}</a></div>
  <div class="grid">${PROMPTS.slice(0,3).map(cardPrompt).join('')}</div>`,
 
@@ -846,7 +850,7 @@ function travaVirais(){return `
   <a href="${CHECKOUT_VIRAIS}" target="_blank" rel="noopener" class="btn btn-g">Liberar o pack por R$ 19,90 ${ic('arrow')}</a></div>`}
 /* Módulos com bump:true só abrem para quem comprou o order bump */
 let TEM_BUMP=false;try{TEM_BUMP=localStorage.am_bump==='1'}catch(x){}
-function aplicarBump(){MODULOS.forEach(m=>{if(!m.bump)return;if(m._lock===undefined)m._lock=m.lock||'';m.lock=TEM_BUMP?m._lock:'Exclusivo de quem levou o bônus'})}
+function aplicarBump(){MODULOS.forEach(m=>{if(!m.bump)return;if(m._lock===undefined)m._lock=m.lock||'';m.lock=TEM_BUMP?m._lock:'Exclusivo de quem levou o bônus'});if(document.getElementById('nav').innerHTML)menu()}
 function consultar(email){return fetch(API+'?email='+encodeURIComponent(email.trim().toLowerCase())).then(r=>r.json())}
 function erroLogin(m){const p=document.getElementById('loginErro');p.innerText=m;p.style.display=m?'block':'none'}
 function entrar(e){
@@ -874,7 +878,8 @@ function abrir(){
 }
 function sair(){try{localStorage.removeItem('am_email');localStorage.removeItem('am_bump')}catch(x){}location.hash='';location.reload()}
 
-document.getElementById('nav').innerHTML=MENU.map(m=>`<a href="#${m[0]}" class="nav-i" data-p="${m[0]}">${ic(m[2])}${m[1]}${m[3]?`<span class="tag">${m[3]}</span>`:''}</a>`).join('');
+function menu(){document.getElementById('nav').innerHTML=MENU.map(m=>{const tag=m[0]==='virais'&&!TEM_BUMP?'R$ 19,90':m[3];return `<a href="#${m[0]}" class="nav-i" data-p="${m[0]}">${ic(m[0]==='virais'&&!TEM_BUMP?'lock':m[2])}${m[1]}${tag?`<span class="tag">${tag}</span>`:''}</a>`}).join('')}
+menu();
 window.addEventListener('hashchange',render);
 /* Com API vazia, qualquer e-mail entra. Com API, só quem está "ativo" na planilha. */
 try{if(localStorage.am_email){abrir();reconferir()}}catch(x){}
