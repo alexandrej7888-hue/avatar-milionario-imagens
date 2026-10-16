@@ -22,7 +22,7 @@ button,input,select{font:inherit;color:inherit}
 .per{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
 .per button{border:1px solid var(--line2);background:var(--card);padding:8px 14px;border-radius:30px;font-weight:700;font-size:14px;cursor:pointer;color:var(--mut)}
 .per button.on{border-color:var(--g);color:var(--g3);background:var(--gl)}
-.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:16px}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
 .kpi b{overflow-wrap:anywhere}
 .kpi small{display:block;color:var(--mut);font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
 .kpi b{display:block;font-size:26px;font-weight:800;margin-top:4px}
@@ -168,15 +168,19 @@ function linhaTab(cols,lista,vazio){
 }
 const COLS=[
  ['Visitas',x=>num(x.visitas),1],['Pessoas',x=>num(x.visitantes),1],['Cliques',x=>num(x.cliques),1],
- ['Tempo médio',x=>tempo(x.tempoMedio),1],['Checkout',x=>`<b class="ok">${num(x.pessoasCheckout)}</b>`,1],['Conversão',x=>x.conversao.toLocaleString('pt-BR')+'%',1]
+ ['Tempo médio',x=>tempo(x.tempoMedio),1],['Checkout',x=>`<b class="ok">${num(x.pessoasCheckout)}</b>`,1],['Conv. checkout',x=>x.conversao.toLocaleString('pt-BR')+'%',1]
 ];
 function desenhar(){
-  const s=STATS[PER],t=s.total;
+  const s=STATS[PER],t=s.total,vt=(s.vendas&&s.vendas.total)||{vendas:0,conversao:0};
   $('kpis').innerHTML=[
    ['Visitas',num(t.visitas)],['Pessoas únicas',num(t.visitantes)],['Cliques',num(t.cliques)],
-   ['Tempo médio',tempo(t.tempoMedio)],['Cliques no checkout',num(t.pessoasCheckout),1],['Conversão',t.conversao.toLocaleString('pt-BR')+'%',1]
+   ['Tempo médio',tempo(t.tempoMedio)],['Cliques no checkout',num(t.pessoasCheckout),1],['Conversão checkout',t.conversao.toLocaleString('pt-BR')+'%',1],
+   ['Vendas',num(vt.vendas),1],['Conversão em vendas',(vt.conversao||0).toLocaleString('pt-BR')+'%',1]
   ].map(k=>`<div class="card kpi ${k[2]?'dest':''}"><small>${k[0]}</small><b>${k[1]}</b></div>`).join('');
-  $('tAfi').innerHTML=linhaTab([['Afiliado',x=>x.nome==='(sem afiliado)'?'<span class="mut">Página principal (sua)</span>':`<b>${esc(x.nome)}</b>`],...COLS],s.afiliados,'Nenhuma visita nesse período.');
+  /* Vendas de cada afiliado (vindas da Kiwify) ao lado das visitas dele */
+  const vAfi={};((s.vendas&&s.vendas.afiliados)||[]).forEach(a=>{vAfi[a.nome]=a});
+  const colsVenda=[['Vendas',x=>`<b class="ok">${num((vAfi[x.nome]||{}).vendas)}</b>`,1],['Conv. vendas',x=>{const v=(vAfi[x.nome]||{}).vendas||0;return (x.visitas?Math.round(v/x.visitas*1000)/10:0).toLocaleString('pt-BR')+'%'},1]];
+  $('tAfi').innerHTML=linhaTab([['Afiliado',x=>x.nome==='(sem afiliado)'?'<span class="mut">Página principal (sua)</span>':`<b>${esc(x.nome)}</b>`],...COLS,...colsVenda],s.afiliados,'Nenhuma visita nesse período.');
   $('tOri').innerHTML=linhaTab([['Origem',x=>esc(x.nome)],...COLS],s.origens,'Nenhuma visita nesse período.');
   $('tPag').innerHTML=linhaTab([['Página',x=>esc(x.nome)],...COLS],s.paginas,'Nenhuma visita nesse período.');
   const max=Math.max(1,...STATS.dias.map(d=>d.visitas));
