@@ -165,7 +165,7 @@ const BREVO_KEY = '';
 const REMETENTE = { name: 'Avatar Milionário', email: 'contato@avatarmilionario.com' };
 const RESPONDER_PARA = 'alexandrej7888@gmail.com';
 const AREA_MEMBROS = 'https://minhapagina.pro/area-de-membros/';
-const WHATS_SUPORTE = '';
+const WHATS_SUPORTE = '5538999715362';
 const IMG_EMAIL = 'https://cdn.jsdelivr.net/gh/alexandrej7888-hue/avatar-milionario-imagens@c8bb30b1cdc0463cc9c411e0ede26f1fc676f2b9/capas/email-boasvindas.jpg';
 function estado_(email) {
   const sh = aba_();
@@ -193,7 +193,7 @@ function emailHtml_(email, titulo, intro, passos, extra) {
     '<tr><td style="padding:12px 26px 6px;text-align:center;color:#93a89b;font-size:13px;line-height:1.5">Seu login é este e-mail: <b style="color:#ecf5ef">' + email + '</b><br>Não precisa de senha.</td></tr>' +
     (extra || '') +
     '<tr><td style="padding:18px 26px 26px;text-align:center;color:#62756a;font-size:12px;line-height:1.5">' +
-      (WHATS_SUPORTE ? 'Dúvidas? Fale com o suporte no WhatsApp: ' + WHATS_SUPORTE + '<br>' : 'Dúvidas? É só responder este e-mail.<br>') +
+      (WHATS_SUPORTE ? '<a href="https://wa.me/' + WHATS_SUPORTE + '" style="background:#25d366;color:#03150a;text-decoration:none;font-weight:bold;font-size:14px;padding:11px 20px;border-radius:10px;display:inline-block;margin-bottom:12px">Suporte no WhatsApp</a><br>Dúvidas? Chame no WhatsApp (38) 99971-5362 ou responda este e-mail.<br>' : 'Dúvidas? É só responder este e-mail.<br>') +
       'Você recebeu este e-mail porque comprou o Avatar Milionário.</td></tr>' +
     '</table></div>';
 }
