@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Avatar Milionário | Área de membros</title>
+<meta name="description" content="Área de membros do Avatar Milionário: aulas, ferramentas, prompts e vídeos virais.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#060a08; --bg2:#0a110d; --card:#0e1712; --card2:#121e17; --line:#1b2b21; --line2:#24392c;
+  --txt:#ecf5ef; --mut:#8fa497; --mut2:#62756a;
+  --g:#22c55e; --g2:#16a34a; --g3:#4ade80; --gl:rgba(34,197,94,.12); --gold:#facc15;
+  --r:16px; --sb:260px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:var(--bg);color:var(--txt);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
+svg{width:18px;height:18px;flex-shrink:0;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+/* ---------- LOGIN ---------- */
+#login{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px 16px;
+  background:radial-gradient(ellipse 60% 50% at 50% 0%,rgba(34,197,94,.18),transparent 70%),var(--bg)}
+.lg-card{width:100%;max-width:400px;background:linear-gradient(180deg,var(--card2),var(--card));border:1px solid var(--line2);border-radius:22px;padding:34px 26px;box-shadow:0 30px 80px -20px rgba(0,0,0,.7),0 0 0 1px rgba(34,197,94,.05)}
+.lg-card h1{font-size:22px;text-align:center;margin:18px 0 6px}
+.lg-card p.sub{color:var(--mut);text-align:center;font-size:14px;margin-bottom:24px}
+.field{position:relative;margin-bottom:12px}
+.field svg{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--mut2)}
+.field input{width:100%;background:var(--bg);border:1px solid var(--line2);border-radius:12px;padding:15px 14px 15px 42px;color:var(--txt);font:inherit;font-size:14px;outline:none;transition:.2s}
+.field input:focus{border-color:var(--g);box-shadow:0 0 0 4px var(--gl)}
+.forgot{display:block;text-align:right;font-size:13px;color:var(--g3);margin:4px 0 18px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:12px;font-weight:700;font-size:14px;padding:13px 20px;transition:.2s}
+.btn-g{background:linear-gradient(180deg,var(--g3),var(--g2));color:#03150a;box-shadow:0 8px 24px -8px rgba(34,197,94,.6),inset 0 1px 0 rgba(255,255,255,.3)}
+.btn-g:hover{transform:translateY(-1px);box-shadow:0 12px 30px -8px rgba(34,197,94,.75),inset 0 1px 0 rgba(255,255,255,.3)}
+.btn-o{border:1px solid var(--line2);background:var(--card2);color:var(--txt)}
+.btn-o:hover{border-color:var(--g);color:var(--g3)}
+.btn-full{width:100%;padding:15px}
+.info{margin-top:18px;display:flex;gap:12px;background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:16px;font-size:13px;color:var(--mut);line-height:1.55}
+.info b{color:var(--txt);display:block;margin-bottom:4px;font-size:14px}
+.ico-box{width:36px;height:36px;border-radius:10px;background:var(--gl);color:var(--g3);display:grid;place-items:center;flex-shrink:0}
+.wpp{margin-top:12px;width:100%;border:1px solid rgba(34,197,94,.35);background:rgba(34,197,94,.07);color:var(--g3)}
+
+/* ---------- LOGO ---------- */
+.logo{display:flex;align-items:center;gap:10px;justify-content:center}
+.logo-mark{width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,var(--g3),var(--g2));display:grid;place-items:center;color:#03150a;box-shadow:0 6px 20px -6px rgba(34,197,94,.7)}
+.logo-mark svg{width:22px;height:22px;stroke-width:2.4}
+.logo-txt{line-height:1;font-weight:800;letter-spacing:-.3px}
+.logo-txt span{display:block;font-size:11px;letter-spacing:2.5px;color:var(--g3);font-weight:700;margin-bottom:3px}
+.logo-txt strong{font-size:18px}
+
+/* ---------- APP ---------- */
+#app{display:none}
+.topbar{position:fixed;top:0;left:0;right:0;height:42px;z-index:40;display:flex;align-items:center;justify-content:center;gap:14px;font-size:13px;
+  background:linear-gradient(90deg,#0b3d1f,#15803d,#0b3d1f);color:#dcfce7}
+.topbar b{color:#fff}
+.topbar a{background:#fff;color:#065f2b;font-weight:700;padding:5px 12px;border-radius:8px;font-size:12px;display:flex;gap:5px;align-items:center}
+.topbar a svg{width:13px;height:13px}
+aside{position:fixed;top:42px;bottom:0;left:0;width:var(--sb);background:var(--bg2);border-right:1px solid var(--line);display:flex;flex-direction:column;padding:22px 14px;z-index:30;transition:transform .3s}
+aside .logo{justify-content:flex-start;padding:0 8px 26px}
+nav{display:flex;flex-direction:column;gap:3px}
+.nav-i{display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:11px;color:var(--mut);font-size:14px;font-weight:500;transition:.15s;position:relative}
+.nav-i:hover{background:var(--card);color:var(--txt)}
+.nav-i.on{background:linear-gradient(90deg,rgba(34,197,94,.16),rgba(34,197,94,.03));color:#fff;font-weight:700}
+.nav-i.on::before{content:"";position:absolute;left:-14px;top:9px;bottom:9px;width:3px;border-radius:0 3px 3px 0;background:var(--g)}
+.nav-i.on svg{color:var(--g3)}
+.tag{margin-left:auto;font-size:9.5px;font-weight:800;background:var(--g);color:#03150a;padding:3px 7px;border-radius:20px;letter-spacing:.3px}
+.sb-foot{margin-top:auto;border-top:1px solid var(--line);padding-top:14px}
+.user{display:flex;align-items:center;gap:11px;padding:12px 10px}
+.av{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--g3),var(--g2));color:#03150a;font-weight:800;display:grid;place-items:center}
+.user small{display:block;color:var(--mut);font-size:12px}
+.user b{font-size:14px}
+.logout{color:#f87171;display:flex;align-items:center;gap:10px;padding:8px 12px;font-size:14px;font-weight:600}
+main{margin-left:var(--sb);padding:76px 40px 60px;max-width:calc(1100px + var(--sb));min-height:100vh}
+.burger{display:none}
+.overlay{display:none}
+
+/* ---------- COMMON ---------- */
+.ph h1{font-size:30px;font-weight:800;letter-spacing:-.6px}
+.ph p{color:var(--mut);margin-top:6px;font-size:15px}
+.ph{margin-bottom:30px}
+.sec-t{display:flex;align-items:center;gap:10px;font-size:11.5px;font-weight:800;letter-spacing:1.6px;color:var(--g3);margin:30px 0 14px;text-transform:uppercase}
+.sec-t::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,var(--line2),transparent)}
+.sec-h{display:flex;justify-content:space-between;align-items:center;margin:36px 0 14px}
+.sec-h h2{font-size:19px;font-weight:800}
+.sec-h a{font-size:13px;color:var(--g3);font-weight:600;display:flex;gap:4px;align-items:center}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px}
+.card{background:linear-gradient(180deg,var(--card2),var(--card));border:1px solid var(--line);border-radius:var(--r);padding:22px;transition:.25s;position:relative;overflow:hidden}
+.card:hover{border-color:rgba(34,197,94,.45);transform:translateY(-3px);box-shadow:0 18px 40px -18px rgba(34,197,94,.35)}
+.card .ico-box{width:44px;height:44px;border-radius:12px;margin-bottom:16px}
+.card .ico-box svg{width:21px;height:21px}
+.card h3{font-size:17px;font-weight:700;margin-bottom:6px;display:flex;align-items:center;gap:8px}
+.card p{color:var(--mut);font-size:14px;line-height:1.55;margin-bottom:18px}
+.pill{font-size:10.5px;font-weight:700;padding:3px 8px;border-radius:20px;background:var(--gl);color:var(--g3);border:1px solid rgba(34,197,94,.25)}
+.pill.gold{background:rgba(250,204,21,.1);color:var(--gold);border-color:rgba(250,204,21,.3)}
+.card .btn{padding:10px 16px;font-size:13px}
+.fade{animation:fd .35s ease}
+@keyframes fd{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+/* banner */
+.banner{border-radius:22px;overflow:hidden;margin-bottom:18px;aspect-ratio:16/9;border:1px solid rgba(34,197,94,.3);background:#0b1a11}
+.banner img{width:100%;height:100%;object-fit:cover;display:block}
+
+/* hero */
+.hero{border-radius:22px;padding:34px;position:relative;overflow:hidden;border:1px solid rgba(34,197,94,.3);
+  background:radial-gradient(ellipse 70% 120% at 100% 0%,rgba(74,222,128,.25),transparent 60%),linear-gradient(135deg,#0c2416,#08130d)}
+.hero h1{font-size:30px;font-weight:800;letter-spacing:-.6px;max-width:560px;line-height:1.15}
+.hero h1 em{font-style:normal;color:var(--g3)}
+.hero p{color:#b6cbbd;margin:10px 0 22px;max-width:500px;line-height:1.6}
+.hero .row{display:flex;gap:10px;flex-wrap:wrap}
+.progress{margin-top:26px;max-width:420px}
+.progress .bar{height:8px;background:rgba(255,255,255,.08);border-radius:10px;overflow:hidden;margin-top:8px}
+.progress .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--g2),var(--g3));border-radius:10px;transition:width .8s}
+.progress small{color:var(--mut);font-size:12.5px;display:flex;justify-content:space-between}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:18px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px}
+.stat b{font-size:24px;font-weight:800;display:block}
+.stat span{color:var(--mut);font-size:13px}
+
+/* videos */
+.vgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px}
+.vid{aspect-ratio:9/16;border-radius:14px;border:1px solid var(--line);position:relative;overflow:hidden;cursor:pointer;transition:.25s;
+  background:linear-gradient(160deg,#143522,#07100b)}
+.vid:hover{border-color:var(--g);transform:scale(1.02)}
+.vid .play{position:absolute;inset:0;display:grid;place-items:center}
+.vid .play span{width:50px;height:50px;border-radius:50%;background:rgba(34,197,94,.9);display:grid;place-items:center;color:#03150a;box-shadow:0 0 0 8px rgba(34,197,94,.15)}
+.vid .play svg{fill:#03150a;stroke:none;margin-left:3px}
+.vid{display:block;width:100%;padding:0}
+.vid img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.vid .play{background:linear-gradient(transparent 55%,rgba(0,0,0,.45))}
+.vid-dl{position:absolute;left:8px;right:8px;bottom:8px;z-index:2;display:flex;align-items:center;justify-content:center;gap:6px;padding:9px;border-radius:10px;background:var(--g);color:#03150a;font-weight:800;font-size:13px}
+.vid-dl svg{width:15px;height:15px}
+.vid-dl:hover{filter:brightness(1.1)}
+.vid-dl:disabled{opacity:.7}
+.player[hidden]{display:none}
+.player{position:fixed;inset:0;z-index:90;background:rgba(0,0,0,.85);backdrop-filter:blur(6px);display:grid;place-items:center;padding:20px}
+.player-box{position:relative;width:min(420px,100%);display:flex;flex-direction:column;gap:12px}
+.player-box video{width:100%;max-height:78vh;border-radius:16px;background:#000;border:1px solid var(--line2)}
+.player-x{position:absolute;top:-14px;right:-14px;z-index:2;width:38px;height:38px;border-radius:50%;background:var(--card2);border:1px solid var(--line2);display:grid;place-items:center;color:var(--txt)}
+
+/* prompts */
+.prompt pre{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:14px;font-family:ui-monospace,Consolas,monospace;font-size:12.5px;color:#a7c9b3;white-space:pre-wrap;line-height:1.6;margin-bottom:16px;max-height:140px;overflow:auto}
+
+/* aulas: capas verticais */
+.mgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:18px}
+.mrow{display:flex;gap:14px;overflow-x:auto;padding-bottom:10px;scroll-snap-type:x mandatory;scrollbar-width:thin;scrollbar-color:var(--line2) transparent}
+.mrow .mc{flex:0 0 170px;scroll-snap-align:start}
+.mc{cursor:pointer;display:block}
+.mc .cover{position:relative;aspect-ratio:9/16;border-radius:16px;overflow:hidden;border:1px solid var(--line);background:#0b1a11;transition:.3s}
+.mc .cover img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;transition:transform .5s}
+.mc .fb{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:space-between;align-items:center;text-align:center;padding:22px 14px;
+  background:radial-gradient(ellipse 80% 50% at 50% 30%,rgba(74,222,128,.35),transparent 70%),linear-gradient(180deg,#0d2a18,#050a07)}
+.mc .fb small{font-size:11px;letter-spacing:3px;font-weight:700;color:#d1fae5}
+.mc .fb strong{font-size:22px;line-height:1.05;font-weight:800;text-transform:uppercase;color:#fff;text-shadow:0 0 18px rgba(34,197,94,.8);text-wrap:balance}
+.mc.locked .fb{filter:grayscale(.5) brightness(.55)}
+.mc:hover .cover{border-color:var(--g);box-shadow:0 20px 45px -18px rgba(34,197,94,.55);transform:translateY(-4px)}
+.mc:hover .cover img{transform:scale(1.05)}
+.mc .cover .hov{position:absolute;inset:0;display:grid;place-items:center;background:rgba(0,0,0,.35);opacity:0;transition:.25s}
+.mc:hover .cover .hov{opacity:1}
+.mc .hov span{width:58px;height:58px;border-radius:50%;background:var(--g);display:grid;place-items:center;color:#03150a;box-shadow:0 0 0 10px rgba(34,197,94,.2)}
+.mc .hov svg{width:24px;height:24px}
+.mc .hov .pl{fill:#03150a;stroke:none;margin-left:3px}
+.mc.locked .cover img{filter:grayscale(.55) brightness(.45)}
+.mc.locked .hov{opacity:1;background:transparent}
+.mc.locked .hov span{background:rgba(0,0,0,.6);color:#fff;border:1px solid rgba(255,255,255,.2);box-shadow:none;backdrop-filter:blur(6px)}
+.mc .badge{display:inline-block;margin-top:7px;font-size:10.5px;font-weight:800;padding:4px 9px;border-radius:20px;background:var(--card2);color:var(--mut);border:1px solid var(--line2)}
+.mc .badge.ok{background:var(--g);color:#03150a;border:0}
+.mc .badge.gold{background:rgba(250,204,21,.18);color:var(--gold);border-color:rgba(250,204,21,.4)}
+.mc .bar{position:absolute;left:0;right:0;bottom:0;height:5px;background:rgba(255,255,255,.12)}
+.mc .bar i{display:block;height:100%;background:var(--g3)}
+.mc .info2{padding:12px 4px 0}
+.mc .info2 b{display:block;font-size:14.5px;font-weight:700}
+.mc .info2 small{display:block;color:var(--mut);font-size:12.5px}
+
+/* página do módulo (aulas) */
+.voltar{display:inline-flex;gap:6px;align-items:center;color:var(--g3);font-weight:700;font-size:14px;margin-bottom:14px}
+.aula-wrap{display:grid;grid-template-columns:1fr 340px;gap:20px;align-items:start}
+.pv{position:relative;aspect-ratio:16/9;border-radius:16px;overflow:hidden;background:#000;border:1px solid var(--line2)}
+.pv iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.aula-info{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;margin-top:16px}
+.aula-info small{color:var(--g3);font-weight:700;font-size:12.5px}
+.aula-info h2{font-size:21px;font-weight:800;margin-top:2px}
+.lista-card:hover{transform:none}
+.lista{display:flex;flex-direction:column;gap:8px;margin-top:6px}
+.li{display:flex;gap:12px;align-items:center;padding:11px 12px;border-radius:12px;border:1.5px solid var(--line2);background:var(--bg2);text-align:left;width:100%;transition:.15s}
+.li:hover{border-color:var(--mut2)}
+.li.on{border-color:var(--g);background:var(--gl)}
+.li .n{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:var(--card2);border:1px solid var(--line2);font-weight:800;font-size:13px;flex-shrink:0}
+.li.ok .n{background:var(--g);color:#03150a;border:0}
+.li b{display:block;font-size:14px;line-height:1.3}
+.li small{color:var(--mut);font-size:12px}
+
+/* criador */
+.cr{display:grid;grid-template-columns:1fr 340px;gap:20px;align-items:start}
+#opts{display:flex;flex-direction:column;gap:14px;min-width:0}
+.opt{background:linear-gradient(180deg,var(--card2),var(--card));border:1px solid var(--line);border-radius:var(--r);padding:16px 16px 18px}
+.opt label{display:flex;justify-content:space-between;gap:10px;font-size:14px;font-weight:800;margin-bottom:12px}
+.opt label span{font-weight:600;font-size:12.5px;color:var(--g3)}
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:10px}
+.tile{display:flex;flex-direction:column;gap:6px;padding:6px;border-radius:14px;border:1.5px solid var(--line2);background:var(--bg2);text-align:center;transition:.15s}
+.tile:hover{border-color:var(--mut2);transform:translateY(-2px)}
+.tile .ti{aspect-ratio:1;border-radius:10px;overflow:hidden;background:radial-gradient(circle at 50% 35%,rgba(74,222,128,.25),transparent 70%),#0b1a11;display:grid;place-items:center}
+.tile .ti img{width:100%;height:100%;object-fit:cover;display:block}
+.tile .ti.none{font-size:26px;color:var(--mut2)}
+.tile .tl{font-size:12px;line-height:1.25;color:var(--mut);padding:0 2px 2px}
+.tile.on{border-color:var(--g);background:var(--gl);box-shadow:0 0 0 3px rgba(34,197,94,.15)}
+.tile.on .tl{color:var(--g3);font-weight:700}
+.swatches{display:flex;flex-wrap:wrap;gap:8px}
+.sw{display:flex;align-items:center;gap:8px;padding:6px 12px 6px 6px;border-radius:30px;border:1.5px solid var(--line2);background:var(--bg2);font-size:12.5px;color:var(--mut)}
+.sw i{width:24px;height:24px;border-radius:50%;border:2px solid rgba(255,255,255,.18)}
+.sw.on{border-color:var(--g);color:var(--g3);font-weight:700;background:var(--gl)}
+.resumo{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:12px}
+.resumo span{aspect-ratio:1;border-radius:9px;overflow:hidden;border:1px solid var(--line2)}
+.resumo img{width:100%;height:100%;object-fit:cover;display:block}
+.sticky{position:sticky;top:76px}
+.tabs{display:flex;gap:8px;margin:-10px 0 22px;flex-wrap:wrap}
+.tab{display:flex;align-items:center;gap:8px;padding:11px 18px;border-radius:12px;border:1.5px solid var(--line2);background:var(--bg2);color:var(--mut);font-weight:700;font-size:14px}
+.tab.on{border-color:var(--g);background:var(--gl);color:var(--g3)}
+.tile.retrato .ti{aspect-ratio:3/4}
+.sub-l{display:flex;justify-content:space-between;font-size:13px;font-weight:700;color:var(--mut);margin-bottom:8px}
+.sub-l span{color:var(--g3)}
+.tiles.looks .tile:first-child .ti{aspect-ratio:3/4}
+.passo label{justify-content:flex-start;align-items:center}
+.passo .num{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--g);color:#03150a;font-weight:800;font-size:14px}
+.dica{color:var(--mut);font-size:13.5px;line-height:1.55;margin:-4px 0 12px}
+.vazio{display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;padding:34px 16px;margin:12px 0;border:1.5px dashed var(--line2);border-radius:12px;color:var(--mut);font-size:13px}
+.vazio svg{width:28px;height:28px;color:var(--g3)}
+.vazio b{color:var(--txt);font-size:15px}
+.look-sel{display:flex;gap:12px;align-items:center;margin-top:12px}
+.look-sel img{width:54px;height:72px;object-fit:cover;border-radius:10px;border:1px solid var(--line2)}
+.look-sel b{display:block;font-size:14px}
+.look-sel small{color:var(--g3);font-size:12.5px}
+.out{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:14px;font-size:13px;color:#a7c9b3;line-height:1.6;min-height:170px;max-height:300px;overflow:auto;margin:12px 0 14px;font-family:ui-monospace,Consolas,monospace}
+
+/* afiliados */
+.calc{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:18px 0}
+.calc div{background:var(--bg);border:1px solid var(--line2);border-radius:12px;padding:16px;text-align:center}
+.calc small{color:var(--mut);font-size:12px}
+.calc b{display:block;color:var(--g3);font-size:20px;margin-top:4px}
+.conta{margin-top:16px;background:var(--bg);border:1px solid var(--line2);border-radius:12px;overflow:hidden}
+.conta div{display:flex;justify-content:space-between;gap:10px;padding:11px 14px;font-size:14px;border-top:1px solid var(--line)}
+.conta div:first-child{border-top:0}
+.conta span{color:var(--mut)}
+.conta .neg{color:#f87171}
+.conta .tot{background:var(--gl)}
+.conta .tot span{color:var(--txt);font-weight:700}
+.conta .tot b{color:var(--g3);font-size:16px}
+.warn{display:flex;gap:10px;background:rgba(248,113,113,.08);border:1px solid rgba(248,113,113,.35);color:#fecaca;border-radius:12px;padding:14px;font-size:13px;line-height:1.5}
+.warn svg{color:#f87171}
+input.inp{width:100%;background:var(--bg);border:1px solid var(--line2);border-radius:12px;padding:13px 14px;color:var(--txt);font:inherit;font-size:14px;outline:none}
+input.inp:focus{border-color:var(--g)}
+
+/* toast */
+.toast{position:fixed;bottom:24px;left:50%;transform:translate(-50%,120px);background:var(--g);color:#03150a;font-weight:700;padding:12px 20px;border-radius:12px;display:flex;gap:8px;align-items:center;transition:.35s;z-index:100;box-shadow:0 10px 30px -5px rgba(34,197,94,.6)}
+.toast.show{transform:translate(-50%,0)}
+
+/* ---------- RESPONSIVO ---------- */
+@media (max-width:900px){
+  aside{transform:translateX(-100%)}
+  body.menu aside{transform:none}
+  body.menu .overlay{display:block;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:25}
+  main{margin-left:0;padding:100px 16px 50px}
+  .burger{display:flex;position:fixed;top:52px;left:16px;z-index:36;width:42px;height:42px;border-radius:11px;background:var(--card2);border:1px solid var(--line2);align-items:center;justify-content:center}
+  .mob-logo{position:fixed;top:42px;left:0;right:0;height:62px;padding-left:70px;display:flex;align-items:center;z-index:35;background:rgba(6,10,8,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+  .mob-logo .logo{justify-content:flex-start}
+  .topbar{font-size:11.5px;gap:8px;padding:0 10px}
+  .topbar .hide-m{display:none}
+  .cr{grid-template-columns:1fr}
+  .aula-wrap{grid-template-columns:1fr}
+  .aula-info .btn{width:100%}
+  .sticky{position:static}
+  .stats{grid-template-columns:1fr 1fr 1fr;gap:8px}
+  .stat{padding:12px}.stat b{font-size:18px}
+  .hero{padding:24px}.hero h1,.ph h1{font-size:24px}
+  .mod .thumb{width:84px}
+  .calc{grid-template-columns:1fr}
+  .vgrid{grid-template-columns:repeat(2,1fr)}
+  .mgrid{grid-template-columns:repeat(2,1fr);gap:12px}
+  .mrow .mc{flex-basis:140px}
+  .mc .info2 b{font-size:13.5px}
+}
+@media (min-width:901px){.mob-logo{display:none}}
+
+/* ---------- PC: usa a tela toda e aumenta tudo ---------- */
+@media (min-width:1200px){
+  :root{--sb:280px}
+  main{max-width:none;padding:92px 56px 70px}
+  main>.fade{max-width:1600px;margin:0 auto}
+  .nav-i{font-size:15.5px;padding:13px 14px;gap:14px}
+  .nav-i svg{width:20px;height:20px}
+  .logo-txt strong{font-size:20px}
+  .topbar{height:46px;font-size:14px}
+  aside{top:46px}
+  .hero{padding:48px 52px}
+  .hero h1{font-size:42px;max-width:760px}
+  .hero p{font-size:17px;max-width:640px}
+  .hero .btn,.card .btn{font-size:15px;padding:14px 24px}
+  .progress{max-width:560px}
+  .ph h1{font-size:38px}
+  .ph p{font-size:17px}
+  .stats{gap:18px}
+  .stat{padding:24px 26px}
+  .stat b{font-size:34px}
+  .stat span{font-size:15px}
+  .sec-h h2{font-size:24px}
+  .sec-h a{font-size:15px}
+  .mrow{gap:20px;padding-bottom:14px}
+  .mrow .mc{flex:0 0 clamp(210px,15vw,260px)}
+  .mgrid{grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:24px}
+  .mgrid .mc{max-width:300px}
+  .mc .info2 b{font-size:16px}
+  .mc .info2 small{font-size:13.5px}
+  .grid{grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:20px}
+  .card{padding:28px}
+  .card h3{font-size:20px}
+  .card p{font-size:15.5px}
+  .vgrid{grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:18px}
+  .cr{grid-template-columns:1fr 400px;gap:26px}
+  .tiles{grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:12px}
+  .tile .tl{font-size:13px}
+  .opt label{font-size:16px}
+  .sw{font-size:13.5px}
+  .out{font-size:14px}
+}
+</style>
+</head>
+<body>
+
+<!-- ================= LOGIN ================= -->
+<section id="login">
+  <div class="lg-card">
+    <div class="logo">
+      <div class="logo-mark"><svg viewBox="0 0 24 24"><path d="M12 2l3 6 6 .9-4.5 4.3 1 6.3L12 16.6 6.5 19.5l1-6.3L3 8.9 9 8z"/></svg></div>
+      <div class="logo-txt"><span>AVATAR</span><strong>MILIONÁRIO</strong></div>
+    </div>
+    <h1>Entrar na área de membros</h1>
+    <p class="sub">Entre com o e-mail que você usou na compra.</p>
+    <form onsubmit="entrar(event)">
+      <div class="field"><svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 6-10 7L2 6"/></svg><input type="email" id="email" placeholder="Seu e-mail" required></div>
+      <button style="margin-top:6px" class="btn btn-g btn-full" id="btnEntrar">Entrar <svg viewBox="0 0 24 24"><path d="M5 12h14M13 5l7 7-7 7"/></svg></button>
+      <p id="loginErro" style="display:none;color:#f87171;font-size:14px;margin-top:12px;line-height:1.4"></p>
+    </form>
+    <div class="info">
+      <div class="ico-box"><svg viewBox="0 0 24 24"><circle cx="7.5" cy="15.5" r="5.5"/><path d="m21 2-9.6 9.6M15.5 7.5l3 3L22 7l-3-3"/></svg></div>
+      <div><b>Primeiro acesso?</b>É só digitar o mesmo e-mail que você usou na compra. Não precisa de senha.</div>
+    </div>
+    <a href="#" class="btn wpp"><svg viewBox="0 0 24 24"><path d="M21 11.5a8.4 8.4 0 0 1-12.4 7.4L3 21l2.1-5.5A8.4 8.4 0 1 1 21 11.5z"/></svg>Precisa de ajuda? Fale no WhatsApp</a>
+  </div>
+</section>
+
+<!-- ================= APP ================= -->
+<div id="app">
+  <div class="topbar"><span>Ganhe <b>50%</b> de cada venda <span class="hide-m">indicando o Avatar Milionário</span></span><a href="#afiliados">Quero ser afiliado <svg viewBox="0 0 24 24"><path d="M7 17 17 7M7 7h10v10"/></svg></a></div>
+  <button class="burger" onclick="document.body.classList.toggle('menu')"><svg viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
+  <div class="mob-logo"><div class="logo"><div class="logo-txt"><span>AVATAR</span><strong>MILIONÁRIO</strong></div></div></div>
+  <div class="overlay" onclick="document.body.classList.remove('menu')"></div>
+
+  <aside>
+    <div class="logo">
+      <div class="logo-mark"><svg viewBox="0 0 24 24"><path d="M12 2l3 6 6 .9-4.5 4.3 1 6.3L12 16.6 6.5 19.5l1-6.3L3 8.9 9 8z"/></svg></div>
+      <div class="logo-txt"><span>AVATAR</span><strong>MILIONÁRIO</strong></div>
+    </div>
+    <nav id="nav"></nav>
+    <div class="sb-foot">
+      <a href="#conta" class="nav-i" data-p="conta"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>Minha conta</a>
+      <div class="user"><div class="av" id="avL">A</div><div><b id="uname">aluno</b><small>Membro</small></div></div>
+      <button class="logout" onclick="sair()"><svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>Sair</button>
+    </div>
+  </aside>
+
+  <main id="main"></main>
+</div>
+
+<div class="player" id="player" hidden onclick="if(event.target===this)fecharVideo()">
+  <div class="player-box">
+    <button class="player-x" onclick="fecharVideo()" aria-label="Fechar"><svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+    <video controls playsinline></video>
+    <button class="btn btn-g btn-full player-dl"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>Baixar vídeo</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg><span>Copiado!</span></div>
+
+<script>
+/* ---------- ÍCONES ---------- */
+const I={
+ home:'<path d="m3 10 9-7 9 7v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M9 22V12h6v10"/>',
+ book:'<path d="M2 4h6a4 4 0 0 1 4 4v13a3 3 0 0 0-3-3H2zM22 4h-6a4 4 0 0 0-4 4v13a3 3 0 0 1 3-3h7z"/>',
+ wand:'<path d="m15 4 5 5M3 21 14.5 9.5M17 2v3M22 7h-3M5 3v2M4 4h2M19 15v2M18 16h2"/>',
+ tool:'<path d="M14.7 6.3a4 4 0 0 0 5 5L21 13l-8 8-3-3 8-8-1.3-1.3a4 4 0 0 0-5-5L13 5z"/><path d="M3 21l6-6"/>',
+ spark:'<path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2 2M16 16l2 2M6 18l2-2M16 8l2-2"/>',
+ flame:'<path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.4-.5-2-1-3-1-2.1-.2-4.1 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.2.4-2.3 1-3.3.3 1.6 1.3 2.8 2.5 2.8z"/>',
+ users:'<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/>',
+ money:'<rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/><path d="M6 12h.01M18 12h.01"/>',
+ help:'<circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3M12 17h.01"/>',
+ chat:'<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',
+ film:'<rect x="2" y="2" width="20" height="20" rx="2.5"/><path d="M7 2v20M17 2v20M2 12h20M2 7h5M2 17h5M17 17h5M17 7h5"/>',
+ dl:'<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>',
+ ext:'<path d="M7 17 17 7M7 7h10v10"/>',
+ copy:'<rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>',
+ arrow:'<path d="M5 12h14M13 5l7 7-7 7"/>',
+ play:'<path d="M6 4l14 8-14 8z"/>',
+ lock:'<rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>',
+ img:'<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-5-5L5 21"/>',
+ warn:'<path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0zM12 9v4M12 17h.01"/>',
+ cal:'<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>',
+ shuffle:'<path d="M16 3h5v5M4 20 21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/>'
+};
+const ic=(n)=>`<svg viewBox="0 0 24 24">${I[n]}</svg>`;
+
+/* ---------- DADOS (edite aqui) ---------- */
+const MENU=[
+ ['inicio','Início','home'],['aulas','Aulas','book'],['criador','Criador de avatar','wand'],
+ ['ferramentas','Ferramentas','tool'],['prompts','Prompts','spark'],['virais','Vídeos virais','flame'],
+ ['networking','Networking','users'],['afiliados','Afiliados','money','GANHE R$'],['suporte','Suporte','help']
+];
+const FERRAMENTAS=[
+ {grupo:'Para criar',itens:[
+  {n:'ChatGPT',d:'Use os prompts do curso para criar o seu avatar e trocar o look dele.',u:'https://chatgpt.com',i:'chat',t:'Essencial'},
+  {n:'APIMart',d:'Gere os vídeos do seu avatar com IA gastando pouco.',u:'https://apimart.ai',i:'film',t:'Essencial'}
+ ]},
+ {grupo:'Para baixar vídeos de referência',itens:[
+  {n:'Video DownloadHelper',d:'Extensão para o navegador que baixa os vídeos de referência do TikTok, Instagram e outros sites.',u:'https://downloadhelper.net/',i:'dl',t:'Principal'},
+  {n:'SSSTik',d:'Baixe vídeos do TikTok sem marca d\'água para usar de referência.',u:'https://ssstik.io/pt',i:'dl'},
+  {n:'SnapInsta',d:'Baixe Reels e vídeos do Instagram para usar de referência.',u:'https://snapinsta.com.br',i:'dl'}
+ ]}
+];
+const PROMPTS=[
+ {t:'Trocar a pessoa do lado esquerdo',d:'Envie o vídeo como video 1 e o character sheet do seu avatar como image 1. Troca só quem está à esquerda.',p:'Completely replace the person on the left side of video 1 with the person from image 1, faithfully replicating all the characteristics of the person in image 1 while preserving the movements from video 1 in a realistic and natural manner.'},
+ {t:'Trocar a pessoa do lado direito',d:'Envie o vídeo como video 1 e o character sheet do avatar como image 1. Troca só quem está à direita.',p:'Completely replace the person on the right side of video 1 with the person from image 1, faithfully replicating all the characteristics of the person in image 1 while preserving the movements from video 1 in a realistic and natural manner.'},
+ {t:'Trocar a pessoa do centro (1 pessoa)',d:'Para vídeos com uma pessoa só, no centro. Envie o vídeo como video 1 e o character sheet como image 1.',p:'Completely replace the person in the center of video 1 with the person from image 1, faithfully replicating all the characteristics of the person in image 1 while preserving the movements from video 1 in a realistic and natural manner.'},
+ {t:'Incluir o avatar junto com as pessoas do vídeo',d:'Seu avatar entra no vídeo junto com quem já está lá, sem trocar ninguém.',p:'Add the person from image 1 to video 1, standing together with the person or people who are already in the scene, as part of the group, without replacing or changing anyone already in the video. Faithfully replicate all the characteristics of the person in image 1, matching the scale, perspective, lighting, shadows and colors of video 1, interacting naturally with the others and moving in a realistic and natural manner.'}
+];
+/* Vídeos virais: arquivos virais/viral-01.mp4 ... (com miniatura .jpg de mesmo nome) */
+const VIRAIS=['01','02','03','04','05','06','07','08'];
+const VID_BASE='https://raw.githubusercontent.com/alexandrej7888-hue/avatar-milionario-imagens/main/virais/';
+/* Aulas: [título, id do vídeo no Panda, duração]. Módulo com lock fica fechado (some quando liberar). */
+const PANDA='https://player-vz-3feffac1-27d.tv.pandavideo.com.br/embed/?v=';
+const MODULOS=[
+ {t:'Comece por aqui',d:'Boas-vindas e como tirar o máximo do Avatar Milionário.',aulas:[
+  ['Boas-vindas ao Avatar Milionário','02d9050e-357a-4535-a56e-fc2820816c81','1:00'],
+  ['Conhecendo a área de membros','c067b197-3c87-42a7-bfa0-ec808eaf8f43','4:44']]},
+ {t:'Ferramentas',d:'Conheça as ferramentas que você vai usar no curso.',aulas:[
+  ['As ferramentas que você vai usar','b2c25908-0cda-4d6f-9ae5-c977fbb6a5a1','10:04']]},
+ {t:'Criando seu avatar',d:'Crie seu personagem do zero ou a partir de uma referência e troque o look dele.',aulas:[
+  ['Criando seu avatar do zero (sem referência)','9e388438-3c4e-460a-a78b-a3944fe30b87','7:41'],
+  ['Criando seu avatar a partir de uma referência','ac790f1c-4a3a-4d50-9194-e27a6b92dd43','8:24'],
+  ['Trocando a roupa do seu personagem','8fa77276-9c55-4c11-9093-70206a0d216e','7:43']]},
+ {t:'Vídeos virais com IA',d:'Pegue um vídeo de referência e coloque seu avatar no lugar.',aulas:[
+  ['Como fazer um vídeo viral com seu avatar','972fd4c8-e1f8-4f0d-917c-6fad75735c76','14:35']]},
+ {t:'Monetização',d:'Publis, afiliados e produtos: como transformar views em dinheiro.',aulas:[
+  ['Como ganhar dinheiro com seu avatar','3d302edc-94ac-4683-96c1-ef8275d80401','5:48']]},
+ {t:'Bônus: vídeos por menos de R$ 2',d:'O jeito de gerar cada vídeo do seu avatar pagando menos de dois reais.',aulas:[],lock:'Libera em 7 dias'},
+ {t:'TikTok Shop',d:'Módulo em gravação. Em breve na sua área de membros.',aulas:[],lock:'Em breve'}
+];
+/* Aulas concluídas ficam salvas no navegador do aluno */
+let VISTAS=[];try{VISTAS=JSON.parse(localStorage.am_vistas||'[]')}catch(x){}
+const vista=id=>VISTAS.includes(id);
+function concluir(id){if(!vista(id)){VISTAS.push(id);try{localStorage.am_vistas=JSON.stringify(VISTAS)}catch(x){}}}
+const feitasMod=m=>m.aulas.filter(a=>vista(a[1])).length;
+let AULA=0;
+/* Endereço base das imagens (pastas capas/ e criador/). No PC usa as pastas locais; publicado, usa o GitHub. */
+const IMG_BASE=/^(localhost|127\.0\.0\.1)$/.test(location.hostname)||location.protocol==='file:'?'':'https://raw.githubusercontent.com/alexandrej7888-hue/avatar-milionario-imagens/main/';
+/* Banner do Início: arquivo capas/banner.webp (16:9). Se não existir, some sozinho. Troque o número para forçar atualizar. */
+const BANNER_V=1;
+/* Comissão do afiliado: 50% do líquido na Kiwify (preço - 8,99% - R$ 2,49) */
+const TAXA_PCT=8.99, TAXA_FIXA=2.49;
+const PLANOS=[47,67,97].map(p=>{const c=Math.round(p*100),t=Math.round(c*TAXA_PCT/100),f=Math.round(TAXA_FIXA*100),l=c-t-f;
+ return {n:'Plano R$ '+p,p,taxa:t/100,fixa:f/100,liq:l/100,c:Math.round(l/2)/100}});
+let PLANO=1, SIM_N=20;
+const COMISSAO=()=>PLANOS[PLANO].c;
+/* Quantas vendas pagam o curso (no mesmo plano que o aluno comprou) */
+const SE_PAGA=p=>Math.ceil(p.p/p.c);
+const WHATS='https://wa.me/55SEUNUMERO';
+/* Convite de afiliado na Kiwify */
+const AFILIADO='https://dashboard.kiwify.com/join/affiliate/KHW6X7ZN';
+
+/* ---------- PÁGINAS ---------- */
+const brl=v=>v.toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+const cardFerr=f=>`<div class="card"><div class="ico-box">${ic(f.i)}</div><h3>${f.n}${f.t?` <span class="pill">${f.t}</span>`:''}</h3><p>${f.d}</p><a class="btn btn-g" href="${f.u}" target="_blank" rel="noopener">Acessar ${ic('ext')}</a></div>`;
+const cardPrompt=(x,i)=>`<div class="card prompt"><h3>${x.t}</h3><p>${x.d}</p><pre>${x.p}</pre><button class="btn btn-g" onclick="copiar(PROMPTS[${i}].p)">${ic('copy')} Copiar prompt</button></div>`;
+const vid=n=>`<div class="vid" onclick="abrirVideo('${n}')"><img src="${VID_BASE}viral-${n}.jpg" alt="" loading="lazy"><div class="play"><span>${ic('play')}</span></div><button class="vid-dl" onclick="event.stopPropagation();baixarVideo('${n}',this)">${ic('dl')} Baixar</button></div>`;
+function abrirVideo(n){const p=document.getElementById('player');p.querySelector('video').src=VID_BASE+'viral-'+n+'.mp4';p.querySelector('.player-dl').onclick=function(){baixarVideo(n,this)};p.hidden=false;p.querySelector('video').play().catch(()=>{})}
+/* Baixa o arquivo direto para o computador (pasta Downloads) */
+async function baixarVideo(n,btn){
+  const url=VID_BASE+'viral-'+n+'.mp4', txt=btn&&btn.innerHTML;
+  if(btn){btn.disabled=true;btn.innerHTML=ic('dl')+' Baixando...'}
+  try{const r=await fetch(url);if(!r.ok)throw 0;const b=await r.blob();const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='video-viral-'+n+'.mp4';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),4000);toast('Vídeo baixado!')}
+  catch(e){window.open(url,'_blank');toast('Abrindo o vídeo para baixar')}
+  finally{if(btn){btn.disabled=false;btn.innerHTML=txt}}
+}
+function fecharVideo(){const p=document.getElementById('player');const v=p.querySelector('video');v.pause();v.removeAttribute('src');v.load();p.hidden=true}
+const cardMod=(m,i)=>{const n=String(i+1).padStart(2,'0'), f=feitasMod(m), a=m.aulas.length;
+ const badge=m.lock?`<span class="badge gold">${m.lock}</span>`:a&&f===a?'<span class="badge ok">✓ Concluído</span>':f>0?'<span class="badge">Em andamento</span>':'';
+ return `<div class="mc ${m.lock?'locked':''}" title="${m.d}" onclick="${m.lock?`toast('Módulo ${n}: ${m.lock}')`:`AULA=0;location.hash='modulo-${i+1}'`}">
+  <div class="cover"><div class="fb"><small>MÓDULO ${n}</small><strong>${m.t}</strong></div><img src="${IMG_BASE}capas/modulo-${n}.webp" alt="Módulo ${n}: ${m.t}" loading="lazy" onerror="this.remove()">
+   <div class="hov"><span>${m.lock?ic('lock'):'<svg viewBox="0 0 24 24" class="pl"><path d="M6 4l14 8-14 8z"/></svg>'}</span></div>
+   ${m.lock||!a?'':`<div class="bar"><i style="width:${f/a*100}%"></i></div>`}</div>
+  <div class="info2"><b>${m.t}</b><small>Módulo ${n}</small>${badge}</div></div>`};
+const totalAulas=()=>MODULOS.reduce((s,m)=>s+m.aulas.length,0), feitas=()=>MODULOS.reduce((s,m)=>s+feitasMod(m),0);
+const pct=()=>totalAulas()?Math.round(feitas()/totalAulas()*100):0;
+/* Página do módulo: player do Panda + lista de aulas */
+function telaModulo(i){const m=MODULOS[i];if(!m||m.lock||!m.aulas.length)return P.aulas();
+ if(AULA>=m.aulas.length)AULA=0;const a=m.aulas[AULA], prox=AULA<m.aulas.length-1, n=String(i+1).padStart(2,'0');
+ return `<a href="#aulas" class="voltar">← Todos os módulos</a>
+ <div class="ph" style="margin-bottom:20px"><h1>${m.t}</h1><p>Módulo ${n} · ${m.aulas.length} ${m.aulas.length>1?'aulas':'aula'}</p></div>
+ <div class="aula-wrap">
+  <div><div class="pv"><iframe id="pv" src="${PANDA+a[1]}" allow="accelerometer;gyroscope;autoplay;encrypted-media;picture-in-picture" allowfullscreen fetchpriority="high"></iframe></div>
+   <div class="aula-info"><div><small>Aula ${AULA+1} de ${m.aulas.length}</small><h2>${a[0]}</h2></div>
+    <button class="btn ${vista(a[1])?'btn-o':'btn-g'}" onclick="concluir('${a[1]}');${prox?`AULA++;rr()`:`rr();toast('Módulo concluído!')`}">${vista(a[1])?'✓ Concluída':'Concluir aula'}${prox?' e ir para a próxima '+ic('arrow'):''}</button></div></div>
+  <div class="card lista-card"><h3>${ic('book')} Aulas do módulo</h3><div class="lista">${m.aulas.map((x,j)=>`<button class="li ${j===AULA?'on':''} ${vista(x[1])?'ok':''}" onclick="AULA=${j};rr()"><span class="n">${vista(x[1])?'✓':j+1}</span><span><b>${x[0]}</b><small>${x[2]}</small></span></button>`).join('')}</div>
+   ${MODULOS[i+1]&&!MODULOS[i+1].lock&&MODULOS[i+1].aulas.length?`<a class="btn btn-o btn-full" style="margin-top:12px" href="#modulo-${i+2}" onclick="AULA=0">Próximo módulo ${ic('arrow')}</a>`:''}</div>
+ </div>`}
+
+const P={
+inicio:()=>`
+ <div class="banner"><img src="${IMG_BASE}capas/banner.webp?v=${BANNER_V}" alt="Avatar Milionário" onerror="this.parentNode.remove()"></div>
+ <div class="hero">
+  <span class="pill">ÁREA DE MEMBROS</span>
+  <h1 style="margin-top:14px">Bem-vindo, <em id="hn">${nome()}</em>. Seu avatar vai trabalhar por você.</h1>
+  <p>Siga as aulas na ordem, use as ferramentas e os prompts prontos, e poste seu primeiro vídeo viral ainda hoje.</p>
+  <div class="row"><a href="#aulas" class="btn btn-g">Continuar assistindo ${ic('arrow')}</a><a href="#criador" class="btn btn-o">${ic('wand')} Criar meu avatar</a></div>
+  <div class="progress"><small><span>Seu progresso</span><span>${pct()}% concluído</span></small><div class="bar"><i id="pb"></i></div></div>
+ </div>
+ <div class="sec-h"><h2>Seus módulos</h2><a href="#aulas">Ver todos ${ic('arrow')}</a></div>
+ <div class="mrow">${MODULOS.map(cardMod).join('')}</div>
+ <div class="grid" style="margin-top:18px">
+  <div class="card"><div class="ico-box">${ic('money')}</div><h3>Seu curso se paga com 3 vendas</h3><p>Seja afiliado e receba de ${brl(PLANOS[0].c)} a ${brl(PLANOS[PLANOS.length-1].c)} por venda no PIX.</p><a href="#afiliados" class="btn btn-g">Quero ser afiliado</a></div>
+  <div class="card"><div class="ico-box">${ic('spark')}</div><h3>Conteúdo novo toda semana</h3><p>Novos vídeos virais, prompts e aulas entrando o tempo todo.</p><a href="#virais" class="btn btn-o">Ver vídeos virais</a></div>
+  <div class="card"><div class="ico-box">${ic('users')}</div><h3>Grupo de networking <span class="pill gold">EM BREVE</span></h3><p>Abre em 7 dias. Só para quem é aluno.</p><a href="#networking" class="btn btn-o">Ver detalhes</a></div>
+ </div>
+ ${TEM_BUMP?`<div class="sec-h"><h2>Vídeos virais <span class="pill">LIBERADO</span></h2><a href="#virais">Ver mais ${ic('arrow')}</a></div>
+ <div class="vgrid">${VIRAIS.slice(0,5).map(vid).join('')}</div>`:''}
+ <div class="sec-h"><h2>Prompts</h2><a href="#prompts">Ver mais ${ic('arrow')}</a></div>
+ <div class="grid">${PROMPTS.slice(0,3).map(cardPrompt).join('')}</div>`,
+
+aulas:()=>`
+ <div class="ph"><h1>Aulas</h1><p>O passo a passo completo, na ordem certa.</p></div>
+ <div class="mgrid">${MODULOS.map(cardMod).join('')}</div>`,
+
+criador:()=>`
+ <div class="ph"><h1>Criador de avatar</h1><p>Monte seu personagem ou transforme um desenho numa pessoa real. Depois copie o prompt e use no ChatGPT.</p></div>
+ <div class="tabs"><button class="tab ${MODO==='montar'?'on':''}" onclick="MODO='montar';render()">${ic('wand')} Montar personagem</button><button class="tab ${MODO==='foto'?'on':''}" onclick="MODO='foto';render()">${ic('img')} Personagem em pessoa real</button></div>
+ ${MODO==='foto'?telaFoto():`<div class="cr">
+  <div id="opts">${CRIADOR.map((g,i)=>!vis(g)?'':`<section class="opt"><label>${g.t}<span id="lbl${i}"></span></label>
+   <div class="${g.cor?'swatches':'tiles'}">${g.ops.map((o,j)=>o[3]&&sexo()!=='f'?'':g.cor
+    ?`<button class="sw" data-g="${i}" data-j="${j}" title="${o[1]}"><i style="background:${o[0]}"></i><span>${o[1]}</span></button>`
+    :`<button class="tile" data-g="${i}" data-j="${j}">${o[0]?`<span class="ti"><img src="${IMG_BASE}criador/${o[0]}.webp" alt="" loading="lazy" onerror="this.remove()"></span>`:`<span class="ti none">${o[1]==='Nenhum'?'✕':'✦'}</span>`}<span class="tl">${o[1]}</span></button>`).join('')}</div></section>`).join('')}</div>
+  <div class="card sticky"><h3>${ic('img')} Seu personagem</h3><div class="resumo" id="resumo"></div><div class="out" id="out"></div>
+   <button class="btn btn-g btn-full" onclick="copiar(document.getElementById('out').innerText)">${ic('copy')} Copiar prompt</button>
+   <button class="btn btn-o btn-full" style="margin-top:8px" onclick="sortear()">${ic('shuffle')} Sortear combinação</button></div>
+ </div>`}`,
+
+ferramentas:()=>`
+ <div class="ph"><h1>Ferramentas</h1><p>Os sites que você vai usar no passo a passo do curso.</p></div>
+ ${FERRAMENTAS.map(g=>`<div class="sec-t">${g.grupo}</div><div class="grid">${g.itens.map(cardFerr).join('')}</div>`).join('')}
+ <div class="info" style="margin-top:28px"><div class="ico-box">${ic('help')}</div><div><b>Dica</b>Abra as ferramentas em outra aba e deixe esta área aberta para acompanhar a aula junto.</div></div>`,
+
+prompts:()=>`
+ <div class="ph"><h1>Prompts prontos</h1><p>Copie o prompt e cole na ferramenta, junto com a foto do seu avatar e o vídeo de referência.</p></div>
+ <div class="grid">${PROMPTS.map(cardPrompt).join('')}</div>`,
+
+virais:()=>TEM_BUMP?`
+ <div class="ph"><h1>Pack de vídeos virais <span class="pill">LIBERADO</span></h1><p>Vídeos virais prontos para baixar e recriar com o seu avatar.</p></div>
+ <div class="vgrid">${VIRAIS.map(vid).join('')}</div>`:travaVirais(),
+
+networking:()=>`
+ <div class="ph"><h1>Networking</h1><p>Grupo exclusivo para alunos trocarem resultados e ideias.</p></div>
+ <div class="card" style="max-width:560px"><div class="ico-box">${ic('cal')}</div><h3>Abre em 7 dias <span class="pill gold">EM BREVE</span></h3><p>Assim que o grupo abrir, o link de entrada aparece aqui. Enquanto isso, avance nas aulas para chegar com resultado.</p><a href="#aulas" class="btn btn-g">Ir para as aulas ${ic('arrow')}</a></div>`,
+
+afiliados:()=>`
+ <div class="ph"><h1>Programa de afiliados</h1><p>Ganhe 50% de cada venda indicando o Avatar Milionário.</p></div>
+ <div class="card" style="max-width:640px">
+  <span class="pill">PROGRAMA DE AFILIADOS</span>
+  <h3 style="font-size:24px;margin-top:12px">Seu curso se paga com <span style="color:var(--g3)">${SE_PAGA(PLANOS[PLANO])} vendas</span></h3>
+  <p>Você recebe 50% do valor líquido de cada venda no PIX pelo seu link (já descontada a taxa da plataforma).</p>
+  <div class="swatches" style="margin:4px 0 0">${PLANOS.map((p,i)=>`<button class="sw ${PLANO===i?'on':''}" style="padding:9px 14px" onclick="PLANO=${i};rr()">${p.n} · ${brl(p.c)} por venda</button>`).join('')}</div>
+  ${(()=>{const p=PLANOS[PLANO];return `<div class="conta">
+   <div><span>Preço da venda</span><b>${brl(p.p)}</b></div>
+   <div><span>Taxa da Kiwify (${String(TAXA_PCT).replace('.',',')}%)</span><b class="neg">- ${brl(p.taxa)}</b></div>
+   <div><span>Taxa fixa por venda</span><b class="neg">- ${brl(p.fixa)}</b></div>
+   <div><span>Valor líquido</span><b>${brl(p.liq)}</b></div>
+   <div class="tot"><span>Sua comissão (50% do líquido)</span><b>${brl(p.c)}</b></div>
+   <div><span>Se você comprou o ${p.n}, ele se paga com</span><b style="color:var(--g3)">${SE_PAGA(p)} vendas (${brl(p.c*SE_PAGA(p))})</b></div></div>`})()}
+  <div class="calc"><div><small>1 venda</small><b>${brl(COMISSAO())}</b></div><div><small>10 vendas</small><b>${brl(COMISSAO()*10)}</b></div><div><small>100 vendas</small><b>${brl(COMISSAO()*100)}</b></div></div>
+  <label style="font-size:13px;color:var(--mut);font-weight:700">Simule: quantas vendas por mês?</label>
+  <input class="inp" type="number" min="0" value="${SIM_N}" oninput="SIM_N=+this.value||0;sim.innerText=brl(SIM_N*COMISSAO())" style="margin:8px 0 6px">
+  <p style="margin-bottom:16px">Você ganharia <b id="sim" style="color:var(--g3)">${brl(COMISSAO()*SIM_N)}</b> por mês. Não é garantia de ganhos.</p>
+  <div class="warn">${ic('warn')}<div><b>Pediu reembolso, perde a afiliação:</b> a sua página sai do ar e as comissões acabam.</div></div>
+  <a class="btn btn-g btn-full" style="margin-top:16px" href="${AFILIADO}" target="_blank" rel="noopener">Quero me afiliar agora ${ic('ext')}</a>
+ </div>`,
+
+suporte:()=>`
+ <div class="ph"><h1>Suporte</h1><p>Ficou com dúvida? A gente responde rápido.</p></div>
+ <div class="grid">
+  <div class="card"><div class="ico-box">${ic('chat')}</div><h3>WhatsApp</h3><p>Fale direto com o time de suporte.</p><a class="btn btn-g" href="${WHATS}" target="_blank" rel="noopener">Chamar no WhatsApp ${ic('ext')}</a></div>
+  <div class="card"><div class="ico-box">${ic('help')}</div><h3>Não recebi a senha</h3><p>Confira Spam e Promoções no e-mail da compra. Se não achar, chame no WhatsApp.</p></div>
+ </div>`,
+
+conta:()=>`
+ <div class="ph"><h1>Minha conta</h1><p>Seus dados de acesso.</p></div>
+ <div class="card" style="max-width:520px">
+  <div class="user" style="padding:0 0 18px"><div class="av">${nome()[0].toUpperCase()}</div><div><b>${nome()}</b><small>Membro</small></div></div>
+  <label style="font-size:13px;color:var(--mut);font-weight:700">E-mail</label><input class="inp" value="${(()=>{try{return localStorage.am_email||EMAIL}catch(x){return EMAIL}})()}" disabled style="margin:8px 0 16px">
+  <button class="btn btn-o" onclick="sair()">Sair da conta</button>
+ </div>`
+};
+
+/* Criador: [arquivo da imagem (pasta criador/), nome na tela, texto que vai pro prompt].
+   Grupos com cor:true mostram bolinhas de cor (o 1º campo é a cor). Grupos com nenhum:true começam em "Nenhum". */
+const CORES=[['#111111','Preto','black'],['#f5f5f5','Branco','white'],['#8a8f98','Cinza','grey'],['#1e3a8a','Azul-marinho','navy blue'],['#2563eb','Azul','blue'],['#16a34a','Verde','green'],
+ ['#556b2f','Verde-oliva','olive green'],['#dc2626','Vermelho','red'],['#7f1d1d','Vinho','burgundy'],['#f97316','Laranja','orange'],['#facc15','Amarelo','yellow'],['#ec4899','Rosa','pink'],
+ ['#7c3aed','Roxo','purple'],['#a0522d','Marrom','brown'],['#d6c3a1','Bege','beige'],['#d4a017','Dourado','gold']];
+const CRIADOR=[
+ {t:'Gênero',k:'gender',ops:[['genero-masculino','Masculino','man'],['genero-feminino','Feminino','woman']]},
+ {t:'Idade aparente',k:'age',sx:'m',ops:[['idade-jovem','Jovem 18 a 25','young adult, 18 to 25 years old'],['idade-adulto','Adulto 26 a 40','adult, 26 to 40 years old'],['idade-maduro','Maduro 40+','mature, over 40 years old']],sel:1},
+ {t:'Idade aparente',k:'age',sx:'f',ops:[['f-idade-jovem','Jovem 18 a 25','young adult, 18 to 25 years old'],['f-idade-adulta','Adulta 26 a 40','adult, 26 to 40 years old'],['f-idade-madura','Madura 40+','mature, over 40 years old']],sel:1},
+ {t:'Cabelo',k:'haircut',sx:'f',ops:[
+  ['f-cabelo-longo-liso','Longo liso','very long straight sleek hair'],['f-cabelo-ondulado','Ondulado','long wavy beach waves'],['f-cabelo-cacheado','Cacheado','big voluminous curly hair'],
+  ['f-cabelo-black','Black power','big round afro'],['f-cabelo-chanel','Chanel','short chin-length bob'],['f-cabelo-pixie','Pixie curtinho','very short pixie cut'],
+  ['f-cabelo-franja','Com franja','long hair with blunt bangs'],['f-cabelo-rabo','Rabo de cavalo','high ponytail'],['f-cabelo-coque','Coque alto','high top bun'],
+  ['f-cabelo-trancas','Tranças','long box braids'],['f-cabelo-chiquinha','Maria-chiquinha','two pigtails'],['f-cabelo-raspado','Raspado na lateral','side shaved undercut with long hair']]},
+ {t:'Corte de cabelo',k:'haircut',sx:'m',ops:[
+  ['cabelo-tigelinha-largo','Tigelinha largo','wide bowl cut'],['cabelo-tigelinha','Tigelinha','bowl cut'],['cabelo-longo-aberto','Longo aberto','long open hair parted in the middle'],
+  ['cabelo-franja-curta','Franja curta','short micro fringe'],['cabelo-reto-queixo','Reto no queixo','straight chin-length bob'],['cabelo-topo-reto','Topo reto','flat top'],
+  ['cabelo-mullet','Mullet','mullet'],['cabelo-calvo-laterais','Calvo nas laterais','bald on top with hair on the sides'],['cabelo-cachos','Cachos volumosos','huge voluminous curls'],
+  ['cabelo-espetado','Espetado alto','tall spiky hair'],['cabelo-asas','Asas laterais','hair sticking out to the sides like wings'],['cabelo-topete','Topete gigante','giant pompadour'],
+  ['cabelo-duas-pontas','Duas pontas','two pointy horn-like tufts'],['cabelo-tigelinha-gigante','Tigelinha gigante','gigantic bowl cut'],['cabelo-assimetrico','Assimétrico','asymmetric haircut']]},
+ {t:'Cor do cabelo',k:'hair color',cor:true,ops:[['#3b2416','Castanho','brown'],['#111111','Preto','black'],['#e6c27a','Loiro','blonde'],['#b5502a','Ruivo','ginger'],['#c9c9c9','Grisalho','grey'],['#2fbf62','Verde','neon green'],['#e255a1','Rosa','pink']]},
+ {t:'Formato do rosto',k:'head shape',sx:'f',ops:[
+  ['f-cabeca-padrao','Padrão','normal'],['f-cabeca-alongado','Alongado','elongated'],['f-cabeca-quadrado','Quadrado','square'],['f-cabeca-redondo','Redondo','round'],
+  ['f-cabeca-coracao','Coração','heart shaped'],['f-cabeca-larga','Largo','wide'],['f-cabeca-queixo-comprido','Queixo comprido','long chin'],['f-cabeca-testa-alta','Testa alta','very high forehead'],['f-cabeca-mandibula','Mandíbula forte','strong oversized jaw']]},
+ {t:'Maquiagem',k:'makeup',sx:'f',ops:[
+  ['f-make-sem','Sem maquiagem','no makeup'],['f-make-natural','Natural','soft natural makeup'],['f-make-batom','Batom vermelho','bold red lipstick'],
+  ['f-make-delineado','Delineado gatinho','dramatic winged eyeliner'],['f-make-glam','Glam com brilho','glam glitter makeup'],['f-make-gotica','Gótica','gothic dark makeup']]},
+ {t:'Formato da cabeça',k:'head shape',sx:'m',ops:[
+  ['cabeca-padrao','Padrão','normal'],['cabeca-alongado','Alongado','elongated'],['cabeca-quadrado','Quadrado','square'],['cabeca-redondo','Redondo','round'],
+  ['cabeca-triangular','Triangular','triangular'],['cabeca-larga','Larga','wide'],['cabeca-queixo-comprido','Queixo comprido','long chin'],['cabeca-testa-alta','Testa alta','very high forehead'],['cabeca-mandibula','Mandíbula gigante','giant jaw']]},
+ {t:'Barba e bigode',k:'facial hair',sx:'m',ops:[
+  ['barba-sem','Sem barba','clean shaven'],['barba-bigode-fino','Bigode fino','thin pencil mustache'],['barba-bigode-grosso','Bigode grosso','thick bushy mustache'],
+  ['barba-bigode-enrolado','Bigode enrolado','curled handlebar mustache'],['barba-curta','Barba curta','short trimmed beard'],['barba-cavanhaque','Cavanhaque','goatee']]},
+ {t:'Proporções do corpo',k:'body',sx:'f',ops:[
+  ['f-corpo-fitness','Fitness','very fit athletic'],['f-corpo-baixinha','Baixinha','very short'],['f-corpo-altona','Altona','very tall with long legs'],['f-corpo-magra','Muito magra','very skinny'],
+  ['f-corpo-curvilinea','Curvilínea','curvy hourglass'],['f-corpo-plus','Plus size','plus size'],['f-corpo-pera','Corpo pera','pear shaped'],['f-corpo-ombros','Ombros largos','broad shoulders'],['f-corpo-mignon','Mignon','petite']]},
+ {t:'Estilo de roupa',k:'outfit',sx:'f',ops:[
+  ['f-roupa-esportivo','Esportivo','sporty'],['f-roupa-executiva','Executiva','elegant executive'],['f-roupa-streetwear','Streetwear','streetwear'],['f-roupa-funkeira','Funkeira / Grife','Brazilian funk designer style'],
+  ['f-roupa-gotica','Gótica','goth'],['f-roupa-vestido','Vestido de festa','long party evening dress'],['f-roupa-academia','Academia','gym wear'],['f-roupa-praiana','Praiana','summer beach dress'],
+  ['f-roupa-country','Country','country cowgirl'],['f-roupa-y2k','Y2K','Y2K fashion'],['f-roupa-futebol','Futebol oversized','oversized football jersey'],['f-roupa-bicolor','Bicolor retrô','retro two-tone tracksuit']]},
+ {t:'Proporções do corpo',k:'body',sx:'m',ops:[
+  ['corpo-bombadao','Bombadão','extremely muscular'],['corpo-baixinho','Baixinho','very short'],['corpo-altao','Altão','very tall'],['corpo-magro','Muito magro','very skinny'],
+  ['corpo-barrigudo','Barrigudo','big belly'],['corpo-anao','Anão','dwarf'],['corpo-encorpado','Encorpado','stocky'],['corpo-pera','Corpo pera','pear shaped'],['corpo-ombros','Ombros enormes','huge shoulders']]},
+ {t:'Estilo de roupa',k:'outfit',sx:'m',ops:[
+  ['roupa-esportivo','Esportivo','sporty'],['roupa-social','Social','formal suit'],['roupa-streetwear','Streetwear','streetwear'],['roupa-funkeiro','Funkeiro / Grife','Brazilian funk designer style'],
+  ['roupa-gotico','Gótico','goth'],['roupa-mandrake','Mandrake RJ','Rio de Janeiro mandrake style'],['roupa-academia','Academia','gym wear'],['roupa-praiano','Praiano','beachwear'],
+  ['roupa-country','Country','country'],['roupa-y2k','Y2K','Y2K fashion'],['roupa-futebol','Futebol oversized','oversized football jersey'],['roupa-bicolor','Bicolor retrô','retro two-tone tracksuit']]},
+ {t:'Parte de cima',k:'top',ops:[['','Do estilo',''],
+  ['top-camiseta','Camiseta','basic t-shirt'],['top-regata','Regata','tank top'],['top-camisa-social','Camisa social','button-up dress shirt'],['top-polo','Polo','polo shirt'],
+  ['top-moletom','Moletom','hoodie'],['top-jaqueta-couro','Jaqueta de couro','leather biker jacket'],['top-jaqueta-jeans','Jaqueta jeans','denim jacket'],['top-blazer','Blazer','tailored blazer'],
+  ['top-camisa-time','Camisa de time','football jersey'],['top-florida','Camisa florida','hawaiian floral shirt'],
+  ['top-cropped','Cropped','cropped top',1],['top-alcinha','Blusa de alcinha','spaghetti strap blouse',1],['top-body','Body','fitted bodysuit',1]]},
+ {t:'Cor da parte de cima',k:'top color',cor:true,ops:CORES},
+ {t:'Parte de baixo',k:'bottom',ops:[['','Do estilo',''],
+  ['baixo-jeans','Calça jeans','straight blue jeans'],['baixo-jeans-rasgado','Jeans rasgado','ripped jeans'],['baixo-bermuda','Bermuda','bermuda shorts'],['baixo-short','Short','short shorts'],
+  ['baixo-moletom','Calça moletom','jogger sweatpants'],['baixo-cargo','Calça cargo','cargo pants'],['baixo-social','Calça social','tailored dress trousers'],
+  ['baixo-saia-curta','Saia curta','mini skirt',1],['baixo-saia-longa','Saia longa','long maxi skirt',1],['baixo-legging','Legging','leggings',1]]},
+ {t:'Cor da parte de baixo',k:'bottom color',cor:true,ops:CORES},
+ {t:'Calçado',k:'shoes',ops:[['','Do estilo',''],
+  ['calcado-tenis-branco','Tênis branco','clean white sneakers'],['calcado-tenis-corrida','Tênis de corrida','running shoes'],['calcado-tenis-cano-alto','Tênis cano alto','high top sneakers'],
+  ['calcado-chinelo','Chinelo','flip flops'],['calcado-sandalia','Sandália','strappy sandals'],['calcado-coturno','Coturno','combat boots'],['calcado-bota-country','Bota country','cowboy boots'],
+  ['calcado-social','Sapato social','leather dress shoes'],['calcado-mocassim','Mocassim','loafers'],['calcado-crocs','Crocs','rubber clogs'],['calcado-salto','Salto alto','high heels',1]]},
+ {t:'Cor do calçado',k:'shoes color',cor:true,ops:CORES},
+ {t:'Tom de pele',k:'skin tone',cor:true,ops:[['#f1c9a5','Claro','light'],['#d9a27a','Médio','medium'],['#a86b45','Moreno','tan'],['#6b4128','Escuro','dark']]},
+ {t:'Cor dos olhos',k:'eye color',cor:true,ops:[['#5a3a1e','Castanhos','brown'],['#2f6fd6','Azuis','blue'],['#3f8f4a','Verdes','green'],['#1a1a1a','Pretos','black']]},
+ {t:'Óculos',k:'glasses',nenhum:true,ops:[
+  ['oculos-quadrado','Quadrado grande','big square glasses'],['oculos-oakley','Esportivo Oakley','sporty wraparound sunglasses'],['oculos-redondo-dourado','Redondo dourado','round gold glasses'],
+  ['oculos-futurista','Futurista espelhado','futuristic mirrored visor'],['oculos-gatinho','Gatinho','cat eye glasses'],['oculos-redondo-grosso','Redondo grosso','thick round glasses']]},
+ {t:'Correntes e colares',k:'necklace',nenhum:true,ops:[
+  ['colar-correntao','Correntão dourado','thick gold chain'],['colar-prata','Corrente prata','silver chain'],['colar-camadas','Correntes em camadas','layered chains'],
+  ['colar-perolas','Colar de pérolas','pearl necklace'],['colar-medalhao','Medalhão','gold medallion'],['colar-choker','Choker prata','silver choker']]},
+ {t:'Brincos',k:'earrings',sx:'f',nenhum:true,ops:[
+  ['brinco-argola','Argola dourada','big gold hoop earrings'],['brinco-perola','Pérola','pearl earrings'],['brinco-pingente','Pingente','long crystal drop earrings'],
+  ['brinco-ear-cuff','Ear cuff','silver ear cuff'],['brinco-brilhante','Brilhante','diamond stud earrings']]},
+ {t:'Bonés e chapéus',k:'headwear',nenhum:true,ops:[
+  ['chapeu-bone-aba-reta','Boné aba reta','flat brim cap'],['chapeu-country','Chapéu country','cowboy hat'],['chapeu-gorro','Gorro','beanie'],
+  ['chapeu-bucket','Bucket','bucket hat'],['chapeu-boina','Boina','beret'],['chapeu-tweed','Boné de tweed','tweed newsboy cap']]}
+];
+CRIADOR.forEach(g=>{if(g.nenhum)g.ops.unshift(['','Nenhum',''])});
+
+/* ---------- Criador: personagem em pessoa real ---------- */
+/* Passo 1: transformar o personagem em pessoa real com a roupa original.
+   Passo 2: trocar só a roupa. Cada look: [imagem, nome, parte de cima, cor padrão de cima, parte de baixo (null = peça única), cor padrão de baixo, itens fixos].
+   {c} é onde entra a cor. */
+let MODO='montar', REF_LOOK=-1, REF_EXTRA='';
+/* Cores do look: 'orig' = cores originais, 'conj' = tudo de uma cor, 'sep' = cima e baixo separados */
+let REF_CMODO='orig', REF_CONJ=0, REF_CIMA=0, REF_BAIXO=1;
+const LOOKS_ICONE=[
+ ['icones/icone-nerd-ruivo','Terno de tweed com gravata borboleta','a {c} herringbone tweed jacket (single-breasted, notch lapels, two buttons, flap pockets) over a matching {c} tweed vest buttoned all the way up','brown','matching {c} tweed trousers, straight leg, full length','brown','a crisp white shirt with a pointed collar, a dark brown paisley bow tie, polished brown leather oxford shoes'],
+ ['icones/icone-loiro-bigode','Blazer xadrez com gravata listrada','a {c} and cream houndstooth tweed blazer, single-breasted with notch lapels','brown','{c} wool trousers, straight leg','grey','a blue and white gingham check shirt, an orange and navy diagonally striped tie, brown leather shoes'],
+ ['icones/icone-bombadao-queixo','Terno sem camisa','a {c} suit jacket worn open with NO shirt underneath, bare chest visible','dark charcoal grey','matching {c} suit trousers','dark charcoal grey','black leather dress shoes'],
+ ['icones/icone-chanel-bigodao','Camisa gola padre','a {c} long-sleeve button-up shirt with a band collar (mandarin collar, no lapels), buttoned to the top','white','{c} straight trousers','black','black leather shoes'],
+ ['icones/icone-tigelinha-oculos','Jaqueta esportiva listrada','a {c} zip-up track jacket with a stand collar and three white stripes down each sleeve','orange','matching {c} track pants with three white stripes down the sides','orange','white sneakers'],
+ ['icones/icone-mullet-interior','Regata xadrez com corrente','a {c} sleeveless plaid flannel shirt with cut-off sleeves, unbuttoned at the top','red and blue','worn {c} jeans','light blue','a thin gold chain necklace, brown work boots'],
+ ['icones/icone-careca-cavanhaque','Jaqueta de couro','a {c} leather biker jacket with an asymmetric zipper and silver hardware, over a plain black t-shirt','black','{c} slim jeans','black','black leather boots'],
+ ['icones/icone-topete-gigante','Camisa florida aberta','an open short-sleeve hawaiian shirt with a {c} tropical floral print, unbuttoned showing the chest','colorful red, green and blue','{c} straight trousers','white','a gold medallion necklace, white loafers'],
+ ['icones/icone-ruiva-franja','Cardigã de tricô','a {c} chunky knitted cardigan over a plain dark top','green','a {c} plaid pleated skirt to the knee','dark green and black','black tights, black mary jane shoes'],
+ ['icones/icone-black-power','Baby tee Y2K','a {c} fitted Y2K baby tee (short, tight cropped t-shirt)','pink','low-rise baggy {c} jeans','light blue','big gold hoop earrings, white sneakers'],
+ ['icones/icone-loira-chiquinha','Conjunto de plush','a {c} velour zip-up tracksuit jacket','pastel pink','matching {c} velour tracksuit pants','pastel pink','white sneakers'],
+ ['icones/icone-morena-chanel','Gola alta','a {c} fitted ribbed turtleneck sweater','black','{c} high-waisted tailored trousers','black','black pointed ankle boots'],
+ ['icones/look-terno-preto-gravata','Terno preto e gravata','a slim {c} suit jacket, single-breasted with notch lapels','black','matching slim {c} suit trousers','black','a white dress shirt, a thin black tie, black oxford shoes'],
+ ['icones/look-seguranca-terno','Segurança de terno','a {c} suit jacket','black','matching {c} suit trousers','black','a white dress shirt, a black tie, dark sunglasses, a coiled security earpiece, black shoes'],
+ ['icones/look-terno-marrom-gravata-vermelha','Terno marrom e gravata vermelha','a {c} single-breasted suit jacket','brown','matching {c} suit trousers','brown','a white dress shirt, a solid red tie, brown leather shoes'],
+ ['icones/look-terno-azul-claro','Terno azul-claro com gravata de cordão','a {c} western-cut suit jacket','light powder blue','matching {c} suit trousers','light powder blue','a white dress shirt, a black string bolo tie with a silver clasp, black dress boots'],
+ ['icones/look-paleto-tweed-verde','Paletó de tweed verde','a {c} tweed sport jacket with elbow patches','olive green','{c} wool trousers','grey','a light blue collared shirt, a maroon knit tie, brown leather shoes'],
+ ['icones/look-paleto-caca','Paletó de caça','a {c} tweed hunting jacket with patch pockets over a knitted sweater vest','olive brown','{c} corduroy trousers','brown','a checked collared shirt, a dark green tie, brown leather boots'],
+ ['icones/look-terno-verde-magnata','Terno de magnata','an old-fashioned {c} three-piece suit jacket with a matching vest and a pocket watch chain','dark green','matching {c} suit trousers','dark green','a white shirt with a high collar, a dark tie, black leather shoes'],
+ ['icones/look-blazer-bege','Blazer bege','a {c} unstructured blazer','beige','{c} chino trousers','dark navy','a white button-up shirt open at the collar, brown loafers'],
+ ['icones/look-mafioso','Mafioso','a {c} blazer worn open over an unbuttoned white shirt showing the chest','black','{c} dress trousers','black','a thick gold chain, black leather loafers'],
+ ['icones/look-casaco-oncinha','Casaco de oncinha','a long knee-length {c} faux fur coat over a purple satin shirt','leopard print','{c} trousers','black','a big gold chain, gold rings, black shoes'],
+ ['icones/look-tunica-real','Túnica real','a {c} velvet royal tunic with gold embroidered trim and puffed sleeves','burgundy','{c} tights','black','a heavy gold chain of office, black leather boots'],
+ ['icones/look-tunica-arabe','Túnica árabe','a long {c} Arab thobe robe with long sleeves, reaching all the way down to the feet','white',null,'','a white ghutra headscarf held by a black agal cord, brown leather sandals'],
+ ['icones/look-macacao-cientista','Macacão de cientista','a {c} zip-up jumpsuit with yellow padded panels on the chest, silver metallic cuffs and a black belt','red',null,'','white gloves, black boots, round goggles on the forehead'],
+ ['icones/look-traje-heroi-vermelho','Fantasia de super-herói','a {c} skin-tight full body superhero costume, no logo','red',null,'','black gloves, black boots, a black belt, a small black eye mask'],
+ ['icones/look-traje-vilao-capa','Fantasia de vilão com capa','a {c} skin-tight super villain costume with a white stripe across the chest, no logo','black',null,'','a long black cape, black gloves, black boots'],
+ ['icones/look-traje-azul-gelo','Fantasia azul-gelo','a fitted {c} full body costume','pale ice-blue',null,'','white boots, white gloves, white sleek wraparound goggles'],
+ ['icones/look-marinheiro','Marinheiro','a {c} sailor shirt with a wide square collar and sleeves rolled up','navy blue','{c} trousers','dark navy','a white sailor cap, black boots'],
+ ['icones/look-camiseta-justa-oculos','Camiseta justa e óculos escuros','a tight {c} crew-neck t-shirt','black','{c} jeans','blue','black sunglasses, black boots'],
+ ['icones/look-regata-amarela-musculosa','Regata e calça de moletom','a {c} tank top','yellow','{c} jogger sweatpants','grey','grey sneakers'],
+ ['icones/look-camisa-mostarda','Camisa de botão manga curta','a {c} short-sleeve button-up shirt, buttoned up','mustard brown','{c} straight trousers','brown','brown leather shoes'],
+ ['icones/look-agasalho-80s-faixa','Agasalho anos 80 com faixa','a shiny {c} 80s nylon tracksuit jacket','teal','matching shiny {c} tracksuit pants','teal','a white sweatband on the head, white sneakers'],
+ ['icones/look-regata-basica','Regata básica','a simple {c} tank top','white','{c} jeans','light blue','white sneakers'],
+ ['icones/look-blazer-tweed-feminino','Blazer de tweed com saia','a {c} tweed blazer over a white collared blouse','brown','a {c} knee-length pencil skirt','navy','black tights, black heeled shoes'],
+ ['icones/look-blusa-retro-lenco','Blusa retrô com lenço','a fitted {c} 60s short-sleeve top','light blue','a {c} high-waisted plaid A-line skirt','navy and white','an orange silk neck scarf, white socks, black mary jane shoes'],
+ ['icones/look-conjunto-rosa-60s','Conjunto anos 60','a {c} boxy 60s jacket over a white turtleneck','pink','a matching {c} A-line mini skirt','pink','a pink headband, black low heels']];
+const LOOKS_MAIS=[
+ ['icones/look-mais-social','Terno social','a {c} formal suit jacket','navy blue','matching {c} suit trousers','navy blue','a white dress shirt, a dark tie, black oxford shoes'],
+ ['icones/look-mais-streetwear','Streetwear','an oversized {c} hoodie','grey','{c} cargo pants with side pockets','olive green','chunky white sneakers'],
+ ['icones/look-mais-funkeiro','Funkeiro / Grife','a {c} designer polo shirt','navy','{c} bermuda shorts','beige','a thick gold chain, a flat brim cap, branded sneakers'],
+ ['icones/look-mais-mandrake','Mandrake RJ','a {c} sleeveless designer shirt','black','{c} bermuda shorts','beige','a flat cap, slides with white socks, a thin gold chain'],
+ ['icones/look-mais-gotico','Gótico','a long {c} trench coat over dark clothes','black','{c} skinny trousers','black','silver chains, black combat boots'],
+ ['icones/look-mais-academia','Academia','a {c} gym tank top','black','{c} training shorts','black','running sneakers'],
+ ['icones/look-mais-praia','Praia','a short-sleeve {c} floral beach shirt','blue and white','{c} board shorts','turquoise','flip flops'],
+ ['icones/look-mais-country','Country','a {c} plaid western shirt','red','{c} jeans with a big belt buckle','blue','a brown cowboy hat, brown cowboy boots'],
+ ['icones/look-mais-y2k','Y2K','a shiny {c} metallic puffer jacket','silver','baggy {c} jeans','blue','tinted sunglasses, white sneakers'],
+ ['icones/look-mais-futebol','Futebol','an oversized {c} football jersey with no logos','blue','{c} football shorts','blue','long socks, sneakers'],
+ ['icones/look-mais-agasalho-retro','Agasalho retrô','a retro two-tone {c} 80s tracksuit jacket','red and blue','matching {c} tracksuit pants','red and blue','white sneakers'],
+ ['icones/look-mais-executiva','Executiva','an elegant {c} tailored blazer over a silk blouse','black','{c} tailored wide-leg trousers','black','pointed heels'],
+ ['icones/look-mais-vestido-festa','Vestido de festa','a long elegant {c} evening gown reaching the floor','navy blue',null,'','strappy heels'],
+ ['icones/look-mais-vestido-verao','Vestido de verão','a flowy {c} floral summer dress to the knee','white',null,'','a straw sun hat, flat sandals'],
+ ['icones/look-mais-funkeira','Funkeira','a {c} cropped top','black','{c} designer shorts','denim blue','gold chains, branded sneakers']];
+const LOOKS=[...LOOKS_ICONE,...LOOKS_MAIS];
+const FOTO_REAL=`One image with 4 photos of this same real person side by side, like a model comp card: front full body, side profile full body, back full body and a close-up portrait of the face. Neutral standing pose, plain white seamless studio backdrop, soft even studio lighting. A real photograph, not a render. Raw photo, shot on Canon EOS R5, 85mm lens, f/2.8, real skin texture with visible pores, natural skin imperfections, individual hair strands, realistic fabric texture, true-to-life proportions, sharp focus, 8K. Style: real photography only. Avoid: cartoon, 3D render, Pixar, animation, illustration, anime, CGI, doll, plastic skin.`;
+/* Passo 1 */
+function promptPasso1(){
+  return `Use the attached image as the only reference. Transform this character into a real human being, as if this character existed in real life. Keep everything that makes the character recognizable: the same hairstyle and hair color, the same face shape and facial features, the same facial hair or makeup, the same eye color, the same skin tone, the same body proportions, the same accessories, and the exact same outfit with the same colors, all recreated as they would look on a real person with real fabric clothing.${REF_EXTRA.trim()?' Extra details: '+REF_EXTRA.trim()+'.':''} ${FOTO_REAL}`;
+}
+/* Passo 2 */
+function promptLook(){
+  if(REF_LOOK<0)return '';
+  const l=LOOKS[REF_LOOK], peca=!l[4];
+  const cTop=REF_CMODO==='conj'?CORES[REF_CONJ][2]:REF_CMODO==='sep'?CORES[REF_CIMA][2]:l[3];
+  const cBot=REF_CMODO==='conj'?CORES[REF_CONJ][2]:REF_CMODO==='sep'?CORES[REF_BAIXO][2]:l[5];
+  const top=l[2].split('{c}').join(cTop), bot=peca?'':l[4].split('{c}').join(cBot);
+  const roupa=peca?`Main piece: ${top}.`:`Top: ${top}. Bottom: ${bot}.`;
+  return `Use the attached image as the reference for the person. Keep this exact same person 100% identical: same face and facial features, same hairstyle and hair color, same facial hair or makeup, same skin tone, same eye color, same body type and proportions. Do not change anything about the person. Change ONLY the clothing to this new outfit. ${roupa} Other details: ${l[6]}. Follow every clothing piece and every color exactly as described, nothing else from the old outfit should remain. ${FOTO_REAL}`;
+}
+const lookTile=(l,i)=>`<button class="tile retrato ${REF_LOOK===i?'on':''}" onclick="REF_LOOK=${i};rr()"><span class="ti"><img src="${IMG_BASE}${l[0]}.webp" alt="" loading="lazy" onerror="this.remove()"></span><span class="tl">${l[1]}</span></button>`;
+const corLinha=(t,v,sel)=>`<div class="sub-l">${t}<span>${CORES[sel][1]}</span></div><div class="swatches" style="margin-bottom:14px">${CORES.map((c,i)=>`<button class="sw ${sel===i?'on':''}" onclick="${v}=${i};rr()"><i style="background:${c[0]}"></i><span>${c[1]}</span></button>`).join('')}</div>`;
+function telaFoto(){const n=LOOKS_ICONE.length, peca=REF_LOOK>=0&&!LOOKS[REF_LOOK][4];return `<div class="cr">
+  <div id="opts">
+   <section class="opt passo"><label><span class="num">1</span> Primeiro, gere seu personagem com a roupa original</label>
+    <p class="dica">No ChatGPT, anexe a imagem do personagem (desenho, anime, boneco 3D) e cole este prompt. Ele vira uma pessoa real com a mesma roupa.</p>
+    <input class="inp" id="refExtra" placeholder="Detalhes extras (opcional). Ex.: brasileiro, 30 anos, sorrindo" value="${REF_EXTRA.replace(/"/g,'&quot;')}" oninput="REF_EXTRA=this.value;document.getElementById('out1').innerText=promptPasso1()">
+    <div class="out" id="out1" style="min-height:0;max-height:160px">${promptPasso1()}</div>
+    <button class="btn btn-g" onclick="copiar(document.getElementById('out1').innerText)">${ic('copy')} Copiar prompt do passo 1</button></section>
+   <section class="opt passo"><label><span class="num">2</span> Quer mudar a roupa do seu personagem? Escolha o look</label>
+    <p class="dica">Anexe no ChatGPT a imagem do personagem que você gerou no passo 1 e use o prompt do look que aparece ao lado. A pessoa continua a mesma, só a roupa muda.</p></section>
+   <section class="opt"><label>Looks<span>${REF_LOOK>=0&&REF_LOOK<n?LOOKS[REF_LOOK][1]:''}</span></label>
+    <div class="tiles">${LOOKS_ICONE.map((l,i)=>lookTile(l,i)).join('')}</div></section>
+   <section class="opt"><label>Mais looks<span>${REF_LOOK>=n?LOOKS[REF_LOOK][1]:''}</span></label>
+    <div class="tiles">${LOOKS_MAIS.map((l,i)=>lookTile(l,i+n)).join('')}</div></section>
+   <section class="opt"><label>Cores do look</label>
+    <div class="swatches" style="margin-bottom:16px">${[['orig','Cores originais do look'],['conj','Conjunto (tudo da mesma cor)'],['sep',peca?'Cor da peça':'Cima e baixo separados']].map(m=>`<button class="sw ${REF_CMODO===m[0]?'on':''}" style="padding:9px 14px" onclick="REF_CMODO='${m[0]}';rr()">${m[1]}</button>`).join('')}</div>
+    ${REF_CMODO==='conj'?corLinha('Cor do conjunto','REF_CONJ',REF_CONJ):''}
+    ${REF_CMODO==='sep'?(peca?corLinha('Cor da peça','REF_CIMA',REF_CIMA):corLinha('Parte de cima (blusa, camisa, jaqueta)','REF_CIMA',REF_CIMA)+corLinha('Parte de baixo (calça, short, saia)','REF_BAIXO',REF_BAIXO)):''}</section>
+  </div>
+  <div class="card sticky"><h3>${ic('copy')} Prompt para trocar o look</h3>
+   ${REF_LOOK<0?`<div class="vazio">${ic('img')}<b>Escolha um look ao lado</b><span>O prompt para trocar a roupa do seu personagem aparece aqui.</span></div>`:`
+   <div class="look-sel"><img src="${IMG_BASE}${LOOKS[REF_LOOK][0]}.webp" alt=""><div><b>${LOOKS[REF_LOOK][1]}</b><small>${REF_CMODO==='orig'?'Cores originais':REF_CMODO==='conj'?'Conjunto '+CORES[REF_CONJ][1].toLowerCase():peca?'Peça '+CORES[REF_CIMA][1].toLowerCase():'Cima '+CORES[REF_CIMA][1].toLowerCase()+' · baixo '+CORES[REF_BAIXO][1].toLowerCase()}</small></div></div>
+   <div class="out" id="out">${promptLook()}</div>
+   <button class="btn btn-g btn-full" onclick="copiar(document.getElementById('out').innerText)">${ic('copy')} Copiar prompt do look</button>`}
+   <div class="info" style="margin-top:12px"><div class="ico-box">${ic('help')}</div><div><b>Como usar</b>Passo 1 cria a pessoa real. Passo 2 troca só a roupa dessa mesma pessoa, quantas vezes quiser.</div></div>
+  </div>
+ </div>`}
+function rr(){const y=scrollY;render();scrollTo(0,y)}
+const SEL=CRIADOR.map(g=>g.sel||0);
+
+/* ---------- LÓGICA ---------- */
+/* Nome exibido = parte do e-mail antes do @, formatada (joao.silva@... -> Joao Silva) */
+let EMAIL='';
+function nome(){
+  let e=EMAIL;try{e=localStorage.am_email||EMAIL}catch(x){}
+  if(!e)return 'Aluno';
+  const n=e.split('@')[0].replace(/[0-9]+/g,' ').replace(/[._\-+]+/g,' ').trim();
+  return n?n.split(/\s+/).map(p=>p[0].toUpperCase()+p.slice(1).toLowerCase()).join(' '):'Aluno';
+}
+function render(){
+  const pg=(location.hash.slice(1)||'inicio'), mod=/^modulo-\d+$/.test(pg)?+pg.slice(7)-1:-1;
+  const f=mod>=0?()=>telaModulo(mod):P[pg]||P.inicio;
+  document.getElementById('main').innerHTML=`<div class="fade">${f()}</div>`;
+  document.querySelectorAll('.nav-i').forEach(a=>a.classList.toggle('on',a.dataset.p===(mod>=0?'aulas':pg)));
+  document.body.classList.remove('menu'); window.scrollTo(0,0);
+  const t=mod>=0&&MODULOS[mod]?MODULOS[mod].t:{inicio:'Início',aulas:'Aulas',criador:'Criador de avatar',ferramentas:'Ferramentas',prompts:'Prompts',virais:'Vídeos virais',networking:'Networking',afiliados:'Afiliados',suporte:'Suporte',conta:'Minha conta'}[pg]||'Início';
+  document.title=t+' | Avatar Milionário';
+  if(pg==='inicio') setTimeout(()=>{const b=document.getElementById('pb');if(b)b.style.width=pct()+'%'},80);
+  if(pg==='criador'&&MODO==='foto')return;
+  if(pg==='criador'){document.querySelectorAll('#opts [data-g]').forEach(b=>b.onclick=()=>{const mudouSexo=+b.dataset.g===0&&SEL[0]!==+b.dataset.j;SEL[b.dataset.g]=+b.dataset.j;if(mudouSexo){limparFem();const y=scrollY;render();scrollTo(0,y)}else gerar()});gerar()}
+}
+/* Grupos com sx:'m' ou sx:'f' só aparecem para aquele gênero */
+const sexo=()=>SEL[0]===1?'f':'m';
+const vis=g=>!g.sx||g.sx===sexo();
+function gerar(){
+  document.querySelectorAll('#opts [data-g]').forEach(b=>b.classList.toggle('on',SEL[b.dataset.g]===+b.dataset.j));
+  CRIADOR.forEach((g,i)=>{const l=document.getElementById('lbl'+i);if(l)l.innerText=g.ops[SEL[i]][1]});
+  const v=k=>{const i=CRIADOR.findIndex(g=>g.k===k&&vis(g));return i<0?'':CRIADOR[i].ops[SEL[i]][2]};
+  const fem=sexo()==='f';
+  const ac=['glasses','earrings','necklace','headwear'].map(v).filter(Boolean);
+  document.getElementById('out').innerText=`A real photograph, not a render. Professional fashion photo shoot of a real ${v('gender')}, ${v('age')}, a real human being photographed in a studio. Hairstyle: ${v('haircut')}, ${v('hair color')} hair. Face shape: ${v('head shape')}. ${fem?'Makeup: '+v('makeup'):'Facial hair: '+v('facial hair')}. Body type: ${v('body')}. Skin tone: ${v('skin tone')}, ${v('eye color')} eyes. Outfit: ${v('outfit').replace(/ style$/,'')} style. Top: ${v('top')||'matching the outfit style'}, ${v('top color')} color. Bottom: ${v('bottom')||'matching the outfit style'}, ${v('bottom color')} color. Shoes: ${v('shoes')||'matching the outfit style'}, ${v('shoes color')} color.${ac.length?' Accessories: '+ac.join(', ')+'.':''} One image with 4 photos of this same real person side by side, like a model comp card: front full body, side profile full body, back full body and a close-up portrait of the face. Neutral standing pose, plain white seamless studio backdrop, soft even studio lighting. Raw photo, shot on Canon EOS R5, 85mm lens, f/2.8, real skin texture with visible pores, natural skin imperfections, individual hair strands, realistic fabric texture, true-to-life proportions, sharp focus, 8K. Style: real photography only. Keep every chosen feature clearly visible, even the unusual ones, as they would look on a real person. Avoid: cartoon, 3D render, Pixar, animation, illustration, CGI, doll, plastic skin.`;
+  document.getElementById('resumo').innerHTML=CRIADOR.filter(g=>!g.cor&&vis(g)).map(g=>{const o=g.ops[SEL[CRIADOR.indexOf(g)]];return o[0]?`<span title="${g.t}: ${o[1]}"><img src="${IMG_BASE}criador/${o[0]}.webp" alt="${o[1]}" onerror="this.parentNode.remove()"></span>`:''}).join('');
+}
+function sortear(){CRIADOR.forEach((g,i)=>{if(!i)return;const ok=g.ops.map((o,j)=>j).filter(j=>!(g.ops[j][3]&&sexo()!=='f'));SEL[i]=ok[Math.floor(Math.random()*ok.length)]});gerar()}
+/* Ao virar masculino, desmarca peças só femininas */
+function limparFem(){if(sexo()==='m')CRIADOR.forEach((g,i)=>{if(g.ops[SEL[i]][3])SEL[i]=0})}
+function copiar(t){navigator.clipboard.writeText(t).then(()=>toast('Prompt copiado!'),()=>toast('Não foi possível copiar'))}
+let tt;function toast(m){const e=document.getElementById('toast');e.querySelector('span').innerText=m;e.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>e.classList.remove('show'),2200)}
+/* ---------- ACESSO ---------- */
+/* URL do script da planilha (termina em /exec). Vazio = qualquer e-mail entra. */
+const API='https://script.google.com/macros/s/AKfycbyw-PCFL5Ed1hpDJp18ZlNqYBeUs3GD_D3gMnNuYYyof5XHwb54WJCqd70FAVkwBSL_/exec';
+/* Checkout do pack Vídeos Virais (order bump), para quem não levou na compra */
+const CHECKOUT_VIRAIS='https://pay.kiwify.com.br/rxUekt8';
+function travaVirais(){return `
+ <div class="ph"><h1>Pack de vídeos virais</h1><p>Vídeos virais prontos para baixar e recriar com o seu avatar.</p></div>
+ <div class="card" style="max-width:600px"><div class="ico-box">${ic('lock')}</div><h3>Exclusivo do pack Vídeos Virais</h3>
+  <p>Esse conteúdo é liberado para quem levou o pack Vídeos Virais junto com a compra. Se você comprou e não está vendo, saia e entre de novo com o mesmo e-mail da compra.</p>
+  <a href="${CHECKOUT_VIRAIS}" target="_blank" rel="noopener" class="btn btn-g">Liberar o pack por R$ 19,90 ${ic('arrow')}</a></div>`}
+/* Módulos com bump:true só abrem para quem comprou o order bump */
+let TEM_BUMP=false;try{TEM_BUMP=localStorage.am_bump==='1'}catch(x){}
+function aplicarBump(){MODULOS.forEach(m=>{if(!m.bump)return;if(m._lock===undefined)m._lock=m.lock||'';m.lock=TEM_BUMP?m._lock:'Exclusivo de quem levou o bônus'})}
+function consultar(email){return fetch(API+'?email='+encodeURIComponent(email.trim().toLowerCase())).then(r=>r.json())}
+function erroLogin(m){const p=document.getElementById('loginErro');p.innerText=m;p.style.display=m?'block':'none'}
+function entrar(e){
+  e.preventDefault();const email=document.getElementById('email').value.trim();erroLogin('');
+  if(!API){EMAIL=email;try{localStorage.am_email=email}catch(x){}abrir();return}
+  const b=document.getElementById('btnEntrar'),txt=b.innerHTML;b.disabled=true;b.innerText='Verificando...';
+  consultar(email).then(r=>{
+    if(!r.acesso){erroLogin('Não encontramos uma compra com esse e-mail. Use o mesmo e-mail da compra na Kiwify. Se acabou de comprar, aguarde 1 minuto e tente de novo.');return}
+    EMAIL=email;TEM_BUMP=!!r.bump;try{localStorage.am_email=email;localStorage.am_bump=TEM_BUMP?'1':'0'}catch(x){}abrir();
+  }).catch(()=>erroLogin('Não conseguimos verificar agora. Confira sua internet e tente de novo.'))
+  .finally(()=>{b.disabled=false;b.innerHTML=txt});
+}
+/* Quem já entrou antes é conferido de novo em segundo plano (reembolso tira o acesso) */
+function reconferir(){
+  if(!API)return;let e='';try{e=localStorage.am_email||''}catch(x){}if(!e)return;
+  consultar(e).then(r=>{
+    if(!r.acesso){sair();return}
+    const b=!!r.bump;if(b!==TEM_BUMP){TEM_BUMP=b;try{localStorage.am_bump=b?'1':'0'}catch(x){}aplicarBump();render()}
+  }).catch(()=>{});
+}
+function abrir(){
+  aplicarBump();
+  document.getElementById('login').style.display='none';document.getElementById('app').style.display='block';
+  document.getElementById('uname').innerText=nome();document.getElementById('avL').innerText=nome()[0].toUpperCase();render();
+}
+function sair(){try{localStorage.removeItem('am_email');localStorage.removeItem('am_bump')}catch(x){}location.hash='';location.reload()}
+
+document.getElementById('nav').innerHTML=MENU.map(m=>`<a href="#${m[0]}" class="nav-i" data-p="${m[0]}">${ic(m[2])}${m[1]}${m[3]?`<span class="tag">${m[3]}</span>`:''}</a>`).join('');
+window.addEventListener('hashchange',render);
+/* Com API vazia, qualquer e-mail entra. Com API, só quem está "ativo" na planilha. */
+try{if(localStorage.am_email){abrir();reconferir()}}catch(x){}
+</script>
+</body>
+</html>
