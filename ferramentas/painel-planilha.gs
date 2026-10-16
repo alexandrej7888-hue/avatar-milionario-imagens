@@ -22,7 +22,7 @@ const SENHA_PAINEL = '';
 const PRODUTO_BUMP = 'Virais';
 
 const ABA = 'Alunos';
-const CABECALHO = ['email', 'nome', 'acesso', 'bump', 'evento', 'pedido', 'atualizado em'];
+const CABECALHO = ['email', 'nome', 'acesso', 'bump', 'evento', 'pedido', 'atualizado em', 'observacao'];
 const COLS = CABECALHO.length;
 
 /* Status e eventos da Kiwify que liberam e que bloqueiam */
@@ -37,6 +37,9 @@ function aba_() {
     sh = ss.insertSheet(ABA);
     sh.appendRow(CABECALHO);
     sh.setFrozenRows(1);
+  } else if (!sh.getRange(1, COLS).getValue()) {
+    /* Planilha antiga, de antes da coluna de observação */
+    sh.getRange(1, COLS).setValue(CABECALHO[COLS - 1]);
   }
   return sh;
 }
@@ -63,15 +66,15 @@ function assinaturaOk_(corpo, assinatura) {
   return hex === String(assinatura || '').toLowerCase();
 }
 
-/* Grava ou atualiza a linha do e-mail. Campos ausentes (undefined) mantêm o valor que já estava. */
+/* Grava ou atualiza a linha do e-mail. Campos ausentes (undefined) mantêm o valor que já estava; null apaga. */
 function salvar_(email, campos) {
   const lock = LockService.getScriptLock();
   lock.waitLock(20000);
   try {
     const sh = aba_();
     const r = acharLinha_(sh, email);
-    const atual = r ? sh.getRange(r, 1, 1, COLS).getValues()[0] : [email, '', '', '', '', '', ''];
-    const pega = (v, i) => (v === undefined || v === '' ? atual[i] : v);
+    const atual = r ? sh.getRange(r, 1, 1, COLS).getValues()[0] : [email, '', '', '', '', '', '', ''];
+    const pega = (v, i) => (v === null ? '' : v === undefined || v === '' ? atual[i] : v);
     const linha = [
       email,
       pega(campos.nome, 1),
@@ -79,7 +82,8 @@ function salvar_(email, campos) {
       pega(campos.bump, 3),
       pega(campos.evento, 4),
       pega(campos.pedido, 5),
-      new Date()
+      new Date(),
+      pega(campos.observacao, 7)
     ];
     if (r) sh.getRange(r, 1, 1, COLS).setValues([linha]);
     else sh.appendRow(linha);
@@ -93,10 +97,13 @@ function listar_() {
   const n = sh.getLastRow();
   if (n < 2) return [];
   const sit = situacaoEmails_();
+  const ips = ipsPorEmail_();
   return sh.getRange(2, 1, n - 1, COLS).getValues().map(v => {
     const s = sit[String(v[0]).trim().toLowerCase()];
+    const ip = ips[String(v[0]).trim().toLowerCase()] || [];
     return {
       email: v[0], nome: v[1], acesso: v[2], bump: v[3], evento: v[4], pedido: v[5],
+      observacao: v[7] || '', ips: ip.length, listaIps: ip,
       quando: v[6] instanceof Date ? v[6].toISOString() : String(v[6]),
       mail: s ? { quando: new Date(s.quando).toISOString(), ok: s.ok, erro: s.erro, entregue: s.entregue, aberto: s.aberto ? new Date(s.aberto).toISOString() : '', problema: s.problema } : null
     };
@@ -104,7 +111,7 @@ function listar_() {
 }
 
 /* Painel: { acao, senha, email?, nome? }
-   acao: listar | liberar | bloquear | liberar_bump | bloquear_bump */
+   acao: listar | liberar | bloquear | bloquear_ips | liberar_bump | bloquear_bump | ips */
 function painel_(d) {
   if (!SENHA_PAINEL || d.senha !== SENHA_PAINEL) {
     Utilities.sleep(1500);
@@ -114,6 +121,8 @@ function painel_(d) {
   const mudancas = {
     liberar: { acesso: 'ativo' },
     bloquear: { acesso: 'bloqueado' },
+    /* Bloqueio por IPs: o aluno vê o aviso para chamar o suporte no WhatsApp */
+    bloquear_ips: { acesso: 'bloqueado', observacao: OBS_IPS + ' em ' + Utilities.formatDate(new Date(), Session.getScriptTimeZone(), 'dd/MM/yyyy HH:mm') },
     liberar_bump: { bump: 'ativo' },
     bloquear_bump: { bump: 'bloqueado' }
   }[d.acao];
@@ -121,6 +130,8 @@ function painel_(d) {
     if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return json_({ ok: false, erro: 'e-mail inválido' });
     mudancas.nome = String(d.nome || '').trim();
     mudancas.evento = 'manual';
+    /* Liberar na mão tira o bloqueio de IPs: apaga a observação e zera os IPs da conta */
+    if (d.acao === 'liberar') { mudancas.observacao = null; limparIps_(email); }
     /* Liberar com a caixinha do Vídeos Virais marcada: libera os dois de uma vez (um e-mail só) */
     if (d.acao === 'liberar' && d.comBump) mudancas.bump = 'ativo';
     const antes = estado_(email);
@@ -128,10 +139,11 @@ function painel_(d) {
     /* Liberou pelo painel: a pessoa recebe o mesmo e-mail de boas-vindas da compra (só na primeira vez) */
     let envio = null;
     try {
-      if (d.acao === 'liberar' && antes.acesso !== 'ativo') envio = enviarBoasVindas_(email, mudancas.nome || antes.nome, true, mudancas.bump === 'ativo' || antes.bump === 'ativo');
+      /* Desbloqueio de quem foi barrado por IPs não reenvia o e-mail de boas-vindas */
+      if (d.acao === 'liberar' && antes.acesso !== 'ativo' && antes.observacao.indexOf(OBS_IPS) !== 0) envio = enviarBoasVindas_(email, mudancas.nome || antes.nome, true, mudancas.bump === 'ativo' || antes.bump === 'ativo');
       if (d.acao === 'liberar_bump' && antes.bump !== 'ativo') envio = enviarBoasVindas_(email, mudancas.nome || antes.nome, false, true);
     } catch (x) { envio = { ok: false, erro: String(x.message || x) }; }
-    if (d.acao !== 'bloquear' && d.acao !== 'bloquear_bump') return json_({ ok: true, envio: envio, bump: !!PRODUTO_BUMP, alunos: listar_() });
+    if (d.acao !== 'bloquear' && d.acao !== 'bloquear_bump' && d.acao !== 'bloquear_ips') return json_({ ok: true, envio: envio, bump: !!PRODUTO_BUMP, alunos: listar_() });
   }
   /* Botão "Reenviar e-mail" do painel: manda de novo o e-mail de boas-vindas de verdade */
   if (d.acao === 'reenviar') {
@@ -142,6 +154,7 @@ function painel_(d) {
   }
   if (d.acao === 'visitas') return json_({ ok: true, stats: estatisticas_() });
   if (d.acao === 'aovivo') return json_({ ok: true, aoVivo: aoVivo_() });
+  if (d.acao === 'ips') return json_({ ok: true, ips: resumoIps_() });
   return json_({ ok: true, bump: !!PRODUTO_BUMP, alunos: listar_() });
 }
 
@@ -192,9 +205,9 @@ const IMG_EMAIL = 'https://cdn.jsdelivr.net/gh/alexandrej7888-hue/avatar-miliona
 function estado_(email) {
   const sh = aba_();
   const r = acharLinha_(sh, email);
-  if (!r) return { acesso: '', bump: '', nome: '' };
-  const v = sh.getRange(r, 1, 1, 4).getValues()[0];
-  return { acesso: String(v[2]).toLowerCase(), bump: String(v[3]).toLowerCase(), nome: String(v[1] || '').trim() };
+  if (!r) return { acesso: '', bump: '', nome: '', observacao: '' };
+  const v = sh.getRange(r, 1, 1, COLS).getValues()[0];
+  return { acesso: String(v[2]).toLowerCase(), bump: String(v[3]).toLowerCase(), nome: String(v[1] || '').trim(), observacao: String(v[7] || '') };
 }
 function passo_(n, titulo, texto) {
   return '<tr><td style="padding:0 0 14px"><table role="presentation" width="100%" cellspacing="0" cellpadding="0"><tr>' +
@@ -563,14 +576,114 @@ function doPost(e) {
   return json_({ ok: true, email: email, acesso: campos.acesso || null, bump: campos.bump || null });
 }
 
-/* Área de membros -> planilha: ?email=fulano@x.com responde se tem acesso e se tem o bump */
+/* ---------- IPs ----------
+   A área de membros manda o IP de quem entra. Cada e-mail pode usar até LIMITE_IPS IPs diferentes;
+   passou disso, a conta ganha a observação de alerta e aparece no painel com as cidades de cada IP.
+   Quem bloqueia é você, pelo painel (botão "Bloquear por IPs"): aí a pessoa vê o aviso para chamar o suporte.
+   Liberar pelo painel zera os IPs e tira a observação. */
+const LIMITE_IPS = 2;
+const ABA_IPS = 'IPs';
+const CAB_IPS = ['email', 'ip', 'primeiro acesso', 'ultimo acesso', 'acessos', 'local'];
+const OBS_ALERTA = 'ALERTA: acesso de vários IPs';
+const OBS_IPS = 'Bloqueado por acesso de vários IPs';
+/* Cidade/estado do IP (serviços grátis, só é chamado na primeira vez que o IP aparece) */
+function localIp_(ip) {
+  try {
+    const r = UrlFetchApp.fetch('https://ipwho.is/' + ip + '?lang=pt-BR&fields=success,city,region,country', { muteHttpExceptions: true });
+    const j = JSON.parse(r.getContentText());
+    if (j.success) return [j.city, j.region, j.country].filter(Boolean).join(', ');
+  } catch (x) { console.error('ipwho.is: ' + x); }
+  try {
+    const r = UrlFetchApp.fetch('http://ip-api.com/json/' + ip + '?lang=pt-BR&fields=status,city,regionName,country', { muteHttpExceptions: true });
+    const j = JSON.parse(r.getContentText());
+    if (j.status === 'success') return [j.city, j.regionName, j.country].filter(Boolean).join(', ');
+  } catch (x) { console.error('ip-api: ' + x); }
+  return '';
+}
+function abaIps_() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sh = ss.getSheetByName(ABA_IPS);
+  if (!sh) { sh = ss.insertSheet(ABA_IPS); sh.appendRow(CAB_IPS); sh.setFrozenRows(1); }
+  return sh;
+}
+function linhasIps_(sh) {
+  const n = sh.getLastRow();
+  return n < 2 ? [] : sh.getRange(2, 1, n - 1, CAB_IPS.length).getValues();
+}
+/* Anota o IP do e-mail e devolve quantos IPs diferentes ele já usou */
+function registrarIp_(email, ip) {
+  const lock = LockService.getScriptLock();
+  lock.waitLock(10000);
+  try {
+    const sh = abaIps_();
+    const rows = linhasIps_(sh);
+    let qtd = 0, achou = 0;
+    rows.forEach((r, i) => {
+      if (String(r[0]).toLowerCase() !== email) return;
+      qtd++;
+      if (String(r[1]) === ip) achou = i + 2;
+    });
+    if (achou) sh.getRange(achou, 4, 1, 2).setValues([[new Date(), (+rows[achou - 2][4] || 0) + 1]]);
+    else { sh.appendRow([email, ip, new Date(), new Date(), 1, '']); qtd++; achou = sh.getLastRow(); }
+    if (!achou || !rows[achou - 2] || !rows[achou - 2][5]) {
+      const local = localIp_(ip);
+      if (local) sh.getRange(achou, 6).setValue(local);
+    }
+    return qtd;
+  } finally { lock.releaseLock(); }
+}
+function limparIps_(email) {
+  const sh = abaIps_();
+  const rows = linhasIps_(sh);
+  for (let i = rows.length - 1; i >= 0; i--) {
+    if (String(rows[i][0]).toLowerCase() === email) sh.deleteRow(i + 2);
+  }
+}
+/* { email: [{ ip, local, primeiro, ultimo, acessos }, ...] } */
+function ipsPorEmail_() {
+  const m = {};
+  const iso = x => x instanceof Date ? x.toISOString() : String(x || '');
+  linhasIps_(abaIps_()).forEach(r => {
+    const em = String(r[0]).toLowerCase();
+    (m[em] = m[em] || []).push({ ip: String(r[1]), local: String(r[5] || ''), primeiro: iso(r[2]), ultimo: iso(r[3]), acessos: +r[4] || 0 });
+  });
+  return m;
+}
+/* Quantas contas entraram com 1 IP, com 2 e com mais de LIMITE_IPS */
+function resumoIps_() {
+  const m = ipsPorEmail_();
+  const contas = Object.keys(m).map(em => ({ email: em, ips: m[em].length, lista: m[em] })).sort((a, b) => b.ips - a.ips);
+  return {
+    limite: LIMITE_IPS,
+    contas: contas.length,
+    umIp: contas.filter(c => c.ips === 1).length,
+    variosIps: contas.filter(c => c.ips > 1).length,
+    acimaDoLimite: contas.filter(c => c.ips > LIMITE_IPS).length,
+    lista: contas
+  };
+}
+/* Rode no editor para ver o resumo no registro de execução */
+function verIps() { console.log(JSON.stringify(resumoIps_(), null, 2)); }
+
+/* Área de membros -> planilha: ?email=fulano@x.com&ip=1.2.3.4 responde se tem acesso e se tem o bump */
 function doGet(e) {
-  const email = String((e && e.parameter && e.parameter.email) || '').trim().toLowerCase();
+  const p = (e && e.parameter) || {};
+  const email = String(p.email || '').trim().toLowerCase();
   if (!email) return json_({ ok: true, servico: 'acesso avatar milionario' });
   const sh = aba_();
   const r = acharLinha_(sh, email);
   if (!r) return json_({ acesso: false, bump: false });
-  const v = sh.getRange(r, 1, 1, 4).getValues()[0];
+  const v = sh.getRange(r, 1, 1, COLS).getValues()[0];
   const on = x => String(x).trim().toLowerCase() === 'ativo';
+  if (String(v[7]).indexOf(OBS_IPS) === 0) return json_({ acesso: false, bump: false, bloqueioIp: true });
+  const ip = String(p.ip || '').trim();
+  if (on(v[2]) && /^\d{1,3}(\.\d{1,3}){3}$/.test(ip)) {
+    const qtd = registrarIp_(email, ip);
+    /* Passou do limite: só marca o alerta (quem bloqueia é você, no painel) */
+    if (qtd > LIMITE_IPS) {
+      const obs = OBS_ALERTA + ' (' + qtd + ' IPs) em ' + Utilities.formatDate(new Date(), Session.getScriptTimeZone(), 'dd/MM/yyyy HH:mm');
+      if (!v[7] || String(v[7]).indexOf(OBS_ALERTA) === 0) salvar_(email, { observacao: obs });
+    }
+  }
   return json_({ acesso: on(v[2]), bump: on(v[3]), nome: v[1] || '' });
 }

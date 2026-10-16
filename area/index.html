@@ -851,13 +851,27 @@ function travaVirais(){return `
 /* Módulos com bump:true só abrem para quem comprou o order bump */
 let TEM_BUMP=false;try{TEM_BUMP=localStorage.am_bump==='1'}catch(x){}
 function aplicarBump(){MODULOS.forEach(m=>{if(!m.bump)return;if(m._lock===undefined)m._lock=m.lock||'';m.lock=TEM_BUMP?m._lock:'Exclusivo de quem levou o bônus'});if(document.getElementById('nav').innerHTML)menu()}
-function consultar(email){return fetch(API+'?email='+encodeURIComponent(email.trim().toLowerCase())).then(r=>r.json())}
+/* IP de quem está entrando (a planilha conta quantos IPs diferentes cada e-mail usa). Só IPv4: o IPv6 muda sozinho o tempo todo. */
+const IP=Promise.race([
+  fetch('https://api.ipify.org?format=json').then(r=>r.json()).then(j=>j.ip||'').catch(()=>''),
+  new Promise(ok=>setTimeout(()=>ok(''),4000))
+]);
+function consultar(email){return IP.then(ip=>fetch(API+'?email='+encodeURIComponent(email.trim().toLowerCase())+'&ip='+encodeURIComponent(ip))).then(r=>r.json())}
 function erroLogin(m){const p=document.getElementById('loginErro');p.innerText=m;p.style.display=m?'block':'none'}
+/* Conta bloqueada por acesso de vários IPs: aviso + botão do WhatsApp com a mensagem pronta */
+function avisoBloqueio(email){
+  const p=document.getElementById('loginErro');
+  const msg='Olá! Minha conta da área de membros do Avatar Milionário foi bloqueada por acesso de vários IPs. Meu e-mail é '+email+'.';
+  p.innerHTML='<b style="color:#fff">Sua conta foi bloqueada por segurança.</b><br>Detectamos acesso a esta conta a partir de vários locais (IPs) diferentes. Para liberar, fale com o suporte no WhatsApp.'+
+    '<a class="btn btn-g btn-full" style="margin-top:12px;background:#25d366" target="_blank" rel="noopener" href="https://wa.me/5538999715362?text='+encodeURIComponent(msg)+'">Falar com o suporte no WhatsApp</a>';
+  p.style.display='block';
+}
 function entrar(e){
   e.preventDefault();const email=document.getElementById('email').value.trim();erroLogin('');
   if(!API){EMAIL=email;try{localStorage.am_email=email}catch(x){}abrir();return}
   const b=document.getElementById('btnEntrar'),txt=b.innerHTML;b.disabled=true;b.innerText='Verificando...';
   consultar(email).then(r=>{
+    if(r.bloqueioIp){avisoBloqueio(email);return}
     if(!r.acesso){erroLogin('Não encontramos uma compra com esse e-mail. Use o mesmo e-mail da compra na Kiwify. Se acabou de comprar, aguarde 1 minuto e tente de novo.');return}
     EMAIL=email;TEM_BUMP=!!r.bump;try{localStorage.am_email=email;localStorage.am_bump=TEM_BUMP?'1':'0'}catch(x){}abrir();
   }).catch(()=>erroLogin('Não conseguimos verificar agora. Confira sua internet e tente de novo.'))
@@ -867,6 +881,7 @@ function entrar(e){
 function reconferir(){
   if(!API)return;let e='';try{e=localStorage.am_email||''}catch(x){}if(!e)return;
   consultar(e).then(r=>{
+    if(r.bloqueioIp){try{localStorage.am_bloqueio=e}catch(x){}sair();return}
     if(!r.acesso){sair();return}
     const b=!!r.bump;if(b!==TEM_BUMP){TEM_BUMP=b;try{localStorage.am_bump=b?'1':'0'}catch(x){}aplicarBump();render()}
   }).catch(()=>{});
@@ -883,6 +898,8 @@ menu();
 window.addEventListener('hashchange',render);
 /* Com API vazia, qualquer e-mail entra. Com API, só quem está "ativo" na planilha. */
 try{if(localStorage.am_email){abrir();reconferir()}}catch(x){}
+/* Foi tirado da área por bloqueio de IPs: mostra o aviso na tela de login */
+try{const b=localStorage.am_bloqueio;if(b){localStorage.removeItem('am_bloqueio');document.getElementById('email').value=b;avisoBloqueio(b)}}catch(x){}
 </script>
 </body>
 </html>

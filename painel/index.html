@@ -98,6 +98,8 @@ h2{font-size:17px;font-weight:800;margin:22px 0 10px}
   <div class="tabs"><button data-t="visitas" class="on">Visitas</button><button data-t="vendas">Vendas</button><button data-t="alunos">Alunos</button></div>
  </div>
  <div class="mut" id="vivoAfi" style="margin:-12px 0 18px"></div>
+ <!-- Alunos que entraram de mais IPs que o limite: você decide se bloqueia -->
+ <div id="alertaIps" class="card" style="display:none;border-color:rgba(250,204,21,.45);background:rgba(250,204,21,.06);margin-bottom:18px"></div>
 
  <section id="tVendas" style="display:none">
   <div class="per" id="perV">
@@ -301,16 +303,34 @@ const dt=x=>new Date(x).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',ho
 const pillMail=m=>!m?'<span class="pill x">—</span>':!m.ok?'<span class="pill no" title="'+esc(m.erro||'')+'">Erro no envio</span>':m.problema?'<span class="pill no" title="'+esc(m.problema)+'">Não entregue</span>':m.aberto?'<span class="pill ok">Aberto '+dt(m.aberto)+'</span>':m.entregue?'<span class="pill ab">Entregue</span>':'<span class="pill x">Enviado '+dt(m.quando)+'</span>';
 function aviso(txt,ok){let a=$('aviso');if(!a){a=document.createElement('div');a.id='aviso';document.body.appendChild(a)}a.className=ok?'ok':'no';a.innerText=txt;clearTimeout(a._t);a._t=setTimeout(()=>a.className='',6000)}
 const pill=v=>v==='ativo'?'<span class="pill ok">ativo</span>':v==='bloqueado'?'<span class="pill no">bloqueado</span>':'<span class="pill x">—</span>';
+/* Cidades de onde a conta entrou (um item por IP) */
+const locais=a=>(a.listaIps||[]).map(i=>`<div style="font-size:13px;line-height:1.5"><b>${esc(i.local||'local desconhecido')}</b> <span class="mut">· IP ${esc(i.ip)} · ${i.acessos} acesso${i.acessos==1?'':'s'} · último ${dt(i.ultimo)}</span></div>`).join('');
+const pillIps=a=>!a.ips?'<span class="pill x">—</span>':`<span class="pill ${a.ips>2?'no':a.ips>1?'ab':'ok'}" title="${esc((a.listaIps||[]).map(i=>(i.local||'?')+' ('+i.ip+')').join('\n'))}">${a.ips} IP${a.ips>1?'s':''}</span>`;
+function alertaIps(){
+  const l=ALUNOS.filter(a=>String(a.observacao||'').indexOf('ALERTA')===0);
+  const bloq=ALUNOS.filter(a=>String(a.observacao||'').indexOf('Bloqueado por acesso')===0).length;
+  const box=$('alertaIps');
+  if(!l.length){box.style.display='none';return}
+  box.style.display='';
+  box.innerHTML=`<b style="font-size:15px;color:#facc15">⚠ ${l.length} aluno${l.length>1?'s':''} entrando de mais de 2 locais (IPs) diferentes</b>
+   <p class="mut" style="margin:4px 0 12px">Pode ser a mesma pessoa no celular e no Wi-Fi, ou a conta compartilhada. Veja as cidades e decida. "Bloquear" faz o aluno ver um aviso para chamar o suporte no WhatsApp.${bloq?' Já bloqueados por IP: '+bloq+'.':''}</p>`+
+   l.map(a=>{const e=esc(a.email);return `<div style="border-top:1px solid var(--line,#24392c);padding:12px 0">
+    <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center"><div><b>${esc(a.nome)||'—'}</b> <span class="mut">${e}</span> ${pillIps(a)}</div>
+    <div style="white-space:nowrap"><button class="btn r s" onclick="acao('bloquear_ips','${e}')">Bloquear</button> <button class="btn o s" title="Tira o alerta e zera os IPs" onclick="acao('liberar','${e}')">Está tudo bem</button></div></div>
+    <div style="margin-top:6px">${locais(a)}</div></div>`}).join('');
+}
 function listaAlunos(){
+  alertaIps();
   const q=$('busca').value.trim().toLowerCase();
   const l=ALUNOS.filter(a=>!q||String(a.email).toLowerCase().includes(q)||String(a.nome).toLowerCase().includes(q));
-  $('contAlunos').innerText=ALUNOS.filter(a=>a.acesso==='ativo').length+' com acesso';
+  const comIp=ALUNOS.filter(a=>a.ips>0),varios=comIp.filter(a=>a.ips>1).length;
+  $('contAlunos').innerText=ALUNOS.filter(a=>a.acesso==='ativo').length+' com acesso · '+comIp.length+' já entraram ('+(comIp.length-varios)+' de 1 IP, '+varios+' de 2 ou mais)';
   if(!l.length){$('tAl').innerHTML='<tr><td class="mut">Nenhum aluno ainda.</td></tr>';return}
-  $('tAl').innerHTML='<tr><th>Aluno</th><th>Acesso</th>'+(TEM_BUMP?'<th>Vídeos Virais</th>':'')+'<th>E-mail</th><th>Origem</th><th>Quando</th><th></th></tr>'+l.map(a=>{
+  $('tAl').innerHTML='<tr><th>Aluno</th><th>Acesso</th>'+(TEM_BUMP?'<th>Vídeos Virais</th>':'')+'<th>IPs</th><th>E-mail</th><th>Origem</th><th>Quando</th><th></th></tr>'+l.map(a=>{
     const e=esc(a.email);
-    return `<tr><td><b>${esc(a.nome)||'—'}</b><br><span class="mut">${e}</span></td><td>${pill(a.acesso)}</td>
+    return `<tr><td><b>${esc(a.nome)||'—'}</b><br><span class="mut">${e}</span>${a.observacao?`<br><span style="font-size:12px;color:#facc15">${esc(a.observacao)}</span>`:''}</td><td>${pill(a.acesso)}</td>
     ${TEM_BUMP?`<td>${pill(a.bump)} <button class="btn o s" onclick="acao('${a.bump==='ativo'?'bloquear_bump':'liberar_bump'}','${e}')">${a.bump==='ativo'?'Tirar':'Dar'}</button></td>`:''}
-    <td>${pillMail(a.mail)}</td><td class="mut">${a.evento==='manual'?'manual':'Kiwify'}</td><td class="mut">${a.quando?new Date(a.quando).toLocaleString('pt-BR',{dateStyle:'short',timeStyle:'short'}):''}</td>
+    <td>${pillIps(a)}</td><td>${pillMail(a.mail)}</td><td class="mut">${a.evento==='manual'?'manual':'Kiwify'}</td><td class="mut">${a.quando?new Date(a.quando).toLocaleString('pt-BR',{dateStyle:'short',timeStyle:'short'}):''}</td>
     <td style="white-space:nowrap">${a.acesso==='ativo'||a.bump==='ativo'?`<button class="btn o s" title="Reenviar e-mail de boas-vindas" onclick="acao('reenviar','${e}')">Reenviar e-mail</button> `:''}${a.acesso==='ativo'?`<button class="btn r s" onclick="acao('bloquear','${e}')">Bloquear</button>`:`<button class="btn s" onclick="acao('liberar','${e}')">Liberar</button>`}</td></tr>`}).join('');
 }
 $('busca').oninput=listaAlunos;
@@ -329,6 +349,7 @@ function acao(tipo,email){
     /* Mostra na hora se o e-mail de boas-vindas saiu ou deu erro */
     if(r.envio)aviso(r.envio.ok?'E-mail de boas-vindas enviado para '+em+' ✓':'Erro ao enviar o e-mail para '+em+': '+(r.envio.erro||'tente de novo'),r.envio.ok);
     else if(tipo==='liberar'||tipo==='liberar_bump')aviso('Acesso liberado. Essa pessoa já tinha recebido o e-mail antes (use Reenviar e-mail se precisar).',true);
+    if(tipo==='bloquear_ips')aviso('Bloqueado. Quando '+em+' tentar entrar, vai ver o aviso para chamar o suporte no WhatsApp.',true);
     if(tipo==='reenviar')return;
     if(!email){$('msgAluno').style.color='var(--g3)';$('msgAluno').innerText=(tipo==='liberar'?'Acesso liberado para ':'Acesso bloqueado para ')+em+(tipo==='liberar'&&$('aBump').checked?' (com Vídeos Virais)':'');setTimeout(()=>{$('msgAluno').innerText='';$('msgAluno').style.color=''},4000);$('aEmail').value='';$('aNome').value='';$('aBump').checked=false}
   }).catch(()=>$('msgAluno').innerText='Não foi possível salvar. Tente de novo.')
