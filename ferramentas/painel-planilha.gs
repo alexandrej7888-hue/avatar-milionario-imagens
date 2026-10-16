@@ -158,9 +158,14 @@ function abaEv_() {
 const corta_ = (v, n) => String(v || '').slice(0, n);
 
 /* ---------- E-MAIL DE BOAS-VINDAS ----------
-   Enviado pela sua conta Google quando a compra é aprovada (Gmail comum: até 100 e-mails por dia). */
+   Enviado quando a compra é aprovada. Com a chave da Brevo preenchida, sai pela Brevo
+   como contato@avatarmilionario.com (grátis até 300/dia). Sem a chave, sai pelo seu Gmail. */
+const BREVO_KEY = '';
+const REMETENTE = { name: 'Avatar Milionário', email: 'contato@avatarmilionario.com' };
+const RESPONDER_PARA = 'alexandrej7888@gmail.com';
 const AREA_MEMBROS = 'https://minhapagina.pro/area-de-membros/';
 const WHATS_SUPORTE = '';
+const IMG_EMAIL = 'https://cdn.jsdelivr.net/gh/alexandrej7888-hue/avatar-milionario-imagens@c8bb30b1cdc0463cc9c411e0ede26f1fc676f2b9/capas/email-boasvindas.jpg';
 function estado_(email) {
   const sh = aba_();
   const r = acharLinha_(sh, email);
@@ -168,36 +173,78 @@ function estado_(email) {
   const v = sh.getRange(r, 1, 1, 4).getValues()[0];
   return { acesso: String(v[2]).toLowerCase(), bump: String(v[3]).toLowerCase() };
 }
-function emailHtml_(titulo, corpo) {
-  return '<div style="background:#050907;padding:28px 12px;font-family:Arial,sans-serif">' +
-    '<div style="max-width:520px;margin:0 auto;background:#0d1611;border:1px solid #24392c;border-radius:16px;padding:28px;color:#ecf5ef">' +
-    '<div style="font-size:12px;letter-spacing:3px;color:#4ade80;font-weight:bold">AVATAR MILIONÁRIO</div>' +
-    '<h1 style="font-size:22px;margin:10px 0 14px;color:#fff">' + titulo + '</h1>' + corpo +
-    '<p style="text-align:center;margin:26px 0 8px"><a href="' + AREA_MEMBROS + '" style="background:#22c55e;color:#03150a;text-decoration:none;font-weight:bold;padding:14px 26px;border-radius:12px;display:inline-block">Entrar na área de membros</a></p>' +
-    '<p style="color:#93a89b;font-size:13px;text-align:center">Para entrar, use este mesmo e-mail. Não precisa de senha.</p>' +
-    (WHATS_SUPORTE ? '<p style="color:#93a89b;font-size:13px;text-align:center">Dúvidas? Fale no WhatsApp: ' + WHATS_SUPORTE + '</p>' : '') +
-    '</div></div>';
+function passo_(n, titulo, texto) {
+  return '<tr><td style="padding:0 0 14px"><table role="presentation" width="100%" cellspacing="0" cellpadding="0"><tr>' +
+    '<td width="38" valign="top"><div style="width:30px;height:30px;line-height:30px;border-radius:50%;background:#22c55e;color:#03150a;font-weight:bold;text-align:center;font-size:14px">' + n + '</div></td>' +
+    '<td style="color:#cfe3d6;font-size:15px;line-height:1.5"><b style="color:#fff">' + titulo + '</b><br>' + texto + '</td></tr></table></td></tr>';
+}
+function emailHtml_(email, titulo, intro, passos, extra) {
+  return '<div style="background:#050907;padding:24px 10px;font-family:Arial,Helvetica,sans-serif">' +
+    '<table role="presentation" align="center" width="100%" cellspacing="0" cellpadding="0" style="max-width:560px;background:#0d1611;border:1px solid #24392c;border-radius:18px;overflow:hidden">' +
+    '<tr><td><img src="' + IMG_EMAIL + '" width="560" alt="Avatar Milionário" style="display:block;width:100%;height:auto;border:0"></td></tr>' +
+    '<tr><td style="padding:28px 26px 8px;color:#ecf5ef">' +
+      '<div style="font-size:12px;letter-spacing:3px;color:#4ade80;font-weight:bold">AVATAR MILIONÁRIO</div>' +
+      '<h1 style="font-size:24px;line-height:1.25;margin:10px 0 12px;color:#fff">' + titulo + '</h1>' +
+      '<p style="font-size:15px;line-height:1.6;color:#cfe3d6;margin:0 0 18px">' + intro + '</p>' +
+      (passos ? '<table role="presentation" width="100%" cellspacing="0" cellpadding="0">' + passos + '</table>' : '') +
+    '</td></tr>' +
+    '<tr><td align="center" style="padding:8px 26px 6px"><a href="' + AREA_MEMBROS + '" style="background:#22c55e;color:#03150a;text-decoration:none;font-weight:bold;font-size:16px;padding:16px 30px;border-radius:12px;display:inline-block">Entrar na área de membros</a></td></tr>' +
+    '<tr><td style="padding:12px 26px 6px;text-align:center;color:#93a89b;font-size:13px;line-height:1.5">Seu login é este e-mail: <b style="color:#ecf5ef">' + email + '</b><br>Não precisa de senha.</td></tr>' +
+    (extra || '') +
+    '<tr><td style="padding:18px 26px 26px;text-align:center;color:#62756a;font-size:12px;line-height:1.5">' +
+      (WHATS_SUPORTE ? 'Dúvidas? Fale com o suporte no WhatsApp: ' + WHATS_SUPORTE + '<br>' : 'Dúvidas? É só responder este e-mail.<br>') +
+      'Você recebeu este e-mail porque comprou o Avatar Milionário.</td></tr>' +
+    '</table></div>';
+}
+/* Manda pela Brevo (se tiver chave) ou pelo Gmail */
+function mandar_(para, nome, assunto, html) {
+  if (BREVO_KEY) {
+    const r = UrlFetchApp.fetch('https://api.brevo.com/v3/smtp/email', {
+      method: 'post', contentType: 'application/json', muteHttpExceptions: true,
+      headers: { 'api-key': BREVO_KEY, accept: 'application/json' },
+      payload: JSON.stringify({ sender: REMETENTE, to: [{ email: para, name: nome || para }], replyTo: { email: RESPONDER_PARA }, subject: assunto, htmlContent: html })
+    });
+    if (r.getResponseCode() < 300) return;
+    console.error('Brevo recusou (' + r.getResponseCode() + '): ' + r.getContentText());
+  }
+  MailApp.sendEmail({ to: para, name: REMETENTE.name, replyTo: RESPONDER_PARA, subject: assunto, htmlBody: html });
+}
+/* Guarda o comprador como contato na Brevo (para campanhas depois) */
+function contatoBrevo_(email, nome, bump) {
+  if (!BREVO_KEY) return;
+  try {
+    UrlFetchApp.fetch('https://api.brevo.com/v3/contacts', {
+      method: 'post', contentType: 'application/json', muteHttpExceptions: true,
+      headers: { 'api-key': BREVO_KEY, accept: 'application/json' },
+      payload: JSON.stringify({ email: email, updateEnabled: true, attributes: { FIRSTNAME: String(nome || '').split(/\s+/)[0] || '', COMPROU_BUMP: !!bump } })
+    });
+  } catch (x) { console.error('contato Brevo: ' + x); }
 }
 function enviarBoasVindas_(email, nome, curso, bump) {
   const primeiro = String(nome || '').trim().split(/\s+/)[0] || '';
   const oi = primeiro ? 'Oi, ' + primeiro + '!' : 'Oi!';
   try {
     if (curso) {
-      MailApp.sendEmail({
-        to: email, name: 'Avatar Milionário', subject: 'Seu acesso ao Avatar Milionário chegou 🚀',
-        htmlBody: emailHtml_('Bem-vindo ao Avatar Milionário!',
-          '<p style="line-height:1.6;color:#cfe3d6">' + oi + ' Sua compra foi aprovada e o seu acesso já está liberado.</p>' +
-          '<p style="line-height:1.6;color:#cfe3d6">Lá dentro você encontra as aulas passo a passo, o criador de avatar, os prompts prontos' +
-          (bump ? ' e o <b>pack de Vídeos Virais</b>' : '') + '. Comece pelo módulo "Comece por aqui".</p>')
-      });
+      const passos =
+        passo_(1, 'Entre na área de membros', 'Clique no botão abaixo e digite o mesmo e-mail que você usou na compra.') +
+        passo_(2, 'Comece por "Comece por aqui"', 'Assista as aulas na ordem. São curtas e você já faz junto.') +
+        passo_(3, 'Monte seu avatar', 'Use o Criador de avatar e os prompts prontos para criar seu personagem.') +
+        passo_(4, 'Poste seu primeiro vídeo', (bump ? 'Pegue um vídeo do seu <b style="color:#facc15">pack de Vídeos Virais</b> e coloque seu avatar nele.' : 'Escolha um vídeo viral de referência e coloque seu avatar nele.'));
+      const extra = bump ? '' : '<tr><td style="padding:14px 26px 0"><div style="border:1px dashed #facc15;border-radius:12px;padding:14px;color:#cfe3d6;font-size:14px;line-height:1.5;text-align:center">🔥 Quer vídeos prontos para postar? O <b style="color:#facc15">pack Vídeos Virais</b> está disponível dentro da área de membros.</div></td></tr>';
+      mandar_(email, nome, primeiro ? primeiro + ', seu acesso ao Avatar Milionário chegou 🚀' : 'Seu acesso ao Avatar Milionário chegou 🚀',
+        emailHtml_(email, 'Bem-vindo ao Avatar Milionário! 🎉', oi + ' Sua compra foi aprovada e o seu acesso já está liberado. Veja como começar:', passos, extra));
     } else if (bump) {
-      MailApp.sendEmail({
-        to: email, name: 'Avatar Milionário', subject: 'Seu pack de Vídeos Virais foi liberado 🔥',
-        htmlBody: emailHtml_('Pack de Vídeos Virais liberado!',
-          '<p style="line-height:1.6;color:#cfe3d6">' + oi + ' O pack de Vídeos Virais já está na sua área de membros, no menu "Vídeos virais".</p>')
-      });
+      mandar_(email, nome, 'Seu pack de Vídeos Virais foi liberado 🔥',
+        emailHtml_(email, 'Pack de Vídeos Virais liberado! 🔥', oi + ' O pack já está na sua área de membros, no menu <b>Vídeos virais</b>. É só baixar, colocar seu avatar e postar.', '', ''));
     }
+    contatoBrevo_(email, nome, bump);
   } catch (x) { console.error('e-mail não enviado: ' + x); }
+}
+
+/* Rode esta função uma vez no editor (botão Executar) para autorizar o envio de e-mail.
+   Ela manda um e-mail de exemplo para a sua própria conta. */
+function testarEmail() {
+  enviarBoasVindas_(Session.getEffectiveUser().getEmail(), 'Teste', true, true);
 }
 
 /* ---------- AO VIVO ----------
