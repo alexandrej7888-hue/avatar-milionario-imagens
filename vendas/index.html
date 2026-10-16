@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Avatar Milionário | Crie seu avatar de IA e viralize gastando menos de R$ 2 por vídeo</title>
+<meta name="description" content="Aprenda a criar um avatar de IA que parece gente de verdade, colocar ele em vídeos virais e gerar cada vídeo por menos de R$ 2.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#050907; --bg2:#08100b; --card:#0d1611; --card2:#111d16; --line:#1a2a20; --line2:#24392c;
+  --txt:#ecf5ef; --mut:#93a89b; --mut2:#62756a;
+  --g:#22c55e; --g2:#16a34a; --g3:#4ade80; --gl:rgba(34,197,94,.12); --gold:#facc15; --red:#f87171;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:var(--bg);color:var(--txt);-webkit-font-smoothing:antialiased;overflow-x:hidden;line-height:1.5}
+a{color:inherit;text-decoration:none}
+button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
+img{display:block;max-width:100%}
+svg{width:18px;height:18px;flex-shrink:0;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.wrap{max-width:1120px;margin:0 auto;padding:0 20px}
+section{padding:84px 0}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--g3);background:var(--gl);border:1px solid rgba(34,197,94,.3);padding:6px 12px;border-radius:30px}
+h2{font-size:clamp(28px,4.4vw,44px);font-weight:800;letter-spacing:-1px;line-height:1.1;margin:16px 0 14px;text-wrap:balance}
+h2 em,h1 em{font-style:normal;color:var(--g3)}
+.lead{color:var(--mut);font-size:clamp(16px,1.6vw,18px);max-width:640px}
+.center{text-align:center}.center .lead{margin:0 auto}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;border-radius:14px;font-weight:800;font-size:16px;padding:18px 30px;transition:.2s}
+.btn-g{background:linear-gradient(180deg,var(--g3),var(--g2));color:#03150a;box-shadow:0 14px 34px -10px rgba(34,197,94,.7),inset 0 1px 0 rgba(255,255,255,.35)}
+.btn-g:hover{transform:translateY(-2px);box-shadow:0 18px 40px -10px rgba(34,197,94,.85),inset 0 1px 0 rgba(255,255,255,.35)}
+.btn-o{border:1px solid var(--line2);background:var(--card2)}
+.btn-o:hover{border-color:var(--g);color:var(--g3)}
+.seals{display:flex;gap:18px;flex-wrap:wrap;justify-content:center;margin-top:16px;color:var(--mut);font-size:13px}
+.seals span{display:flex;gap:6px;align-items:center}.seals svg{width:15px;height:15px;color:var(--g3)}
+.card{background:linear-gradient(180deg,var(--card2),var(--card));border:1px solid var(--line);border-radius:20px;padding:26px}
+.ico{width:46px;height:46px;border-radius:13px;background:var(--gl);color:var(--g3);display:grid;place-items:center;margin-bottom:16px}
+.ico svg{width:22px;height:22px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.reveal{opacity:0;transform:translateY(22px);transition:opacity .7s,transform .7s}
+.reveal.in{opacity:1;transform:none}
+
+/* topo */
+.top{background:linear-gradient(90deg,#0b3d1f,#15803d,#0b3d1f);color:#dcfce7;font-size:13px;font-weight:800;letter-spacing:1px;text-transform:uppercase;padding:10px 0;overflow:hidden;white-space:nowrap}
+.top-in{display:inline-flex;width:max-content;animation:letreiro 22s linear infinite}
+.top-in span{padding:0 22px}
+.top-in b{color:#fde047}
+@keyframes letreiro{to{transform:translateX(-50%)}}
+
+/* hero */
+.hero{padding:56px 0 40px;position:relative;overflow:hidden;background:radial-gradient(ellipse 60% 60% at 50% 0%,rgba(34,197,94,.22),transparent 70%)}
+.logo{display:flex;align-items:center;gap:10px;justify-content:center;margin-bottom:30px}
+.logo-mark{width:44px;height:44px;border-radius:13px;background:linear-gradient(135deg,var(--g3),var(--g2));display:grid;place-items:center;color:#03150a;box-shadow:0 8px 24px -6px rgba(34,197,94,.7)}
+.logo-mark svg{width:24px;height:24px;stroke-width:2.4}
+.logo-txt{line-height:1;font-weight:800}
+.logo-txt span{display:block;font-size:11px;letter-spacing:2.5px;color:var(--g3);margin-bottom:3px}
+.logo-txt strong{font-size:20px}
+.hero h1{font-size:clamp(32px,5.6vw,60px);font-weight:800;letter-spacing:-1.6px;line-height:1.05;max-width:900px;margin:0 auto;text-wrap:balance}
+.hero .lead{margin:20px auto 30px;max-width:620px}
+.preco-hero{display:inline-flex;align-items:center;gap:10px;margin-top:22px;background:rgba(250,204,21,.1);border:1px solid rgba(250,204,21,.35);color:var(--gold);padding:10px 16px;border-radius:12px;font-weight:800;font-size:15px}
+.hero-banner{margin:30px auto 0;max-width:460px;position:relative}
+.hero-banner::before{content:"";position:absolute;inset:8% 4% 2%;background:radial-gradient(circle,rgba(34,197,94,.6),rgba(34,197,94,.18) 45%,transparent 70%);filter:blur(28px);z-index:0}
+.hero-banner img{position:relative;z-index:1;width:100%;height:auto;filter:drop-shadow(0 0 24px rgba(34,197,94,.45))}
+
+/* faixa de personagens */
+.faixa{overflow:hidden;padding:26px 0;border-block:1px solid var(--line);background:var(--bg2);mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}
+.faixa-in{display:flex;gap:14px;width:max-content;animation:rola 45s linear infinite}
+.faixa-in{align-items:flex-start;padding-bottom:34px}
+.faixa img{width:150px;aspect-ratio:3/4;object-fit:cover;border-radius:16px;border:1px solid var(--line2)}
+.faixa img:nth-child(even){margin-top:34px}
+@keyframes rola{to{transform:translateX(-50%)}}
+
+/* resultados */
+.res{display:flex;gap:14px;margin-top:40px;overflow-x:auto;padding:6px 20px 12px;scrollbar-width:none;cursor:grab;mask-image:linear-gradient(90deg,transparent,#000 4%,#000 96%,transparent)}
+.res::-webkit-scrollbar{display:none}
+.res.arrasta{cursor:grabbing}
+.res .reel{flex:0 0 220px}
+.reel{position:relative;aspect-ratio:9/16;border-radius:18px;overflow:hidden;border:1px solid var(--line2);background:#0b1a11;cursor:pointer;transition:.25s;text-align:left}
+.reel:hover{border-color:var(--g);transform:translateY(-4px);box-shadow:0 24px 50px -24px rgba(34,197,94,.6)}
+.reel video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.reel::after{content:"";position:absolute;inset:0;background:linear-gradient(transparent 55%,rgba(0,0,0,.85));pointer-events:none}
+.reel .snd{position:absolute;top:10px;right:10px;z-index:1;width:34px;height:34px;border-radius:50%;background:rgba(0,0,0,.55);backdrop-filter:blur(6px);display:grid;place-items:center;color:#fff}
+.reel .snd svg{width:17px;height:17px}
+.reel.som{border-color:var(--g)}.reel.som .snd{background:var(--g);color:#03150a}
+.reel .st{position:absolute;left:12px;right:12px;bottom:12px;z-index:1;display:grid;gap:4px}
+.reel .views{display:flex;align-items:center;gap:6px;font-size:22px;font-weight:800;color:#fff}
+.reel .views svg{width:20px;height:20px;color:var(--g3)}
+.reel .sub{display:flex;gap:12px;font-size:13px;font-weight:700;color:#d1fae5}
+.reel .sub span{display:flex;align-items:center;gap:4px}.reel .sub svg{width:14px;height:14px}
+
+/* custo */
+.custo{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:40px}
+.custo .card{position:relative}
+.custo small{color:var(--mut);font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:1px}
+.custo .v{font-size:clamp(36px,5vw,52px);font-weight:800;letter-spacing:-1px;margin:6px 0}
+.custo .ruim .v{color:var(--red);text-decoration:line-through;text-decoration-thickness:3px}
+.custo .bom{border-color:rgba(34,197,94,.55);background:radial-gradient(ellipse 80% 80% at 100% 0%,rgba(74,222,128,.18),transparent 60%),linear-gradient(180deg,var(--card2),var(--card))}
+.custo .bom .v{color:var(--g3)}
+.custo ul{list-style:none;display:grid;gap:8px;margin-top:14px;color:var(--mut);font-size:15px}
+.custo li{display:flex;gap:8px}.custo li svg{margin-top:3px}
+.ruim li svg{color:var(--red)}.bom li svg{color:var(--g3)}
+.sim{margin-top:18px;padding:26px}
+.sim-top{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;font-weight:700}
+.sim-top b{font-size:24px;color:var(--g3)}
+input[type=range]{width:100%;margin:18px 0 10px;accent-color:var(--g);height:28px}
+.barras{display:grid;gap:14px;margin-top:6px}
+.barra .bl{display:flex;justify-content:space-between;gap:10px;font-size:14px;font-weight:700;margin-bottom:6px}
+.barra .bl span{color:var(--mut)}
+.barra .bt{height:14px;border-radius:10px;background:rgba(255,255,255,.06);overflow:hidden}
+.barra .bt i{display:block;height:100%;border-radius:10px;transition:width .35s}
+.barra.ruim b{color:var(--red)}.barra.ruim .bt i{background:linear-gradient(90deg,#b91c1c,var(--red))}
+.barra.bom b{color:var(--g3)}.barra.bom .bt i{background:linear-gradient(90deg,var(--g2),var(--g3));min-width:6px}
+.eco{margin-top:20px;text-align:center;background:var(--gl);border:1px solid rgba(34,197,94,.4);border-radius:14px;padding:14px;font-size:18px;font-weight:700}
+.eco b{color:var(--g3);font-size:26px}
+.paga{margin-top:18px;display:flex;gap:16px;align-items:center;border-color:rgba(250,204,21,.4);background:radial-gradient(ellipse 80% 100% at 0% 50%,rgba(250,204,21,.12),transparent 60%),linear-gradient(180deg,var(--card2),var(--card))}
+.paga .ico{margin:0;flex-shrink:0;font-size:24px;background:rgba(250,204,21,.15)}
+.paga h3{font-size:19px;font-weight:800;color:var(--gold);margin-bottom:4px}
+.paga p{color:var(--mut);font-size:15px}
+
+/* passos */
+.passos{counter-reset:p;display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:40px}
+.passo{position:relative;padding-top:60px}
+.passo::before{counter-increment:p;content:"0" counter(p);position:absolute;top:22px;left:26px;font-size:15px;font-weight:800;color:#03150a;background:var(--g);border-radius:10px;padding:4px 10px}
+.passo h3,.grid3 h3{font-size:19px;font-weight:800;margin-bottom:8px}
+.passo p,.grid3 p{color:var(--mut);font-size:15px}
+
+/* criador */
+.cri{display:grid;grid-template-columns:1.05fr 1fr;gap:40px;align-items:center}
+.cri-tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.cri-tiles img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:14px;border:1.5px solid var(--line2);background:#0b1a11}
+.cri-tiles img:nth-child(3n+1){border-color:var(--g)}
+.check{list-style:none;display:grid;gap:12px;margin-top:22px}
+.check li{display:flex;gap:10px;font-size:16px}
+.check svg{color:var(--g3);margin-top:3px}
+
+/* modulos */
+.mods{display:flex;gap:14px;overflow-x:auto;padding:6px 2px 16px;margin-top:36px;scroll-snap-type:x mandatory;scrollbar-width:thin;scrollbar-color:var(--line2) transparent}
+.mods figure{flex:0 0 200px;scroll-snap-align:start}
+.mods img{width:100%;aspect-ratio:9/16;object-fit:cover;border-radius:18px;border:1px solid var(--line2)}
+.mods figcaption{font-size:14px;font-weight:700;margin-top:10px}
+.mods figcaption small{display:block;color:var(--mut);font-weight:600;font-size:12px}
+
+/* recebe */
+.receb{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:40px}
+.receb .card{padding:22px;display:flex;gap:14px;align-items:flex-start}
+.receb .ico{margin:0;width:42px;height:42px;flex-shrink:0}
+.receb h3{font-size:16px;font-weight:800}
+.receb p{color:var(--mut);font-size:14px;margin-top:3px}
+
+/* pra quem */
+.quem{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:36px;max-width:900px;margin-inline:auto}
+.quem div{display:flex;gap:12px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px;font-weight:600}
+.quem svg{color:var(--g3)}
+
+/* afiliado */
+.afi{display:grid;grid-template-columns:1fr 1fr;gap:30px;align-items:center;background:radial-gradient(ellipse 70% 100% at 0% 0%,rgba(74,222,128,.18),transparent 60%),linear-gradient(135deg,#0c2416,#08130d);border:1px solid rgba(34,197,94,.35);border-radius:26px;padding:44px}
+.afi .num{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.afi .num div{background:rgba(0,0,0,.3);border:1px solid var(--line2);border-radius:14px;padding:16px;text-align:center}
+.afi .num small{color:var(--mut);font-size:12px;font-weight:700}
+.afi .num b{display:block;color:var(--g3);font-size:22px;margin-top:2px}
+
+/* oferta */
+.oferta{background:radial-gradient(ellipse 60% 50% at 50% 0%,rgba(34,197,94,.16),transparent 70%)}
+.planos{display:grid;grid-template-columns:minmax(0,460px);justify-content:center;gap:18px;margin-top:44px;align-items:stretch}
+.plano{display:flex;flex-direction:column;position:relative}
+.plano.dest{border:2px solid var(--g);box-shadow:0 30px 70px -30px rgba(34,197,94,.6);transform:translateY(-10px)}
+.tag{position:absolute;top:-14px;left:50%;transform:translateX(-50%);background:var(--g);color:#03150a;font-weight:800;font-size:12px;letter-spacing:1px;padding:6px 14px;border-radius:30px;white-space:nowrap}
+.plano h3{font-size:20px;font-weight:800}
+.plano .de{color:var(--mut);font-size:14px;margin-top:14px}
+.plano .de s{color:var(--red)}
+.plano .por{font-size:46px;font-weight:800;letter-spacing:-1.5px;line-height:1.1}
+.plano .por small{font-size:20px;font-weight:700;margin-right:4px}
+.plano .unico{color:var(--g3);font-size:13px;font-weight:700}
+.plano ul{list-style:none;display:grid;gap:10px;margin:20px 0 24px;flex:1}
+.plano li{display:flex;gap:9px;font-size:14.5px}
+.plano li svg{color:var(--g3);margin-top:3px;width:16px;height:16px}
+.plano li.off{color:var(--mut2)}.plano li.off svg{color:var(--mut2)}
+.plano .btn{width:100%}
+
+/* garantia */
+.gar{display:flex;gap:28px;align-items:center;max-width:820px;margin:0 auto}
+.selo{flex-shrink:0;width:150px;height:150px;border-radius:50%;display:grid;place-items:center;text-align:center;background:radial-gradient(circle,#14532d,#052e16);border:3px solid var(--g);box-shadow:0 0 0 8px rgba(34,197,94,.12)}
+.selo b{display:block;font-size:46px;line-height:1;color:#fff}
+.selo span{font-size:12px;font-weight:800;letter-spacing:1px;color:var(--g3)}
+
+/* faq */
+.faq{max-width:780px;margin:36px auto 0;display:grid;gap:10px}
+.faq details{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:4px 20px}
+.faq summary{cursor:pointer;list-style:none;font-weight:700;padding:16px 0;display:flex;justify-content:space-between;gap:12px}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";color:var(--g3);font-size:22px;line-height:1}
+.faq details[open] summary::after{content:"–"}
+.faq p{color:var(--mut);padding:0 0 18px;font-size:15px}
+
+.final{text-align:center;padding:90px 0;background:radial-gradient(ellipse 60% 70% at 50% 100%,rgba(34,197,94,.2),transparent 70%)}
+footer{border-top:1px solid var(--line);padding:30px 0;text-align:center;color:var(--mut2);font-size:13px}
+.fixo{display:none}
+
+@media (max-width:900px){
+  section{padding:64px 0}
+  .grid3,.passos,.receb,.planos,.custo,.cri,.afi,.quem{grid-template-columns:1fr}
+  .plano.dest{transform:none;order:-1}
+  .afi{padding:28px 20px}
+  .gar{flex-direction:column;text-align:center}
+  .cri-tiles{grid-template-columns:repeat(4,1fr)}
+  .mods figure{flex-basis:160px}
+  .faixa img{width:110px}
+  .hero-banner{max-width:290px;margin-top:24px}
+  .res{gap:10px;padding:6px 14px 12px}.res .reel{flex-basis:165px}
+  .reel .views{font-size:18px}.reel .sub{gap:8px;font-size:12px}
+  .fixo{display:flex;position:fixed;left:12px;right:12px;bottom:12px;z-index:50;transform:translateY(160%);transition:.3s}
+  .fixo .btn{width:100%;padding:16px;font-size:16px;box-shadow:0 10px 30px -6px rgba(0,0,0,.6),0 14px 34px -10px rgba(34,197,94,.7)}
+  .fixo.on{transform:none}
+  footer{padding-bottom:100px}
+}
+</style>
+</head>
+<body>
+
+<div class="top"><div class="top-in" id="topIn"></div></div>
+
+<!-- HERO -->
+<header class="hero center">
+ <div class="wrap">
+  <div class="logo"><div class="logo-mark"><svg viewBox="0 0 24 24"><path d="M12 2l3 6 6 .9-4.5 4.3 1 6.3L12 16.6 6.5 19.5l1-6.3L3 8.9 9 8z"/></svg></div><div class="logo-txt" style="text-align:left"><span>AVATAR</span><strong>MILIONÁRIO</strong></div></div>
+  <h1>Crie um avatar de IA que <em>parece gente de verdade</em> e faça vídeos virais gastando <em>menos de R$ 2</em> por vídeo</h1>
+  <p class="lead">Você não precisa aparecer, não precisa gravar nada e não precisa assinar ferramenta cara em dólar. Eu te mostro o passo a passo exato que eu uso, do personagem ao vídeo pronto para postar.</p>
+  <a href="#oferta" class="btn btn-g">Quero criar meu avatar <svg viewBox="0 0 24 24"><path d="M5 12h14M13 5l7 7-7 7"/></svg></a>
+  <div><span class="preco-hero">💸 Cada vídeo sai por menos de R$ 2</span></div>
+  <div class="hero-banner"><img src="IMG/capas/banner-vendas.webp" alt="Avatar Milionário"></div>
+ </div>
+</header>
+
+<div class="faixa"><div class="faixa-in" id="faixa"></div></div>
+
+<!-- RESULTADOS -->
+<section>
+ <div class="wrap center reveal">
+  <span class="eyebrow">O que você vai aprender a fazer</span>
+  <h2>Vídeos assim, que juntos passam de <em id="totviews">37 milhões</em> de visualizações</h2>
+  <p class="lead">Avatares de IA que viralizaram no Instagram. No curso você aprende o passo a passo para criar vídeos como esses com o seu próprio personagem. Arraste para o lado para ver mais e toque no vídeo para ouvir.</p>
+ </div>
+ <div class="res reveal" id="res"></div>
+</section>
+
+<!-- O QUE É -->
+<section>
+ <div class="wrap center reveal">
+  <span class="eyebrow">Avatares de IA</span>
+  <h2>Você já viu esses personagens no seu feed. <em>Agora vai criar o seu.</em></h2>
+  <p class="lead">Personagens feitos com IA, com cara de gente real, que entram em vídeos que já viralizaram e explodem de visualização. E por trás de cada um tem alguém faturando sem nunca aparecer.</p>
+ </div>
+ <div class="wrap grid3 reveal" style="margin-top:40px">
+  <div class="card"><div class="ico"><svg viewBox="0 0 24 24"><path d="M23 7 16 12l7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg></div><h3>Chama atenção na hora</h3><p>O visual diferente prende quem está rolando o feed. É isso que faz o vídeo ser compartilhado e chegar em milhões de pessoas.</p></div>
+  <div class="card"><div class="ico"><svg viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/></svg></div><h3>Vira vitrine para marcas</h3><p>Com seguidores, o seu avatar pode fazer publis, mostrar produtos e entrar em campanhas, sem você precisar ligar a câmera.</p></div>
+  <div class="card"><div class="ico"><svg viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/></svg></div><h3>Habilidade que você vende</h3><p>Quem domina o método cria vídeos para outros criadores e lojas. É um serviço que muita gente quer e pouca gente sabe fazer.</p></div>
+ </div>
+</section>
+
+<!-- CUSTO -->
+<section style="background:var(--bg2);border-block:1px solid var(--line)">
+ <div class="wrap center reveal">
+  <span class="eyebrow">O grande diferencial</span>
+  <h2>Pare de pagar caro. <em>Cada vídeo sai por menos de R$ 2.</em></h2>
+  <p class="lead">A maioria das pessoas desiste porque acha que precisa de plano caro em dólar para fazer esses vídeos. Não precisa. Você vai aprender o caminho barato que eu uso todo dia.</p>
+ </div>
+ <div class="wrap reveal">
+  <div class="custo">
+   <div class="card ruim"><small>Do jeito caro</small><div class="v">R$ 34</div><p style="color:var(--mut)">por vídeo, em planos de ferramentas gringas cobrados em dólar</p>
+    <ul><li><svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg>Assinatura mensal que pesa no bolso</li><li><svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg>Preço muda com o dólar</li><li><svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg>Créditos acabam rápido</li></ul></div>
+   <div class="card bom"><small>Com o Avatar Milionário</small><div class="v">menos de R$ 2</div><p style="color:var(--mut)">por vídeo, pagando só o que usar</p>
+    <ul><li><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>Sem assinatura obrigatória</li><li><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>Recarrega só quando precisar</li><li><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>Dá para postar todo dia sem medo</li></ul></div>
+  </div>
+  <div class="card sim">
+   <div class="sim-top"><span>Arraste: quantos vídeos você quer postar por mês?</span><b id="qtd">30 vídeos</b></div>
+   <input type="range" min="5" max="120" step="5" value="30" id="rng" aria-label="Vídeos por mês">
+   <div class="barras">
+    <div class="barra ruim"><div class="bl"><span>Nas ferramentas caras</span><b id="vCaro">R$ 1.020,00</b></div><div class="bt"><i id="bCaro"></i></div></div>
+    <div class="barra bom"><div class="bl"><span>Com o Avatar Milionário</span><b id="vBom">R$ 60,00</b></div><div class="bt"><i id="bBom"></i></div></div>
+   </div>
+   <div class="eco">Você economiza <b id="vEco">R$ 960,00</b> por mês</div>
+  </div>
+  <div class="card paga"><div class="ico">💰</div><div><h3>Com 2 vídeos o curso já se pagou</h3><p>Cada vídeo feito pelo método custa R$ 32 a menos do que nas ferramentas caras. Fez 2 vídeos, economizou R$ 64: mais do que os R$ 47 que você investe no curso. Do terceiro vídeo em diante, é tudo economia.</p></div></div>
+ </div>
+</section>
+
+<!-- COMO FUNCIONA -->
+<section id="como">
+ <div class="wrap center reveal">
+  <span class="eyebrow">Como funciona</span>
+  <h2>Três passos e o seu avatar <em>está no ar</em></h2>
+ </div>
+ <div class="wrap passos reveal">
+  <div class="card passo"><h3>Crie seu avatar</h3><p>Monte o rosto, o cabelo, o corpo e a roupa no nosso criador e gere um personagem com cara de pessoa real. Ou transforme qualquer desenho numa pessoa de verdade.</p></div>
+  <div class="card passo"><h3>Ache o vídeo certo</h3><p>Pegue vídeos que já viralizaram no TikTok e no Instagram. Você ainda recebe um pack de vídeos virais prontos para baixar.</p></div>
+  <div class="card passo"><h3>Coloque seu avatar no vídeo</h3><p>Com os prompts prontos, o seu avatar entra no lugar da pessoa do vídeo, com os mesmos movimentos. Por menos de R$ 2.</p></div>
+ </div>
+</section>
+
+<!-- CRIADOR -->
+<section style="background:var(--bg2);border-block:1px solid var(--line)">
+ <div class="wrap cri">
+  <div class="reveal"><div class="cri-tiles" id="tiles"></div></div>
+  <div class="reveal">
+   <span class="eyebrow">Ferramenta exclusiva</span>
+   <h2>Monte seu personagem <em>clicando</em>, sem escrever nada</h2>
+   <p class="lead">Dentro da área de membros você tem o Criador de Avatar: escolhe cada detalhe numa imagem, e o prompt sai pronto para colar no ChatGPT.</p>
+   <ul class="check">
+    <li><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>Opções para homem e mulher: cabelo, rosto, corpo, barba e maquiagem</li>
+    <li><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>Roupas, calçados, acessórios e cores separadas</li>
+    <li><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>Mais de 50 looks prontos para trocar a roupa do avatar</li>
+    <li><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>Transforme qualquer desenho ou boneco numa pessoa real</li>
+   </ul>
+  </div>
+ </div>
+</section>
+
+<!-- MODULOS -->
+<section>
+ <div class="wrap center reveal">
+  <span class="eyebrow">O curso</span>
+  <h2>Do zero ao primeiro vídeo viral, <em>na ordem certa</em></h2>
+  <p class="lead">Aulas curtas e diretas, gravadas mostrando a tela. Você assiste e já faz junto.</p>
+ </div>
+ <div class="wrap reveal"><div class="mods" id="mods"></div></div>
+</section>
+
+<!-- O QUE RECEBE -->
+<section style="background:var(--bg2);border-block:1px solid var(--line)">
+ <div class="wrap center reveal">
+  <span class="eyebrow">Tudo que você recebe</span>
+  <h2>Uma área de membros <em>completa</em>, não só um curso</h2>
+ </div>
+ <div class="wrap receb reveal" id="receb"></div>
+</section>
+
+<!-- PRA QUEM -->
+<section>
+ <div class="wrap center reveal">
+  <span class="eyebrow">Para quem é</span>
+  <h2>O Avatar Milionário é para você que…</h2>
+ </div>
+ <div class="wrap quem reveal" id="quem"></div>
+</section>
+
+<!-- AFILIADO -->
+<section style="padding-top:0">
+ <div class="wrap reveal">
+  <div class="afi">
+   <div>
+    <span class="eyebrow">Bônus: programa de afiliados</span>
+    <h2>Seu curso <em>se paga com 3 vendas</em></h2>
+    <p class="lead">Todo aluno pode virar afiliado e ganhar 50% de cada venda pelo próprio link. Indicou três pessoas, o curso já saiu de graça. O resto é lucro.</p>
+   </div>
+   <div class="num"><div><small>Por venda</small><b>R$ 20,14</b></div><div><small>3 vendas</small><b>R$ 60,42</b></div><div><small>10 vendas</small><b>R$ 201,40</b></div>
+    <p style="grid-column:1/-1;color:var(--mut);font-size:13px;text-align:center;margin-top:4px">Comissão de 50% sobre o valor líquido, já descontada a taxa da plataforma.</p></div>
+  </div>
+ </div>
+</section>
+
+<!-- OFERTA -->
+<section id="oferta" class="oferta">
+ <div class="wrap center reveal">
+  <span class="eyebrow">Preço de lançamento</span>
+  <h2>Tudo liberado por <em>R$ 47</em></h2>
+  <p class="lead">Pagamento único, sem mensalidade. O acesso chega no seu e-mail assim que o pagamento é aprovado.</p>
+ </div>
+ <div class="wrap planos reveal" id="planos"></div>
+ <div class="wrap"><div class="seals"><span><svg viewBox="0 0 24 24"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg>Acesso imediato</span><span><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Compra segura</span><span><svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>Pix ou cartão</span></div></div>
+</section>
+
+<!-- GARANTIA -->
+<section style="background:var(--bg2);border-block:1px solid var(--line)">
+ <div class="wrap gar reveal">
+  <div class="selo"><div><b id="gdias">30</b><span>DIAS DE<br>GARANTIA</span></div></div>
+  <div>
+   <h2 style="margin-top:0">Risco zero para você</h2>
+   <p class="lead">Entre, assista às aulas e teste o método. Se em até <b id="gdias2">30</b> dias você achar que não é para você, é só pedir o reembolso que devolvemos 100% do valor. Sem pergunta e sem burocracia.</p>
+  </div>
+ </div>
+</section>
+
+<!-- FAQ -->
+<section>
+ <div class="wrap center reveal"><span class="eyebrow">Dúvidas</span><h2>Perguntas frequentes</h2></div>
+ <div class="wrap faq reveal" id="faq"></div>
+</section>
+
+<!-- FINAL -->
+<section class="final">
+ <div class="wrap reveal">
+  <h2>Seu avatar pode estar postando <em>ainda esta semana</em></h2>
+  <p class="lead" style="margin:0 auto 30px">R$ 47 em pagamento único, garantia de <span id="gdias3">30</span> dias e vídeos por menos de R$ 2.</p>
+  <a href="#oferta" class="btn btn-g">Quero criar meu avatar agora <svg viewBox="0 0 24 24"><path d="M5 12h14M13 5l7 7-7 7"/></svg></a>
+ </div>
+</section>
+
+<footer><div class="wrap">© Avatar Milionário. Resultados variam de pessoa para pessoa e não são garantia de ganhos.</div></footer>
+
+<div class="fixo" id="fixo"><a href="#oferta" class="btn btn-g">Quero entrar</a></div>
+
+<script>
+/* ---------- EDITE AQUI ---------- */
+/* Cada página (principal ou de afiliado) carrega este mesmo arquivo e define antes window.AM_CFG:
+   { checkout: link de compra, afiliado: nome do afiliado, banner: imagem do topo (caminho no repositório) } */
+const CFG=window.AM_CFG||{};
+const CHECKOUT=CFG.checkout||'https://pay.kiwify.com.br/ZAeyDnS';
+const IMG='https://cdn.jsdelivr.net/gh/alexandrej7888-hue/avatar-milionario-imagens@'+(window.AM_VER||'main')+'/';
+const GARANTIA=30;
+/* Planos: link do checkout da Kiwify em "link". O plano com dest:true fica em destaque. */
+const PLANOS=[
+ {n:'Acesso completo',de:'R$ 97,00',p:'47',link:CHECKOUT,dest:true,itens:[[1,'Curso completo passo a passo'],[1,'Criador de avatar com mais de 50 looks'],[1,'Personagem em pessoa real'],[1,'Prompts prontos'],[1,'Pack de vídeos virais'],[1,'Bônus: vídeos por menos de R$ 2'],[1,'Grupo de networking no WhatsApp'],[1,'Programa de afiliados com 50% de comissão']]}
+];
+const MODS=[['Comece por aqui','Boas-vindas e área de membros'],['Ferramentas','Tudo que você vai usar'],['Criando seu avatar','Do zero ou a partir de uma referência'],['Vídeos virais com IA','Seu avatar no vídeo viral'],['Monetização','Como ganhar dinheiro com o avatar'],['Bônus: menos de R$ 2','O jeito barato de gerar os vídeos'],['TikTok Shop','Em breve na área de membros']];
+const RECEB=[
+ ['book','Curso passo a passo','Da criação do personagem até o vídeo pronto para postar.'],
+ ['wand','Criador de avatar','Monte o personagem clicando e copie o prompt pronto.'],
+ ['user','Personagem em pessoa real','Transforme qualquer desenho numa pessoa de verdade.'],
+ ['shirt','Mais de 50 looks','Troque a roupa do avatar sem mudar o rosto.'],
+ ['spark','Prompts prontos','É só copiar e colar nas ferramentas do curso.'],
+ ['flame','Pack de vídeos virais','Vídeos para baixar e recriar com o seu avatar.'],
+ ['coin','Vídeos por menos de R$ 2','O método barato para postar todo dia.'],
+ ['money','Programa de afiliados','Ganhe 50% de cada venda pelo seu link.'],
+ ['phone','Celular ou computador','Assista e crie de onde estiver.']
+];
+const QUEM=['Quer crescer um perfil sem aparecer e sem gravar nada','Quer viralizar no TikTok, no Reels e no Shorts','Quer ganhar dinheiro com publis e vendendo vídeos','Nunca usou IA e quer começar do zero','Quer postar todo dia sem gastar uma fortuna','Quer uma renda extra como afiliado'];
+const FAQ=[
+ ['Preciso saber mexer com IA?','Não. As aulas começam do zero e mostram cada clique na tela. Se você sabe usar o celular, consegue acompanhar.'],
+ ['Funciona no celular?','Sim. A área de membros e as ferramentas funcionam no celular, no tablet e no computador.'],
+ ['Vou precisar aparecer nos vídeos?','Nunca. Quem aparece é o seu avatar. Você não precisa gravar a sua voz nem o seu rosto.'],
+ ['Como sai por menos de R$ 2 o vídeo?','Você aprende a usar ferramentas que cobram só pelo que você gera, sem plano mensal caro em dólar. O passo a passo com os custos está dentro do curso.'],
+ ['Os vídeos vão viralizar com certeza?','Ninguém pode garantir viralização. O que o método faz é colocar o seu avatar em formatos que já provaram que viralizam, o que aumenta muito as suas chances.'],
+ ['É mensalidade?','Não. É pagamento único no Pix ou no cartão.'],
+ ['Como recebo o acesso?','Assim que o pagamento é aprovado, você recebe o acesso no e-mail usado na compra.'],
+ ['Posso vender os vídeos para marcas?','Pode. Os vídeos que você cria com o seu avatar são seus para usar em publis e vender como serviço.'],
+ ['E se eu não gostar?','Você tem '+GARANTIA+' dias de garantia. Pediu, recebe 100% do valor de volta.']
+];
+/* Vídeos (pasta resultados/ no GitHub): [nome do arquivo, visualizações, curtidas, comentários] (0 = não mostrar) */
+const VID=IMG+'resultados/';
+const REELS=[
+ ['gru-espelho',7200000,380000,5840],['Ddb0QUyqnhG',19358993,1712362,53182],['DeT1wGyRC6r',294029,21446,1074],
+ ['DeBwwYiIO-F',8600000,267000,3533],['derek-extra',7100000,77100,2814],['DeQ6tBUtw2n',296691,41684,222],
+ ['DeFlBFgoDiy',5312343,544575,7609],['DeeqtJgRV2a',1191824,138837,1298],['DdrEbnrMO74',6124267,932304,3730],
+ ['DeUjiFssy0P',614297,13500,1700],['DeXQ2fqsI2F',3495303,475629,1680],['gru-vector',1700000,78300,830],['DeOMoJgtZfx',2276315,241274,2414]
+];
+/* Fotos da faixa que passa (pasta faixa/ no GitHub) */
+const RETRATOS=['p13','p06','p03','p15','p01','p10','p08','p05','p09','p16','p11','p02','p14','p04','p12','p07'];
+const TILES=['cabelo-topete','f-cabelo-black','barba-bigode-enrolado','oculos-redondo-dourado','corpo-bombadao','f-make-batom','roupa-funkeiro','colar-correntao','cabelo-mullet','f-roupa-y2k','calcado-tenis-branco','chapeu-country'];
+
+/* ---------- MONTAGEM ---------- */
+const S={
+ book:'<path d="M2 4h6a4 4 0 0 1 4 4v13a3 3 0 0 0-3-3H2zM22 4h-6a4 4 0 0 0-4 4v13a3 3 0 0 1 3-3h7z"/>',
+ wand:'<path d="m15 4 5 5M3 21 14.5 9.5M17 2v3M22 7h-3M5 3v2M4 4h2M19 15v2M18 16h2"/>',
+ user:'<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',
+ shirt:'<path d="M20.4 6.6 16 3a4 4 0 0 1-8 0L3.6 6.6 6 10l2-1v12h8V9l2 1z"/>',
+ spark:'<path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2 2M16 16l2 2M6 18l2-2M16 8l2-2"/>',
+ flame:'<path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.4-.5-2-1-3-1-2.1-.2-4.1 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.2.4-2.3 1-3.3.3 1.6 1.3 2.8 2.5 2.8z"/>',
+ coin:'<circle cx="12" cy="12" r="9"/><path d="M14.5 9.5c-.5-1-1.5-1.5-2.5-1.5-1.4 0-2.5.8-2.5 2s1.1 1.7 2.5 2 2.5.8 2.5 2-1.1 2-2.5 2c-1 0-2-.5-2.5-1.5M12 6v2M12 16v2"/>',
+ money:'<rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/>',
+ phone:'<rect x="6" y="2" width="12" height="20" rx="2"/><path d="M11 18h2"/>',
+ ok:'<path d="M20 6 9 17l-5-5"/>', no:'<path d="M18 6 6 18M6 6l12 12"/>',
+ arrow:'<path d="M5 12h14M13 5l7 7-7 7"/>'
+};
+const sv=n=>`<svg viewBox="0 0 24 24">${S[n]}</svg>`;
+const brl=v=>v.toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+if(CFG.banner)document.querySelector('.hero-banner img').setAttribute('src','IMG/'+CFG.banner);
+document.querySelectorAll('img[src^="IMG/"]').forEach(i=>i.src=IMG+i.getAttribute('src').slice(4));
+const LET='<span>🔥 <b>Último dia</b></span><span>Acesso imediato e completo</span>';
+document.getElementById('topIn').innerHTML=LET.repeat(12);
+const ret=RETRATOS.map(r=>`<img src="${IMG}faixa/${r}.webp" alt="" loading="lazy">`).join('');
+document.getElementById('faixa').innerHTML=ret+ret;
+document.getElementById('tiles').innerHTML=TILES.map(t=>`<img src="${IMG}criador/${t}.webp" alt="" loading="lazy">`).join('');
+document.getElementById('mods').innerHTML=MODS.map((m,i)=>`<figure><img src="${IMG}capas/modulo-${String(i+1).padStart(2,'0')}.webp" alt="Módulo ${i+1}: ${m[0]}" loading="lazy"><figcaption>${m[0]}<small>${m[1]}</small></figcaption></figure>`).join('');
+document.getElementById('receb').innerHTML=RECEB.map(r=>`<div class="card"><div class="ico">${sv(r[0])}</div><div><h3>${r[1]}</h3><p>${r[2]}</p></div></div>`).join('');
+document.getElementById('quem').innerHTML=QUEM.map(q=>`<div>${sv('ok')}${q}</div>`).join('');
+document.getElementById('faq').innerHTML=FAQ.map(f=>`<details><summary>${f[0]}</summary><p>${f[1]}</p></details>`).join('');
+document.getElementById('planos').innerHTML=PLANOS.map(p=>`<div class="card plano ${p.dest?'dest':''}">${p.dest?'<span class="tag">OFERTA DE LANÇAMENTO</span>':''}
+ <h3>${p.n}</h3><div class="de">De <s>${p.de}</s> por</div><div class="por"><small>R$</small>${p.p}</div><div class="unico">Pagamento único</div>
+ <ul>${p.itens.map(i=>`<li class="${i[0]?'':'off'}">${sv(i[0]?'ok':'no')}${i[1]}</li>`).join('')}</ul>
+ <a class="btn ${p.dest?'btn-g':'btn-o'}" href="${p.link}">Quero meu acesso agora ${sv('arrow')}</a></div>`).join('');
+/* resultados */
+const curto=n=>n>=1e6?(n/1e6).toLocaleString('pt-BR',{maximumFractionDigits:1})+' mi':n>=1e3?Math.round(n/1e3)+' mil':String(n);
+const OLHO='<svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>',
+ CORA='<svg viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z"/></svg>',
+ BAL='<svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>';
+const SOM='<svg viewBox="0 0 24 24"><path d="M11 5 6 9H2v6h4l5 4V5zM15.5 8.5a5 5 0 0 1 0 7M19 5a10 10 0 0 1 0 14"/></svg>',
+ MUDO='<svg viewBox="0 0 24 24"><path d="M11 5 6 9H2v6h4l5 4V5zM23 9l-6 6M17 9l6 6"/></svg>';
+document.getElementById('res').innerHTML=[...REELS,...REELS].map(r=>`<div class="reel" onclick="somReel(this)"><video src="${VID}${r[0]}.mp4" poster="${IMG}resultados/${r[0]}.webp" muted loop playsinline preload="none"></video><span class="snd">${MUDO}</span>
+ <span class="st">${r[1]?`<span class="views">${OLHO}${curto(r[1])}</span>`:r[2]?`<span class="views">${CORA}${curto(r[2])}</span>`:''}<span class="sub">${r[1]&&r[2]?`<span>${CORA}${curto(r[2])}</span>`:''}${r[3]?`<span>${BAL}${curto(r[3])}</span>`:''}</span></span></div>`).join('');
+/* toca sozinho, sem som, quando aparece na tela; tocar no vídeo liga o som só dele */
+const vio=new IntersectionObserver(es=>es.forEach(e=>{const v=e.target;if(e.isIntersecting)v.play().catch(()=>{});else v.pause()}),{threshold:.4});
+document.querySelectorAll('.reel video').forEach(v=>vio.observe(v));
+function somReel(el){if(arrastou)return;const v=el.querySelector('video'),ligar=v.muted;
+ document.querySelectorAll('.reel').forEach(o=>{o.querySelector('video').muted=true;o.querySelector('.snd').innerHTML=MUDO;o.classList.remove('som')});
+ if(ligar){v.muted=false;v.currentTime=0;v.play().catch(()=>{});el.querySelector('.snd').innerHTML=SOM;el.classList.add('som')}}
+/* vídeos passando de lado sozinhos; a pessoa também pode arrastar */
+const res=document.getElementById('res');let pos=0,pausa=0,arrastou=false,ini=null;
+function gira(){if(Date.now()>pausa&&!ini){pos+=.5;const meio=res.scrollWidth/2;if(pos>=meio)pos-=meio;res.scrollLeft=pos}requestAnimationFrame(gira)}
+const segura=()=>{pausa=Date.now()+3500};
+res.addEventListener('touchstart',segura,{passive:true});res.addEventListener('wheel',segura,{passive:true});
+res.addEventListener('scroll',()=>{if(Date.now()<=pausa||ini){const meio=res.scrollWidth/2;if(res.scrollLeft>=meio)res.scrollLeft-=meio;pos=res.scrollLeft}},{passive:true});
+res.addEventListener('pointerdown',e=>{if(e.pointerType!=='mouse')return;ini={x:e.clientX,l:res.scrollLeft};arrastou=false;res.classList.add('arrasta')});
+addEventListener('pointermove',e=>{if(!ini)return;const d=e.clientX-ini.x;if(Math.abs(d)>5)arrastou=true;res.scrollLeft=ini.l-d});
+addEventListener('pointerup',()=>{if(!ini)return;ini=null;res.classList.remove('arrasta');segura();setTimeout(()=>arrastou=false,50)});
+requestAnimationFrame(gira);
+const somaViews=REELS.reduce((s,r)=>s+r[1],0);
+document.getElementById('totviews').textContent=Math.floor(somaViews/1e6)+' milhões';
+['gdias','gdias2','gdias3'].forEach(id=>document.getElementById(id).textContent=GARANTIA);
+/* simulador */
+const rng=document.getElementById('rng');
+/* custo por vídeo (base: vídeo de 10s) nas ferramentas caras e no método */
+const CARO=34, BARATO=2;
+function sim(){const n=+rng.value,c=n*CARO,b=n*BARATO;qtd.textContent=n+' vídeos';vCaro.textContent=brl(c);vBom.textContent=brl(b);vEco.textContent=brl(c-b);bCaro.style.width='100%';bBom.style.width=(b/c*100)+'%'}
+rng.oninput=sim;sim();
+/* animação ao rolar */
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:0,rootMargin:'0px 0px -8% 0px'});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+/* botão fixo no celular depois do topo */
+const fixo=document.getElementById('fixo'),oferta=document.getElementById('oferta');
+addEventListener('scroll',()=>{const r=oferta.getBoundingClientRect();fixo.classList.toggle('on',scrollY>600&&!(r.top<innerHeight&&r.bottom>0))},{passive:true});
+</script>
+<!-- Contador de visitas: o nome do afiliado vem de AM_CFG. O carregador da página informa a versão (AM_VER) para o rastreio vir da mesma versão. -->
+<script>window.AM_AFILIADO=(window.AM_CFG||{}).afiliado||'';
+(function(){var s=document.createElement('script');s.src='https://cdn.jsdelivr.net/gh/alexandrej7888-hue/avatar-milionario-imagens@'+(window.AM_VER||'main')+'/rastreio.js';document.body.appendChild(s)})();</script>
+</body>
+</html>
