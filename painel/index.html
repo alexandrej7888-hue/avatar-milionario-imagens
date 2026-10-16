@@ -57,6 +57,18 @@ h2{font-size:17px;font-weight:800;margin:22px 0 10px}
 .pill{display:inline-block;font-size:12px;font-weight:800;padding:3px 9px;border-radius:20px}
 .pill.ok{background:var(--gl);color:var(--g3)}.pill.no{background:rgba(248,113,113,.12);color:var(--red)}.pill.x{background:var(--card2);color:var(--mut)}
 .carregando{opacity:.5;pointer-events:none}
+.busca-afi{display:grid;grid-template-columns:1fr auto auto;gap:8px;margin-bottom:14px}
+.rel-topo{background:linear-gradient(135deg,#0c2416,#08130d);border:1px solid rgba(34,197,94,.35);border-radius:16px;padding:18px 20px;margin-bottom:14px}
+.rel-topo h2{margin:0;font-size:22px}.rel-topo h2 span{color:var(--g3)}
+.rel-topo p{color:var(--mut);font-size:13px;margin-top:4px}
+@media print{
+  @page{size:A4;margin:12mm}
+  body{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .nao-imprime,.top,#vivoAfi,.tabs,.vivo{display:none!important}
+  .wrap{padding:0}
+  .card,.kpi{break-inside:avoid}
+}
+@media (max-width:860px){.busca-afi{grid-template-columns:1fr 1fr}.busca-afi .inp{grid-column:1/-1}}
 .vivo{display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--line2);border-radius:30px;padding:8px 14px;font-size:14px;color:var(--mut)}
 .vivo b{color:var(--txt);font-size:16px}
 .vivo i{width:10px;height:10px;border-radius:50%;background:#ef4444;box-shadow:0 0 0 0 rgba(239,68,68,.6);animation:pulsa 1.6s infinite}
@@ -99,11 +111,19 @@ h2{font-size:17px;font-weight:800;margin:22px 0 10px}
  </section>
 
  <section id="tVisitas">
-  <div class="per" id="per">
+  <div class="busca-afi nao-imprime">
+   <input class="inp" id="buscaAfi" list="listaAfi" placeholder="Buscar afiliado pelo nome (deixe vazio para ver tudo)">
+   <datalist id="listaAfi"></datalist>
+   <button class="btn o" id="limparAfi" style="display:none">Ver tudo</button>
+   <button class="btn" id="pdfAfi" style="display:none">⬇ Baixar PDF</button>
+  </div>
+  <div class="rel-topo" id="relTopo" style="display:none"></div>
+  <div class="per nao-imprime" id="per">
    <button data-p="hoje">Hoje</button><button data-p="7d" class="on">7 dias</button><button data-p="30d">30 dias</button><button data-p="total">Total</button>
    <button data-p="r" style="margin-left:auto">↻ Atualizar</button>
   </div>
   <div class="kpis" id="kpis"></div>
+  <div class="so-geral">
   <div class="card"><b style="font-size:14px">Últimos 30 dias</b><div class="graf" id="graf"></div>
    <div class="leg"><span><b style="background:var(--g3)"></b>Visitas</span><span><b style="background:var(--gold)"></b>Cliques no checkout</span></div></div>
   <h2>Por afiliado</h2>
@@ -112,6 +132,13 @@ h2{font-size:17px;font-weight:800;margin:22px 0 10px}
   <div class="card scroll"><table class="tbl" id="tOri"></table></div>
   <h2>Por página</h2>
   <div class="card scroll"><table class="tbl" id="tPag"></table></div>
+  </div>
+  <div class="so-afi" style="display:none">
+   <h2>Resumo por período</h2>
+   <div class="card scroll"><table class="tbl" id="tAfiPer"></table></div>
+   <h2>Vendas recentes</h2>
+   <div class="card scroll"><table class="tbl" id="tAfiVendas"></table></div>
+  </div>
  </section>
 
  <section id="tAlunos" style="display:none">
@@ -170,7 +197,52 @@ const COLS=[
  ['Visitas',x=>num(x.visitas),1],['Pessoas',x=>num(x.visitantes),1],['Cliques',x=>num(x.cliques),1],
  ['Tempo médio',x=>tempo(x.tempoMedio),1],['Checkout',x=>`<b class="ok">${num(x.pessoasCheckout)}</b>`,1],['Conv. checkout',x=>x.conversao.toLocaleString('pt-BR')+'%',1]
 ];
+/* ---------- FILTRO POR AFILIADO ---------- */
+let AFI='';
+const nomeAfi=n=>n==='(sem afiliado)'?'Página principal':n;
+const PERNOME={hoje:'Hoje','7d':'Últimos 7 dias','30d':'Últimos 30 dias',total:'Desde o início'};
+function dadosAfi(p){
+  const s=STATS[p],z={visitas:0,visitantes:0,cliques:0,tempoMedio:0,pessoasCheckout:0,conversao:0};
+  const a=s.afiliados.find(x=>x.nome===AFI)||z;
+  const v=((s.vendas&&s.vendas.afiliados)||[]).find(x=>x.nome===AFI)||{vendas:0,valor:0,reembolsos:0};
+  return {a,v,convV:a.visitas?Math.round(v.vendas/a.visitas*1000)/10:0};
+}
+function desenharAfi(){
+  const {a,v,convV}=dadosAfi(PER);
+  $('relTopo').innerHTML=`<h2>Relatório do afiliado: <span>${esc(nomeAfi(AFI))}</span></h2><p>${PERNOME[PER]} · gerado em ${new Date().toLocaleString('pt-BR',{dateStyle:'short',timeStyle:'short'})} · Avatar Milionário</p>`;
+  $('kpis').innerHTML=[
+   ['Visitas',num(a.visitas)],['Pessoas únicas',num(a.visitantes)],['Cliques',num(a.cliques)],['Tempo médio',tempo(a.tempoMedio)],
+   ['Cliques no checkout',num(a.pessoasCheckout),1],['Conversão checkout',a.conversao.toLocaleString('pt-BR')+'%',1],
+   ['Vendas',num(v.vendas),1],['Conversão em vendas',convV.toLocaleString('pt-BR')+'%',1]
+  ].map(k=>`<div class="card kpi ${k[2]?'dest':''}"><small>${k[0]}</small><b>${k[1]}</b></div>`).join('');
+  const linhas=['hoje','7d','30d','total'].map(p=>Object.assign({p},dadosAfi(p)));
+  $('tAfiPer').innerHTML=linhaTab([['Período',x=>PERNOME[x.p]],['Visitas',x=>num(x.a.visitas),1],['Cliques no checkout',x=>num(x.a.pessoasCheckout),1],
+   ['Conv. checkout',x=>x.a.conversao.toLocaleString('pt-BR')+'%',1],['Vendas',x=>`<b class="ok">${num(x.v.vendas)}</b>`,1],['Conv. vendas',x=>x.convV.toLocaleString('pt-BR')+'%',1],['Reembolsos',x=>num(x.v.reembolsos),1]],linhas,'');
+  const vend=(STATS.ultimasVendas||[]).filter(x=>(x.afiliado||'(sem afiliado)')===AFI);
+  $('tAfiVendas').innerHTML=linhaTab([['Quando',x=>new Date(x.quando).toLocaleString('pt-BR',{dateStyle:'short',timeStyle:'short'})],['Produto',x=>esc(x.produto)],['Valor',x=>brl(x.valor),1],['Origem',x=>esc(x.origem||'direto')],['Status',x=>x.status==='aprovada'?'<span class="pill ok">aprovada</span>':'<span class="pill no">reembolso</span>']],vend,'Nenhuma venda recente.');
+}
+function aplicarFiltro(){
+  const q=$('buscaAfi').value.trim().toLowerCase();
+  const nomes=[...new Set(['hoje','7d','30d','total'].flatMap(p=>STATS[p].afiliados.map(a=>a.nome).concat(((STATS[p].vendas||{}).afiliados||[]).map(a=>a.nome))))];
+  AFI=!q?'':(nomes.find(n=>n===q)||nomes.find(n=>nomeAfi(n).toLowerCase()===q)||nomes.find(n=>nomeAfi(n).toLowerCase().includes(q))||q);
+  $('limparAfi').style.display=$('pdfAfi').style.display=AFI?'':'none';
+  $('relTopo').style.display=AFI?'':'none';
+  document.querySelector('.so-geral').style.display=AFI?'none':'';
+  document.querySelector('.so-afi').style.display=AFI?'':'none';
+  desenhar();
+}
+function listaNomes(){
+  const nomes=[...new Set(['hoje','7d','30d','total'].flatMap(p=>STATS[p].afiliados.map(a=>a.nome)))];
+  $('listaAfi').innerHTML=nomes.map(n=>`<option value="${esc(nomeAfi(n))}">`).join('');
+}
+$('buscaAfi').addEventListener('change',aplicarFiltro);
+$('buscaAfi').addEventListener('keydown',e=>{if(e.key==='Enter')aplicarFiltro()});
+$('limparAfi').onclick=()=>{$('buscaAfi').value='';aplicarFiltro()};
+$('pdfAfi').onclick=()=>{const t=document.title;document.title='Relatorio '+nomeAfi(AFI)+' - '+PERNOME[PER];window.print();setTimeout(()=>document.title=t,1000)};
+
 function desenhar(){
+  listaNomes();
+  if(AFI){desenharAfi();return}
   const s=STATS[PER],t=s.total,vt=(s.vendas&&s.vendas.total)||{vendas:0,conversao:0};
   $('kpis').innerHTML=[
    ['Visitas',num(t.visitas)],['Pessoas únicas',num(t.visitantes)],['Cliques',num(t.cliques)],
@@ -199,10 +271,10 @@ function desenharVendas(){
   const v=STATS[PERV].vendas;if(!v)return;const t=v.total;
   $('kpisV').innerHTML=[
    ['Vendas',num(t.vendas),1],['Faturamento',brl(t.valor),1],['Sua comissão',brl(t.comissao)],
-   ['Ticket médio',brl(t.vendas?t.valor/t.vendas:0)],['Conversão',t.conversao.toLocaleString('pt-BR')+'%',1],['Reembolsos',num(t.reembolsos)]
+   ['Ticket médio',brl(t.vendas?t.valor/t.vendas:0)],['Conversão',(t.conversao||0).toLocaleString('pt-BR')+'%',1],['Reembolsos',num(t.reembolsos)]
   ].map(k=>`<div class="card kpi ${k[2]?'dest':''}"><small>${k[0]}</small><b>${k[1]}</b></div>`).join('');
   $('tVAfi').innerHTML=linhaTab([['Afiliado',x=>x.nome==='(sem afiliado)'||x.nome==='principal'?'<span class="mut">Página principal (sua)</span>':`<b>${esc(x.nome)}</b>`],
-   ['Visitas',x=>num(x.visitas),1],['Vendas',x=>`<b class="ok">${num(x.vendas)}</b>`,1],['Faturamento',x=>brl(x.valor),1],['Conversão',x=>x.conversao.toLocaleString('pt-BR')+'%',1],['Reembolsos',x=>num(x.reembolsos),1]],v.afiliados,'Nenhuma venda nesse período.');
+   ['Visitas',x=>num(x.visitas),1],['Vendas',x=>`<b class="ok">${num(x.vendas)}</b>`,1],['Faturamento',x=>brl(x.valor),1],['Conversão',x=>(x.conversao||0).toLocaleString('pt-BR')+'%',1],['Reembolsos',x=>num(x.reembolsos),1]],v.afiliados,'Nenhuma venda nesse período.');
   $('tVOri').innerHTML=linhaTab([['Origem',x=>esc(x.nome)],['Vendas',x=>`<b class="ok">${num(x.vendas)}</b>`,1],['Faturamento',x=>brl(x.valor),1],['Reembolsos',x=>num(x.reembolsos),1]],v.origens,'Nenhuma venda nesse período.');
   $('tVUlt').innerHTML=linhaTab([['Quando',x=>new Date(x.quando).toLocaleString('pt-BR',{dateStyle:'short',timeStyle:'short'})],['Produto',x=>esc(x.produto)],
    ['Valor',x=>brl(x.valor),1],['Afiliado',x=>esc(x.afiliado||'—')],['Origem',x=>esc(x.origem||'direto')],['Status',x=>x.status==='aprovada'?'<span class="pill ok">aprovada</span>':'<span class="pill no">reembolso</span>']],STATS.ultimasVendas||[],'Nenhuma venda ainda.');
