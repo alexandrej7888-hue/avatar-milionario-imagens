@@ -92,10 +92,15 @@ function listar_() {
   const sh = aba_();
   const n = sh.getLastRow();
   if (n < 2) return [];
-  return sh.getRange(2, 1, n - 1, COLS).getValues().map(v => ({
-    email: v[0], nome: v[1], acesso: v[2], bump: v[3], evento: v[4], pedido: v[5],
-    quando: v[6] instanceof Date ? v[6].toISOString() : String(v[6])
-  })).reverse();
+  const sit = situacaoEmails_();
+  return sh.getRange(2, 1, n - 1, COLS).getValues().map(v => {
+    const s = sit[String(v[0]).trim().toLowerCase()];
+    return {
+      email: v[0], nome: v[1], acesso: v[2], bump: v[3], evento: v[4], pedido: v[5],
+      quando: v[6] instanceof Date ? v[6].toISOString() : String(v[6]),
+      mail: s ? { quando: new Date(s.quando).toISOString(), ok: s.ok, erro: s.erro, entregue: s.entregue, aberto: s.aberto ? new Date(s.aberto).toISOString() : '', problema: s.problema } : null
+    };
+  }).reverse();
 }
 
 /* Painel: { acao, senha, email?, nome? }
@@ -121,17 +126,19 @@ function painel_(d) {
     const antes = estado_(email);
     salvar_(email, mudancas);
     /* Liberou pelo painel: a pessoa recebe o mesmo e-mail de boas-vindas da compra (só na primeira vez) */
+    let envio = null;
     try {
-      if (d.acao === 'liberar' && antes.acesso !== 'ativo') enviarBoasVindas_(email, mudancas.nome || antes.nome, true, mudancas.bump === 'ativo' || antes.bump === 'ativo');
-      if (d.acao === 'liberar_bump' && antes.bump !== 'ativo') enviarBoasVindas_(email, mudancas.nome || antes.nome, false, true);
-    } catch (x) { console.log('e-mail painel: ' + x); }
+      if (d.acao === 'liberar' && antes.acesso !== 'ativo') envio = enviarBoasVindas_(email, mudancas.nome || antes.nome, true, mudancas.bump === 'ativo' || antes.bump === 'ativo');
+      if (d.acao === 'liberar_bump' && antes.bump !== 'ativo') envio = enviarBoasVindas_(email, mudancas.nome || antes.nome, false, true);
+    } catch (x) { envio = { ok: false, erro: String(x.message || x) }; }
+    if (d.acao !== 'bloquear' && d.acao !== 'bloquear_bump') return json_({ ok: true, envio: envio, bump: !!PRODUTO_BUMP, alunos: listar_() });
   }
   /* Botão "Reenviar e-mail" do painel: manda de novo o e-mail de boas-vindas de verdade */
   if (d.acao === 'reenviar') {
     const est = estado_(email);
     if (est.acesso !== 'ativo' && est.bump !== 'ativo') return json_({ ok: false, erro: 'Esse e-mail não tem acesso liberado.' });
-    enviarBoasVindas_(email, est.nome, est.acesso === 'ativo', est.bump === 'ativo');
-    return json_({ ok: true, enviado: email, bump: !!PRODUTO_BUMP, alunos: listar_() });
+    const envio = enviarBoasVindas_(email, est.nome, est.acesso === 'ativo', est.bump === 'ativo');
+    return json_({ ok: true, envio: envio, bump: !!PRODUTO_BUMP, alunos: listar_() });
   }
   if (d.acao === 'visitas') return json_({ ok: true, stats: estatisticas_() });
   if (d.acao === 'aovivo') return json_({ ok: true, aoVivo: aoVivo_() });
@@ -212,18 +219,72 @@ function emailHtml_(email, titulo, intro, passos, extra) {
       'Você recebeu este e-mail porque comprou o Avatar Milionário.</td></tr>' +
     '</table></div>';
 }
-/* Manda pela Brevo (se tiver chave) ou pelo Gmail */
+/* Manda pela Brevo (se tiver chave) ou pelo Gmail. Devolve { ok, via, erro } e anota na aba E-mails. */
 function mandar_(para, nome, assunto, html) {
+  let res = null;
   if (BREVO_KEY) {
-    const r = UrlFetchApp.fetch('https://api.brevo.com/v3/smtp/email', {
-      method: 'post', contentType: 'application/json', muteHttpExceptions: true,
-      headers: { 'api-key': BREVO_KEY, accept: 'application/json' },
-      payload: JSON.stringify({ sender: REMETENTE, to: [{ email: para, name: nome || para }], replyTo: { email: RESPONDER_PARA }, subject: assunto, htmlContent: html })
-    });
-    if (r.getResponseCode() < 300) return;
-    console.error('Brevo recusou (' + r.getResponseCode() + '): ' + r.getContentText());
+    try {
+      const r = UrlFetchApp.fetch('https://api.brevo.com/v3/smtp/email', {
+        method: 'post', contentType: 'application/json', muteHttpExceptions: true,
+        headers: { 'api-key': BREVO_KEY, accept: 'application/json' },
+        payload: JSON.stringify({ sender: REMETENTE, to: [{ email: para, name: nome || para }], replyTo: { email: RESPONDER_PARA }, subject: assunto, htmlContent: html })
+      });
+      if (r.getResponseCode() < 300) res = { ok: true, via: 'brevo' };
+      else console.error('Brevo recusou (' + r.getResponseCode() + '): ' + r.getContentText());
+    } catch (x) { console.error('Brevo: ' + x); }
   }
-  MailApp.sendEmail({ to: para, name: REMETENTE.name, replyTo: RESPONDER_PARA, subject: assunto, htmlBody: html });
+  if (!res) {
+    try {
+      MailApp.sendEmail({ to: para, name: REMETENTE.name, replyTo: RESPONDER_PARA, subject: assunto, htmlBody: html });
+      res = { ok: true, via: 'gmail' };
+    } catch (x) { res = { ok: false, via: '', erro: String(x.message || x) }; }
+  }
+  anotarEmail_(para, assunto, res);
+  return res;
+}
+
+/* ---------- HISTÓRICO DE E-MAILS ---------- */
+const ABA_EMAILS = 'E-mails';
+const CAB_EMAILS = ['data', 'email', 'assunto', 'enviado', 'via', 'erro'];
+function abaEmails_() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sh = ss.getSheetByName(ABA_EMAILS);
+  if (!sh) { sh = ss.insertSheet(ABA_EMAILS); sh.appendRow(CAB_EMAILS); sh.setFrozenRows(1); }
+  return sh;
+}
+function anotarEmail_(para, assunto, res) {
+  try { abaEmails_().appendRow([new Date(), String(para).toLowerCase(), assunto, res.ok ? 'sim' : 'não', res.via || '', res.erro || '']); } catch (x) { console.error('anotar e-mail: ' + x); }
+}
+/* Situação do último e-mail de cada aluno: enviado/erro (planilha) + entregue/aberto (Brevo) */
+function situacaoEmails_() {
+  const sh = abaEmails_();
+  const n = sh.getLastRow();
+  const sit = {};
+  (n < 2 ? [] : sh.getRange(2, 1, n - 1, CAB_EMAILS.length).getValues()).forEach(r => {
+    const em = String(r[1]).toLowerCase();
+    const t = r[0] instanceof Date ? r[0].getTime() : new Date(r[0]).getTime();
+    sit[em] = { quando: t, ok: r[3] === 'sim', via: r[4], erro: r[5], entregue: false, aberto: 0, problema: '' };
+  });
+  if (BREVO_KEY && Object.keys(sit).length) {
+    try {
+      const r = UrlFetchApp.fetch('https://api.brevo.com/v3/smtp/statistics/events?limit=2500&days=90&sort=desc', {
+        muteHttpExceptions: true, headers: { 'api-key': BREVO_KEY, accept: 'application/json' }
+      });
+      if (r.getResponseCode() < 300) {
+        (JSON.parse(r.getContentText()).events || []).forEach(ev => {
+          const s = sit[String(ev.email || '').toLowerCase()];
+          if (!s) return;
+          const t = new Date(ev.date).getTime();
+          if (t < s.quando - 60000) return; /* só eventos do último envio */
+          const tipo = String(ev.event || '');
+          if (tipo === 'delivered') s.entregue = true;
+          if (tipo === 'opened' || tipo === 'uniqueOpened' || tipo === 'loadedByProxy' || tipo === 'clicks') { s.entregue = true; s.aberto = Math.max(s.aberto, t); }
+          if (/bounce|blocked|invalid|spam|error/i.test(tipo)) s.problema = tipo;
+        });
+      }
+    } catch (x) { console.error('eventos Brevo: ' + x); }
+  }
+  return sit;
 }
 /* Guarda o comprador como contato na Brevo (para campanhas depois) */
 function contatoBrevo_(email, nome, bump) {
@@ -239,6 +300,7 @@ function contatoBrevo_(email, nome, bump) {
 function enviarBoasVindas_(email, nome, curso, bump) {
   const primeiro = String(nome || '').trim().split(/\s+/)[0] || '';
   const oi = primeiro ? 'Oi, ' + primeiro + '!' : 'Oi!';
+  let res = { ok: false, erro: 'nada para enviar' };
   try {
     if (curso) {
       const passos =
@@ -247,14 +309,15 @@ function enviarBoasVindas_(email, nome, curso, bump) {
         passo_(3, 'Monte seu avatar', 'Use o Criador de avatar e os prompts prontos para criar seu personagem.') +
         passo_(4, 'Poste seu primeiro vídeo', (bump ? 'Pegue um vídeo do seu <b style="color:#facc15">pack de Vídeos Virais</b> e coloque seu avatar nele.' : 'Escolha um vídeo viral de referência e coloque seu avatar nele.'));
       const extra = bump ? '' : '<tr><td style="padding:14px 26px 0"><div style="border:1px dashed #facc15;border-radius:12px;padding:14px;color:#cfe3d6;font-size:14px;line-height:1.5;text-align:center">🔥 Quer vídeos prontos para postar? O <b style="color:#facc15">pack Vídeos Virais</b> está disponível dentro da área de membros.</div></td></tr>';
-      mandar_(email, nome, primeiro ? primeiro + ', seu acesso ao Avatar Milionário chegou 🚀' : 'Seu acesso ao Avatar Milionário chegou 🚀',
+      res = mandar_(email, nome, primeiro ? primeiro + ', seu acesso ao Avatar Milionário chegou 🚀' : 'Seu acesso ao Avatar Milionário chegou 🚀',
         emailHtml_(email, 'Bem-vindo ao Avatar Milionário! 🎉', oi + ' Sua compra foi aprovada e o seu acesso já está liberado. Veja como começar:', passos, extra));
     } else if (bump) {
-      mandar_(email, nome, 'Seu pack de Vídeos Virais foi liberado 🔥',
+      res = mandar_(email, nome, 'Seu pack de Vídeos Virais foi liberado 🔥',
         emailHtml_(email, 'Pack de Vídeos Virais liberado! 🔥', oi + ' O pack já está na sua área de membros, no menu <b>Vídeos virais</b>. É só baixar, colocar seu avatar e postar.', '', ''));
     }
     contatoBrevo_(email, nome, bump);
-  } catch (x) { console.error('e-mail não enviado: ' + x); }
+  } catch (x) { console.error('e-mail não enviado: ' + x); res = { ok: false, erro: String(x.message || x) }; }
+  return res;
 }
 
 /* Rode esta função uma vez no editor (botão Executar) para autorizar o envio de e-mail.
