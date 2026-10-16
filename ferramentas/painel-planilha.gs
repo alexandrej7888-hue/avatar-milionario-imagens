@@ -157,6 +157,49 @@ function abaEv_() {
 
 const corta_ = (v, n) => String(v || '').slice(0, n);
 
+/* ---------- E-MAIL DE BOAS-VINDAS ----------
+   Enviado pela sua conta Google quando a compra é aprovada (Gmail comum: até 100 e-mails por dia). */
+const AREA_MEMBROS = 'https://minhapagina.pro/area-de-membros/';
+const WHATS_SUPORTE = '';
+function estado_(email) {
+  const sh = aba_();
+  const r = acharLinha_(sh, email);
+  if (!r) return { acesso: '', bump: '' };
+  const v = sh.getRange(r, 1, 1, 4).getValues()[0];
+  return { acesso: String(v[2]).toLowerCase(), bump: String(v[3]).toLowerCase() };
+}
+function emailHtml_(titulo, corpo) {
+  return '<div style="background:#050907;padding:28px 12px;font-family:Arial,sans-serif">' +
+    '<div style="max-width:520px;margin:0 auto;background:#0d1611;border:1px solid #24392c;border-radius:16px;padding:28px;color:#ecf5ef">' +
+    '<div style="font-size:12px;letter-spacing:3px;color:#4ade80;font-weight:bold">AVATAR MILIONÁRIO</div>' +
+    '<h1 style="font-size:22px;margin:10px 0 14px;color:#fff">' + titulo + '</h1>' + corpo +
+    '<p style="text-align:center;margin:26px 0 8px"><a href="' + AREA_MEMBROS + '" style="background:#22c55e;color:#03150a;text-decoration:none;font-weight:bold;padding:14px 26px;border-radius:12px;display:inline-block">Entrar na área de membros</a></p>' +
+    '<p style="color:#93a89b;font-size:13px;text-align:center">Para entrar, use este mesmo e-mail. Não precisa de senha.</p>' +
+    (WHATS_SUPORTE ? '<p style="color:#93a89b;font-size:13px;text-align:center">Dúvidas? Fale no WhatsApp: ' + WHATS_SUPORTE + '</p>' : '') +
+    '</div></div>';
+}
+function enviarBoasVindas_(email, nome, curso, bump) {
+  const primeiro = String(nome || '').trim().split(/\s+/)[0] || '';
+  const oi = primeiro ? 'Oi, ' + primeiro + '!' : 'Oi!';
+  try {
+    if (curso) {
+      MailApp.sendEmail({
+        to: email, name: 'Avatar Milionário', subject: 'Seu acesso ao Avatar Milionário chegou 🚀',
+        htmlBody: emailHtml_('Bem-vindo ao Avatar Milionário!',
+          '<p style="line-height:1.6;color:#cfe3d6">' + oi + ' Sua compra foi aprovada e o seu acesso já está liberado.</p>' +
+          '<p style="line-height:1.6;color:#cfe3d6">Lá dentro você encontra as aulas passo a passo, o criador de avatar, os prompts prontos' +
+          (bump ? ' e o <b>pack de Vídeos Virais</b>' : '') + '. Comece pelo módulo "Comece por aqui".</p>')
+      });
+    } else if (bump) {
+      MailApp.sendEmail({
+        to: email, name: 'Avatar Milionário', subject: 'Seu pack de Vídeos Virais foi liberado 🔥',
+        htmlBody: emailHtml_('Pack de Vídeos Virais liberado!',
+          '<p style="line-height:1.6;color:#cfe3d6">' + oi + ' O pack de Vídeos Virais já está na sua área de membros, no menu "Vídeos virais".</p>')
+      });
+    }
+  } catch (x) { console.error('e-mail não enviado: ' + x); }
+}
+
 /* ---------- AO VIVO ----------
    Cada página aberta manda um "ping" a cada 45s. Guardamos no cache (sem escrever na planilha)
    quem mandou ping no último 1min30: isso é quem está na página agora. */
@@ -361,7 +404,14 @@ function doPost(e) {
   const campos = { nome: nome, evento: evento || status, pedido: d.order_id || d.order_ref || d.id || '' };
   if (temCurso) campos.acesso = novo;
   if (temBump) campos.bump = novo;
+  const antes = estado_(email);
   salvar_(email, campos);
+  /* Só manda e-mail na primeira liberação (não repete se a Kiwify reenviar o aviso) */
+  if (novo === 'ativo') {
+    const cursoNovo = temCurso && antes.acesso !== 'ativo';
+    const bumpNovo = temBump && antes.bump !== 'ativo';
+    if (cursoNovo || bumpNovo) enviarBoasVindas_(email, nome, cursoNovo, bumpNovo || antes.bump === 'ativo');
+  }
   registrarVenda_(d, novo, email);
   return json_({ ok: true, email: email, acesso: campos.acesso || null, bump: campos.bump || null });
 }
