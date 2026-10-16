@@ -116,13 +116,22 @@ function painel_(d) {
     if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return json_({ ok: false, erro: 'e-mail inválido' });
     mudancas.nome = String(d.nome || '').trim();
     mudancas.evento = 'manual';
+    /* Liberar com a caixinha do Vídeos Virais marcada: libera os dois de uma vez (um e-mail só) */
+    if (d.acao === 'liberar' && d.comBump) mudancas.bump = 'ativo';
     const antes = estado_(email);
     salvar_(email, mudancas);
     /* Liberou pelo painel: a pessoa recebe o mesmo e-mail de boas-vindas da compra (só na primeira vez) */
     try {
-      if (d.acao === 'liberar' && antes.acesso !== 'ativo') enviarBoasVindas_(email, mudancas.nome, true, antes.bump === 'ativo');
-      if (d.acao === 'liberar_bump' && antes.bump !== 'ativo') enviarBoasVindas_(email, mudancas.nome, false, true);
+      if (d.acao === 'liberar' && antes.acesso !== 'ativo') enviarBoasVindas_(email, mudancas.nome || antes.nome, true, mudancas.bump === 'ativo' || antes.bump === 'ativo');
+      if (d.acao === 'liberar_bump' && antes.bump !== 'ativo') enviarBoasVindas_(email, mudancas.nome || antes.nome, false, true);
     } catch (x) { console.log('e-mail painel: ' + x); }
+  }
+  /* Botão "Reenviar e-mail" do painel: manda de novo o e-mail de boas-vindas de verdade */
+  if (d.acao === 'reenviar') {
+    const est = estado_(email);
+    if (est.acesso !== 'ativo' && est.bump !== 'ativo') return json_({ ok: false, erro: 'Esse e-mail não tem acesso liberado.' });
+    enviarBoasVindas_(email, est.nome, est.acesso === 'ativo', est.bump === 'ativo');
+    return json_({ ok: true, enviado: email, bump: !!PRODUTO_BUMP, alunos: listar_() });
   }
   if (d.acao === 'visitas') return json_({ ok: true, stats: estatisticas_() });
   if (d.acao === 'aovivo') return json_({ ok: true, aoVivo: aoVivo_() });
@@ -176,9 +185,9 @@ const IMG_EMAIL = 'https://cdn.jsdelivr.net/gh/alexandrej7888-hue/avatar-miliona
 function estado_(email) {
   const sh = aba_();
   const r = acharLinha_(sh, email);
-  if (!r) return { acesso: '', bump: '' };
+  if (!r) return { acesso: '', bump: '', nome: '' };
   const v = sh.getRange(r, 1, 1, 4).getValues()[0];
-  return { acesso: String(v[2]).toLowerCase(), bump: String(v[3]).toLowerCase() };
+  return { acesso: String(v[2]).toLowerCase(), bump: String(v[3]).toLowerCase(), nome: String(v[1] || '').trim() };
 }
 function passo_(n, titulo, texto) {
   return '<tr><td style="padding:0 0 14px"><table role="presentation" width="100%" cellspacing="0" cellpadding="0"><tr>' +

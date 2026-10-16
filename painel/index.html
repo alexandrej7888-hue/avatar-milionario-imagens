@@ -304,7 +304,7 @@ function listaAlunos(){
     return `<tr><td><b>${esc(a.nome)||'—'}</b><br><span class="mut">${e}</span></td><td>${pill(a.acesso)}</td>
     ${TEM_BUMP?`<td>${pill(a.bump)} <button class="btn o s" onclick="acao('${a.bump==='ativo'?'bloquear_bump':'liberar_bump'}','${e}')">${a.bump==='ativo'?'Tirar':'Dar'}</button></td>`:''}
     <td class="mut">${a.evento==='manual'?'manual':'Kiwify'}</td><td class="mut">${a.quando?new Date(a.quando).toLocaleString('pt-BR',{dateStyle:'short',timeStyle:'short'}):''}</td>
-    <td>${a.acesso==='ativo'?`<button class="btn r s" onclick="acao('bloquear','${e}')">Bloquear</button>`:`<button class="btn s" onclick="acao('liberar','${e}')">Liberar</button>`}</td></tr>`}).join('');
+    <td style="white-space:nowrap">${a.acesso==='ativo'||a.bump==='ativo'?`<button class="btn o s" title="Reenviar e-mail de boas-vindas" onclick="acao('reenviar','${e}')">Reenviar e-mail</button> `:''}${a.acesso==='ativo'?`<button class="btn r s" onclick="acao('bloquear','${e}')">Bloquear</button>`:`<button class="btn s" onclick="acao('liberar','${e}')">Liberar</button>`}</td></tr>`}).join('');
 }
 $('busca').oninput=listaAlunos;
 function acao(tipo,email){
@@ -312,12 +312,14 @@ function acao(tipo,email){
   if(!em){$('msgAluno').innerText='Digite o e-mail.';return}
   $('tAlunos').classList.add('carregando');$('msgAluno').innerText='';
   /* Pelo formulário: liberar/bloquear também liga ou desliga o bump conforme a caixinha */
-  const extra=email?'':tipo==='bloquear'?'bloquear_bump':tipo==='liberar'&&$('aBump').checked?'liberar_bump':'';
-  chamar({acao:tipo,email:em,nome:email?'':$('aNome').value})
+  const extra=email?'':tipo==='bloquear'?'bloquear_bump':'';
+  const comBump=!email&&tipo==='liberar'&&$('aBump').checked;
+  chamar({acao:tipo,email:em,nome:email?'':$('aNome').value,comBump})
   .then(r=>!r.ok||!extra?r:chamar({acao:extra,email:em}))
   .then(r=>{
     if(!r.ok){$('msgAluno').innerText=r.erro==='senha'?'Sessão expirou, entre de novo.':r.erro;return}
     ALUNOS=r.alunos;TEM_BUMP=r.bump;listaAlunos();
+    if(tipo==='reenviar'){$('msgAluno').style.color='var(--g3)';$('msgAluno').innerText='E-mail de boas-vindas reenviado para '+em;setTimeout(()=>{$('msgAluno').innerText='';$('msgAluno').style.color=''},5000);return}
     if(!email){$('msgAluno').style.color='var(--g3)';$('msgAluno').innerText=(tipo==='liberar'?'Acesso liberado para ':'Acesso bloqueado para ')+em+(tipo==='liberar'&&$('aBump').checked?' (com Vídeos Virais)':'');setTimeout(()=>{$('msgAluno').innerText='';$('msgAluno').style.color=''},4000);$('aEmail').value='';$('aNome').value='';$('aBump').checked=false}
   }).catch(()=>$('msgAluno').innerText='Não foi possível salvar. Tente de novo.')
   .finally(()=>$('tAlunos').classList.remove('carregando'));
