@@ -27,7 +27,8 @@ const COLS = CABECALHO.length;
 
 /* Status e eventos da Kiwify que liberam e que bloqueiam */
 const LIBERA = ['paid', 'approved', 'order_approved', 'compra_aprovada'];
-const BLOQUEIA = ['refunded', 'chargedback', 'chargeback', 'order_refunded', 'compra_reembolsada', 'subscription_canceled'];
+const BLOQUEIA = ['refunded', 'chargedback', 'chargeback', 'order_refunded', 'compra_reembolsada', 'subscription_canceled', 'canceled', 'cancelled', 'order_canceled'];
+const PENDENTE = ['waiting_payment', 'pending', 'refused', 'pix_created', 'billet_created', 'pix_gerado', 'boleto_gerado', 'compra_recusada'];
 
 function aba_() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
@@ -306,7 +307,14 @@ function registrarVenda_(d, novo, email) {
   ];
   const lock = LockService.getScriptLock();
   lock.waitLock(10000);
-  try { abaVendas_().appendRow(linha); } finally { lock.releaseLock(); }
+  try {
+    /* A Kiwify reenvia o mesmo aviso várias vezes: o mesmo pedido com o mesmo status só entra uma vez */
+    const sh = abaVendas_();
+    const n = sh.getLastRow();
+    const ja = n < 2 ? [] : sh.getRange(2, 1, n - 1, CAB_VENDAS.length).getValues();
+    if (linha[10] && ja.some(r => String(r[10]) === String(linha[10]) && r[1] === linha[1])) return;
+    sh.appendRow(linha);
+  } finally { lock.releaseLock(); }
 }
 
 /* Evento enviado pelas páginas: { ev, pagina, afiliado, origem, visitante, visita, segundos, cliques } */
@@ -385,7 +393,14 @@ function estatisticas_() {
   /* Vendas por período, afiliado e origem, com conversão sobre as visitas */
   const shV = abaVendas_();
   const nv = shV.getLastRow();
-  const vendas = nv < 2 ? [] : shV.getRange(2, 1, nv - 1, CAB_VENDAS.length).getValues();
+  const vistos = {};
+  const vendas = (nv < 2 ? [] : shV.getRange(2, 1, nv - 1, CAB_VENDAS.length).getValues()).filter(r => {
+    /* Ignora avisos repetidos do mesmo pedido (linhas antigas gravadas antes da correção) */
+    if (!r[10]) return true;
+    const k = r[10] + '|' + r[1];
+    if (vistos[k]) return false;
+    return (vistos[k] = true);
+  });
   const tempo = x => x instanceof Date ? x.getTime() : new Date(x).getTime();
   Object.keys(periodos).forEach(p => {
     const ini = periodos[p];
@@ -439,6 +454,8 @@ function doPost(e) {
   let novo = '';
   if (LIBERA.indexOf(status) >= 0 || LIBERA.indexOf(evento) >= 0) novo = 'ativo';
   if (BLOQUEIA.indexOf(status) >= 0 || BLOQUEIA.indexOf(evento) >= 0) novo = 'bloqueado';
+  /* Pix/boleto gerado ou cartão recusado não é venda: só libera com pagamento confirmado */
+  if (novo === 'ativo' && PENDENTE.indexOf(status) >= 0) novo = '';
   if (!novo) return json_({ ok: true, ignorado: status || evento });
 
   /* Separa o que é bump do que é o curso */
@@ -451,6 +468,8 @@ function doPost(e) {
   const campos = { nome: nome, evento: evento || status, pedido: d.order_id || d.order_ref || d.id || '' };
   if (temCurso) campos.acesso = novo;
   if (temBump) campos.bump = novo;
+  /* Reembolso/chargeback/cancelamento do curso corta tudo (área de membros e Vídeos Virais) */
+  if (novo === 'bloqueado' && temCurso) campos.bump = 'bloqueado';
   const antes = estado_(email);
   salvar_(email, campos);
   /* Só manda e-mail na primeira liberação (não repete se a Kiwify reenviar o aviso) */
