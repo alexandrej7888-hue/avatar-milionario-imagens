@@ -235,7 +235,7 @@ function removerAfiliado_(nome) {
 function listarAfiliados_() {
   const senhas = senhasAfi_();
   const nomes = {};
-  senhas.forEach(a => { nomes[a.nome] = { nome: a.nome, senha: a.senha, quando: a.quando instanceof Date ? a.quando.toISOString() : '' }; });
+  senhas.forEach(a => { nomes[a.nome] = { nome: a.nome, senha: a.senha, quando: a.quando instanceof Date ? a.quando.toISOString() : '', pagina: a.pagina, checkout: a.checkout, preco: a.preco }; });
   try {
     const t = estatisticas_().total;
     t.afiliados.concat(t.vendas.afiliados).forEach(a => {
