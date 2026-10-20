@@ -113,6 +113,8 @@ function listar_() {
 /* Painel: { acao, senha, email?, nome? }
    acao: listar | liberar | bloquear | bloquear_ips | liberar_bump | bloquear_bump | ips */
 function painel_(d) {
+  /* Painel do afiliado: entra com o nome e a senha dele e vê só os números dele */
+  if (d.acao === 'afiliado_entrar') return json_(afiliadoEntrar_(d));
   if (!SENHA_PAINEL || d.senha !== SENHA_PAINEL) {
     Utilities.sleep(1500);
     return json_({ ok: false, erro: 'senha' });
@@ -155,7 +157,104 @@ function painel_(d) {
   if (d.acao === 'visitas') return json_({ ok: true, stats: estatisticas_() });
   if (d.acao === 'aovivo') return json_({ ok: true, aoVivo: aoVivo_() });
   if (d.acao === 'ips') return json_({ ok: true, ips: resumoIps_() });
+  /* Senhas dos afiliados (só o dono vê e mexe) */
+  if (d.acao === 'afiliados') return json_({ ok: true, afiliados: listarAfiliados_() });
+  if (d.acao === 'afiliado_senha') {
+    const nome = String(d.afiliado || '').trim().toLowerCase();
+    const nova = String(d.novaSenha || '').trim();
+    if (!/^[a-z0-9._-]{2,40}$/.test(nome)) return json_({ ok: false, erro: 'Nome de afiliado inválido.' });
+    if (nova.length < 4) return json_({ ok: false, erro: 'A senha precisa ter pelo menos 4 caracteres.' });
+    salvarSenhaAfiliado_(nome, nova);
+    return json_({ ok: true, afiliados: listarAfiliados_() });
+  }
+  if (d.acao === 'afiliado_remover') {
+    removerAfiliado_(String(d.afiliado || '').trim().toLowerCase());
+    return json_({ ok: true, afiliados: listarAfiliados_() });
+  }
   return json_({ ok: true, bump: !!PRODUTO_BUMP, alunos: listar_() });
+}
+
+/* ---------- PAINEL DO AFILIADO ---------- */
+const ABA_AFI = 'Afiliados';
+function abaAfi_() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sh = ss.getSheetByName(ABA_AFI);
+  if (!sh) { sh = ss.insertSheet(ABA_AFI); sh.appendRow(['afiliado', 'senha', 'atualizado em']); sh.setFrozenRows(1); }
+  return sh;
+}
+function senhasAfi_() {
+  const sh = abaAfi_();
+  const n = sh.getLastRow();
+  return n < 2 ? [] : sh.getRange(2, 1, n - 1, 3).getValues().map((r, i) => ({ linha: i + 2, nome: String(r[0]).trim().toLowerCase(), senha: String(r[1]), quando: r[2] }));
+}
+function salvarSenhaAfiliado_(nome, senha) {
+  const lock = LockService.getScriptLock();
+  lock.waitLock(10000);
+  try {
+    const sh = abaAfi_();
+    const ja = senhasAfi_().filter(a => a.nome === nome)[0];
+    if (ja) sh.getRange(ja.linha, 2, 1, 2).setValues([[senha, new Date()]]);
+    else sh.appendRow([nome, senha, new Date()]);
+  } finally { lock.releaseLock(); }
+}
+function removerAfiliado_(nome) {
+  const ja = senhasAfi_().filter(a => a.nome === nome)[0];
+  if (ja) abaAfi_().deleteRow(ja.linha);
+}
+/* Lista para o dono: quem já tem senha + afiliados que já aparecem nas visitas/vendas */
+function listarAfiliados_() {
+  const senhas = senhasAfi_();
+  const nomes = {};
+  senhas.forEach(a => { nomes[a.nome] = { nome: a.nome, senha: a.senha, quando: a.quando instanceof Date ? a.quando.toISOString() : '' }; });
+  try {
+    const t = estatisticas_().total;
+    t.afiliados.concat(t.vendas.afiliados).forEach(a => {
+      const k = String(a.nome || '').toLowerCase();
+      if (k && k.charAt(0) !== '(' && !nomes[k]) nomes[k] = { nome: k, senha: '', quando: '' };
+    });
+  } catch (x) { console.error('lista afiliados: ' + x); }
+  return Object.keys(nomes).sort().map(k => nomes[k]);
+}
+/* Esconde o e-mail do comprador para o afiliado: pe***@gmail.com */
+const mascara_ = e => { const [u, dom] = String(e || '').split('@'); return u ? u.slice(0, 2) + '***' + (dom ? '@' + dom : '') : ''; };
+function afiliadoEntrar_(d) {
+  const nome = String(d.afiliado || '').trim().toLowerCase();
+  const ok = senhasAfi_().filter(a => a.nome === nome && a.senha && a.senha === String(d.senhaAfiliado || ''))[0];
+  if (!ok) { Utilities.sleep(1500); return { ok: false, erro: 'senha' }; }
+  const s = estatisticas_();
+  const zero = { visitas: 0, visitantes: 0, tempoMedio: 0, pessoasCheckout: 0, conversao: 0 };
+  const periodos = {};
+  ['hoje', '7d', '30d', 'total'].forEach(p => {
+    const v = s[p].afiliados.filter(a => a.nome === nome)[0] || zero;
+    const vd = s[p].vendas.afiliados.filter(a => a.nome === nome)[0] || { vendas: 0, valor: 0, reembolsos: 0 };
+    periodos[p] = {
+      visitas: v.visitas, visitantes: v.visitantes, tempoMedio: v.tempoMedio, pessoasCheckout: v.pessoasCheckout, conversao: v.conversao,
+      vendas: vd.vendas, valor: Math.round(vd.valor * 100) / 100, reembolsos: vd.reembolsos,
+      convVendas: v.visitas ? Math.round(vd.vendas / v.visitas * 1000) / 10 : 0
+    };
+  });
+  /* Visitas e cliques no checkout por dia (últimos 14 dias), só deste afiliado */
+  const DIA = 86400000, agora = new Date();
+  const hoje0 = new Date(agora.getFullYear(), agora.getMonth(), agora.getDate()).getTime();
+  const dias = [];
+  for (let i = 13; i >= 0; i--) dias.push({ dia: Utilities.formatDate(new Date(hoje0 - i * DIA), Session.getScriptTimeZone(), 'dd/MM'), visitas: 0, checkouts: 0 });
+  const shE = abaEv_(), nE = shE.getLastRow();
+  (nE < 2 ? [] : shE.getRange(2, 1, nE - 1, 4).getValues()).forEach(r => {
+    if (String(r[3]).toLowerCase() !== nome) return;
+    const t = r[0] instanceof Date ? r[0].getTime() : new Date(r[0]).getTime();
+    const i = Math.floor((t - (hoje0 - 13 * DIA)) / DIA);
+    if (i < 0 || i > 13) return;
+    if (r[1] === 'visita') dias[i].visitas++;
+    if (r[1] === 'checkout') dias[i].checkouts++;
+  });
+  /* Últimas vendas deste afiliado (sem repetir aviso da Kiwify, e-mail escondido) */
+  const shV = abaVendas_(), nV = shV.getLastRow(), vistos = {};
+  const vendas = (nV < 2 ? [] : shV.getRange(2, 1, nV - 1, CAB_VENDAS.length).getValues())
+    .filter(r => String(r[5]).toLowerCase() === nome)
+    .filter(r => { const k = r[10] + '|' + r[1]; if (r[10] && vistos[k]) return false; vistos[k] = 1; return true; })
+    .slice(-30).reverse()
+    .map(r => ({ quando: r[0] instanceof Date ? r[0].toISOString() : String(r[0]), status: r[1], produto: r[2], valor: r[3], email: mascara_(r[9]) }));
+  return { ok: true, afiliado: nome, periodos: periodos, dias: dias, vendas: vendas };
 }
 
 /* Junta nome e ID de todos os produtos que aparecem no pedido (produto principal e bumps) */
