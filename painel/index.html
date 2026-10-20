@@ -103,7 +103,7 @@ h2{font-size:17px;font-weight:800;margin:22px 0 10px}
 
  <section id="tVendas" style="display:none">
   <div class="per" id="perV">
-   <button data-p="hoje">Hoje</button><button data-p="7d" class="on">7 dias</button><button data-p="30d">30 dias</button><button data-p="total">Total</button>
+   <button data-p="hoje">Hoje</button><button data-p="ontem">Ontem</button><button data-p="7d" class="on">7 dias</button><button data-p="30d">30 dias</button><button data-p="total">Total</button>
    <button data-p="r" style="margin-left:auto">↻ Atualizar</button>
   </div>
   <div class="kpis" id="kpisV"></div>
@@ -124,7 +124,7 @@ h2{font-size:17px;font-weight:800;margin:22px 0 10px}
   </div>
   <div class="rel-topo" id="relTopo" style="display:none"></div>
   <div class="per nao-imprime" id="per">
-   <button data-p="hoje">Hoje</button><button data-p="7d" class="on">7 dias</button><button data-p="30d">30 dias</button><button data-p="total">Total</button>
+   <button data-p="hoje">Hoje</button><button data-p="ontem">Ontem</button><button data-p="7d" class="on">7 dias</button><button data-p="30d">30 dias</button><button data-p="total">Total</button>
    <button data-p="r" style="margin-left:auto">↻ Atualizar</button>
   </div>
   <div class="kpis" id="kpis"></div>
@@ -221,11 +221,12 @@ const COLS=[
 /* ---------- FILTRO POR AFILIADO ---------- */
 let AFI='';
 const nomeAfi=n=>n==='(sem afiliado)'?'Página principal':n;
-const PERNOME={hoje:'Hoje','7d':'Últimos 7 dias','30d':'Últimos 30 dias',total:'Desde o início'};
+const DIA_=n=>{const x=new Date();x.setDate(x.getDate()-n);return x.toLocaleDateString('pt-BR')};
+const PERNOME={hoje:'Hoje, '+DIA_(0),ontem:'Ontem, '+DIA_(1),'7d':'Últimos 7 dias ('+DIA_(6)+' a '+DIA_(0)+')','30d':'Últimos 30 dias ('+DIA_(29)+' a '+DIA_(0)+')',total:'Desde o início'};
 function dadosAfi(p){
   const s=STATS[p],z={visitas:0,visitantes:0,cliques:0,tempoMedio:0,pessoasCheckout:0,conversao:0};
   const a=s.afiliados.find(x=>x.nome===AFI)||z;
-  const v=((s.vendas&&s.vendas.afiliados)||[]).find(x=>x.nome===AFI)||{vendas:0,valor:0,reembolsos:0};
+  const v=((s.vendas&&s.vendas.afiliados)||[]).find(x=>x.nome===AFI)||{vendas:0,valor:0,comAfi:0,reembolsos:0};
   return {a,v,convV:a.visitas?Math.round(v.vendas/a.visitas*1000)/10:0};
 }
 function desenharAfi(){
@@ -234,17 +235,18 @@ function desenharAfi(){
   $('kpis').innerHTML=[
    ['Visitas',num(a.visitas)],['Pessoas únicas',num(a.visitantes)],['Tempo médio',tempo(a.tempoMedio)],
    ['Cliques no checkout',num(a.pessoasCheckout),1],['Conversão checkout',a.conversao.toLocaleString('pt-BR')+'%',1],
-   ['Vendas',num(v.vendas),1],['Conversão em vendas',convV.toLocaleString('pt-BR')+'%',1]
+   ['Vendas',num(v.vendas),1],['Conversão em vendas',convV.toLocaleString('pt-BR')+'%',1],
+   ['Comissão do afiliado',brl(v.comAfi),1],['Ao vivo agora',num(((STATS.aoVivo||{}).afiliados||[]).filter(x=>x.nome===AFI).reduce((s,x)=>s+x.pessoas,0))]
   ].map(k=>`<div class="card kpi ${k[2]?'dest':''}"><small>${k[0]}</small><b>${k[1]}</b></div>`).join('');
-  const linhas=['hoje','7d','30d','total'].map(p=>Object.assign({p},dadosAfi(p)));
+  const linhas=['hoje','ontem','7d','30d','total'].map(p=>Object.assign({p},dadosAfi(p)));
   $('tAfiPer').innerHTML=linhaTab([['Período',x=>PERNOME[x.p]],['Visitas',x=>num(x.a.visitas),1],['Cliques no checkout',x=>num(x.a.pessoasCheckout),1],
-   ['Conv. checkout',x=>x.a.conversao.toLocaleString('pt-BR')+'%',1],['Vendas',x=>`<b class="ok">${num(x.v.vendas)}</b>`,1],['Conv. vendas',x=>x.convV.toLocaleString('pt-BR')+'%',1],['Reembolsos',x=>num(x.v.reembolsos),1]],linhas,'');
+   ['Conv. checkout',x=>x.a.conversao.toLocaleString('pt-BR')+'%',1],['Vendas',x=>`<b class="ok">${num(x.v.vendas)}</b>`,1],['Conv. vendas',x=>x.convV.toLocaleString('pt-BR')+'%',1],['Comissão afiliado',x=>brl(x.v.comAfi),1],['Reembolsos',x=>num(x.v.reembolsos),1]],linhas,'');
   const vend=(STATS.ultimasVendas||[]).filter(x=>(x.afiliado||'(sem afiliado)')===AFI);
   $('tAfiVendas').innerHTML=linhaTab([['Quando',x=>new Date(x.quando).toLocaleString('pt-BR',{dateStyle:'short',timeStyle:'short'})],['Produto',x=>esc(x.produto)],['Valor',x=>brl(x.valor),1],['Origem',x=>esc(x.origem||'direto')],['Status',x=>x.status==='aprovada'?'<span class="pill ok">aprovada</span>':'<span class="pill no">reembolso</span>']],vend,'Nenhuma venda recente.');
 }
 function aplicarFiltro(){
   const q=$('buscaAfi').value.trim().toLowerCase();
-  const nomes=[...new Set(['hoje','7d','30d','total'].flatMap(p=>STATS[p].afiliados.map(a=>a.nome).concat(((STATS[p].vendas||{}).afiliados||[]).map(a=>a.nome))))];
+  const nomes=[...new Set(['hoje','ontem','7d','30d','total'].flatMap(p=>STATS[p].afiliados.map(a=>a.nome).concat(((STATS[p].vendas||{}).afiliados||[]).map(a=>a.nome))))];
   AFI=!q?'':(nomes.find(n=>n===q)||nomes.find(n=>nomeAfi(n).toLowerCase()===q)||nomes.find(n=>nomeAfi(n).toLowerCase().includes(q))||q);
   $('limparAfi').style.display=$('pdfAfi').style.display=AFI?'':'none';
   $('relTopo').style.display=AFI?'':'none';
@@ -295,7 +297,7 @@ function desenharVendas(){
    ['Ticket médio',brl(t.vendas?t.valor/t.vendas:0)],['Conversão',(t.conversao||0).toLocaleString('pt-BR')+'%',1],['Reembolsos',num(t.reembolsos)]
   ].map(k=>`<div class="card kpi ${k[2]?'dest':''}"><small>${k[0]}</small><b>${k[1]}</b></div>`).join('');
   $('tVAfi').innerHTML=linhaTab([['Afiliado',x=>x.nome==='(sem afiliado)'||x.nome==='principal'?'<span class="mut">Página principal (sua)</span>':`<b>${esc(x.nome)}</b>`],
-   ['Visitas',x=>num(x.visitas),1],['Vendas',x=>`<b class="ok">${num(x.vendas)}</b>`,1],['Faturamento',x=>brl(x.valor),1],['Conversão',x=>(x.conversao||0).toLocaleString('pt-BR')+'%',1],['Reembolsos',x=>num(x.reembolsos),1]],v.afiliados,'Nenhuma venda nesse período.');
+   ['Visitas',x=>num(x.visitas),1],['Vendas',x=>`<b class="ok">${num(x.vendas)}</b>`,1],['Faturamento',x=>brl(x.valor),1],['Comissão afiliado',x=>x.nome==='(sem afiliado)'||x.nome==='principal'?'—':brl(x.comAfi),1],['Conversão',x=>(x.conversao||0).toLocaleString('pt-BR')+'%',1],['Reembolsos',x=>num(x.reembolsos),1]],v.afiliados,'Nenhuma venda nesse período.');
   $('tVOri').innerHTML=linhaTab([['Origem',x=>esc(x.nome)],['Vendas',x=>`<b class="ok">${num(x.vendas)}</b>`,1],['Faturamento',x=>brl(x.valor),1],['Reembolsos',x=>num(x.reembolsos),1]],v.origens,'Nenhuma venda nesse período.');
   $('tVUlt').innerHTML=linhaTab([['Quando',x=>new Date(x.quando).toLocaleString('pt-BR',{dateStyle:'short',timeStyle:'short'})],['Produto',x=>esc(x.produto)],
    ['Valor',x=>brl(x.valor),1],['Afiliado',x=>esc(x.afiliado||'—')],['Origem',x=>esc(x.origem||'direto')],['Status',x=>x.status==='aprovada'?'<span class="pill ok">aprovada</span>':'<span class="pill no">reembolso</span>']],STATS.ultimasVendas||[],'Nenhuma venda ainda.');

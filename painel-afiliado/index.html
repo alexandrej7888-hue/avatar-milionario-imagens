@@ -45,6 +45,13 @@ h2{font-size:17px;margin:22px 0 10px}
 .login .btn{width:100%}
 .erro{color:var(--red);font-size:14px;margin-top:10px;min-height:20px}
 .carregando{opacity:.5;pointer-events:none}
+.vivo{display:inline-flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--line2);border-radius:30px;padding:8px 14px;font-size:14px;color:var(--mut);margin-bottom:14px}
+.vivo b{color:var(--txt);font-size:16px}
+.vivo i{width:10px;height:10px;border-radius:50%;background:var(--red);box-shadow:0 0 0 0 rgba(248,113,113,.7);animation:pulso 1.6s infinite}
+.vivo.on i{background:var(--g3);box-shadow:0 0 0 0 rgba(74,222,128,.7)}
+@keyframes pulso{70%{box-shadow:0 0 0 9px rgba(0,0,0,0)}100%{box-shadow:0 0 0 0 rgba(0,0,0,0)}}
+.kpi.ouro{border-color:rgba(250,204,21,.45)}.kpi.ouro b{color:var(--gold)}
+.kpi em{display:block;font-style:normal;color:var(--mut);font-size:12px;margin-top:2px}
 @media(max-width:700px){.kpis{grid-template-columns:repeat(2,1fr)}.kpi b{font-size:22px}}
 </style>
 </head>
@@ -66,7 +73,9 @@ h2{font-size:17px;margin:22px 0 10px}
    <div class="logo"><i>★</i><div><small>PAINEL DO AFILIADO</small><span id="nomeAfi"></span></div></div>
    <div style="display:flex;gap:8px"><button class="btn o" id="btnAtualizar">Atualizar</button><button class="btn o" id="btnSair">Sair</button></div>
   </div>
-  <div class="per" id="per"><button data-p="hoje">Hoje</button><button data-p="7d" class="on">7 dias</button><button data-p="30d">30 dias</button><button data-p="total">Tudo</button></div>
+  <div class="vivo"><i></i><b id="vivoN">0</b>&nbsp;<span id="vivoTxt">pessoas na sua página agora</span></div>
+  <div class="per" id="per"><button data-p="hoje">Hoje</button><button data-p="ontem">Ontem</button><button data-p="7d" class="on">7 dias</button><button data-p="30d">30 dias</button><button data-p="total">Tudo</button></div>
+  <p class="mut" id="perData" style="margin:-6px 0 12px"></p>
   <div class="kpis" id="kpis"></div>
   <h2>Últimos 14 dias</h2>
   <div class="card"><div class="graf" id="graf"></div><div class="leg"><span><b style="background:var(--g3)"></b>Visitas</span><span><b style="background:var(--gold)"></b>Cliques no checkout</span></div></div>
@@ -93,24 +102,30 @@ function entrar(u,s,quieto){
   return chamar({acao:'afiliado_entrar',afiliado:USU,senhaAfiliado:SEN}).then(r=>{
     if(!r.ok){$('msg').innerText=r.erro==='senha'?'Usuário ou senha incorretos.':'Não foi possível entrar. Tente de novo.';try{sessionStorage.removeItem('am_afi')}catch(x){}return}
     try{sessionStorage.am_afi=JSON.stringify([USU,SEN])}catch(x){}
-    DADOS=r;$('fLogin').style.display='none';$('app').style.display='';$('nomeAfi').innerText=r.afiliado;desenhar();
+    DADOS=r;$('fLogin').style.display='none';$('app').style.display='';$('nomeAfi').innerText=r.afiliado;desenhar();mostrarVivo(r.aoVivo);
+    clearInterval(window._vivo);window._vivo=setInterval(()=>{if(document.hidden)return;chamar({acao:'afiliado_entrar',afiliado:USU,senhaAfiliado:SEN,soVivo:1}).then(x=>{if(x.ok)mostrarVivo(x.aoVivo)}).catch(()=>{})},30000);
   }).catch(()=>{if(!quieto)$('msg').innerText='Sem conexão. Tente de novo.'}).finally(()=>$('btnEntrar').classList.remove('carregando'));
 }
 $('fLogin').onsubmit=e=>{e.preventDefault();entrar($('usuario').value,$('senha').value)};
 
+/* Pessoas na página do afiliado agora (atualiza sozinho a cada 30s) */
+function mostrarVivo(n){n=+n||0;$('vivoN').innerText=n;$('vivoTxt').innerText=(n===1?'pessoa':'pessoas')+' na sua página agora';document.querySelector('.vivo').classList.toggle('on',n>0)}
+/* Mostra as datas do período escolhido, ex.: "Ontem, 19/10/2026" */
+function dataPer(p){const d=n=>{const x=new Date();x.setDate(x.getDate()-n);return x.toLocaleDateString('pt-BR')};return p==='hoje'?'Hoje, '+d(0):p==='ontem'?'Ontem, '+d(1):p==='7d'?'De '+d(6)+' até hoje':p==='30d'?'De '+d(29)+' até hoje':'Desde o começo'}
 function desenhar(){
   const p=DADOS.periodos[PER];
-  const k=[['Visitas',num(p.visitas)],['Pessoas únicas',num(p.visitantes)],['Tempo médio',tempo(p.tempoMedio)],['Cliques no checkout',num(p.pessoasCheckout),1],
-           ['Conversão checkout',(p.conversao||0).toLocaleString('pt-BR')+'%'],['Vendas',num(p.vendas),1],['Valor vendido',real(p.valor),1],['Conversão em vendas',(p.convVendas||0).toLocaleString('pt-BR')+'%']];
-  $('kpis').innerHTML=k.map(x=>`<div class="card kpi${x[2]?' dest':''}"><small>${x[0]}</small><b>${x[1]}</b></div>`).join('');
+  const k=[['Sua comissão',real(p.comissao),'ouro',p.reembolsos?p.reembolsos+' reembolso'+(p.reembolsos>1?'s':'')+' descontado'+(p.reembolsos>1?'s':''):''],['Vendas',num(p.vendas),'dest'],['Valor vendido',real(p.valor),'dest'],['Conversão em vendas',(p.convVendas||0).toLocaleString('pt-BR')+'%'],
+           ['Visitas',num(p.visitas)],['Pessoas únicas',num(p.visitantes)],['Cliques no checkout',num(p.pessoasCheckout),'dest'],['Conversão checkout',(p.conversao||0).toLocaleString('pt-BR')+'%']];
+  $('kpis').innerHTML=k.map(x=>`<div class="card kpi ${x[2]||''}"><small>${x[0]}</small><b>${x[1]}</b>${x[3]?`<em>${x[3]}</em>`:''}</div>`).join('');
+  $('perData').innerText=dataPer(PER);
   const mx=Math.max(1,...DADOS.dias.map(d=>d.visitas));
   $('graf').innerHTML=DADOS.dias.map(d=>`<div title="${d.dia}: ${d.visitas} visitas, ${d.checkouts} cliques no checkout"><div class="b"><i style="height:${d.visitas/mx*100}%;background:var(--g3)"></i><i style="height:${d.checkouts/mx*100}%;background:var(--gold)"></i></div><span>${d.dia}</span></div>`).join('');
   const v=DADOS.vendas;
   $('tVendas').innerHTML=!v.length?'<tr><td class="mut">Nenhuma venda pelo seu link ainda. Bora divulgar! 🚀</td></tr>':
-   '<tr><th>Quando</th><th>Produto</th><th>Valor</th><th>Comprador</th><th>Status</th></tr>'+v.map(x=>`<tr><td class="mut">${new Date(x.quando).toLocaleString('pt-BR',{dateStyle:'short',timeStyle:'short'})}</td><td>${esc(x.produto)}</td><td>${real(x.valor)}</td><td class="mut">${esc(x.email)}</td><td>${x.status==='aprovada'?'<span class="pill ok">aprovada</span>':'<span class="pill no">'+esc(x.status)+'</span>'}</td></tr>`).join('');
+   '<tr><th>Quando</th><th>Produto</th><th>Valor</th><th>Sua comissão</th><th>Comprador</th><th>Status</th></tr>'+v.map(x=>`<tr><td class="mut">${new Date(x.quando).toLocaleString('pt-BR',{dateStyle:'short',timeStyle:'short'})}</td><td>${esc(x.produto)}</td><td>${real(x.valor)}</td><td style="color:var(--gold);font-weight:800">${x.status==='aprovada'?'':'− '}${real(x.comissao)}</td><td class="mut">${esc(x.email)}</td><td>${x.status==='aprovada'?'<span class="pill ok">aprovada</span>':'<span class="pill no">'+esc(x.status)+'</span>'}</td></tr>`).join('');
 }
 $('per').onclick=e=>{const p=e.target.dataset.p;if(!p||!DADOS)return;PER=p;document.querySelectorAll('#per button').forEach(b=>b.classList.toggle('on',b.dataset.p===p));desenhar()};
-$('btnAtualizar').onclick=e=>{e.target.classList.add('carregando');chamar({acao:'afiliado_entrar',afiliado:USU,senhaAfiliado:SEN}).then(r=>{if(r.ok){DADOS=r;desenhar()}}).finally(()=>e.target.classList.remove('carregando'))};
+$('btnAtualizar').onclick=e=>{e.target.classList.add('carregando');chamar({acao:'afiliado_entrar',afiliado:USU,senhaAfiliado:SEN}).then(r=>{if(r.ok){DADOS=r;desenhar();mostrarVivo(r.aoVivo)}}).finally(()=>e.target.classList.remove('carregando'))};
 $('btnSair').onclick=()=>{try{sessionStorage.removeItem('am_afi')}catch(x){}location.reload()};
 
 /* Lembra o login só enquanto a aba estiver aberta */

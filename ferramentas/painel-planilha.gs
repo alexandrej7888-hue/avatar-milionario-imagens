@@ -221,15 +221,17 @@ function afiliadoEntrar_(d) {
   const nome = String(d.afiliado || '').trim().toLowerCase();
   const ok = senhasAfi_().filter(a => a.nome === nome && a.senha && a.senha === String(d.senhaAfiliado || ''))[0];
   if (!ok) { Utilities.sleep(1500); return { ok: false, erro: 'senha' }; }
+  /* Atualização rápida só do "ao vivo" (o painel pergunta a cada 30s) */
+  if (d.soVivo) return { ok: true, aoVivo: (aoVivo_().afiliados.filter(a => a.nome === nome)[0] || { pessoas: 0 }).pessoas };
   const s = estatisticas_();
   const zero = { visitas: 0, visitantes: 0, tempoMedio: 0, pessoasCheckout: 0, conversao: 0 };
   const periodos = {};
-  ['hoje', '7d', '30d', 'total'].forEach(p => {
+  ['hoje', 'ontem', '7d', '30d', 'total'].forEach(p => {
     const v = s[p].afiliados.filter(a => a.nome === nome)[0] || zero;
-    const vd = s[p].vendas.afiliados.filter(a => a.nome === nome)[0] || { vendas: 0, valor: 0, reembolsos: 0 };
+    const vd = s[p].vendas.afiliados.filter(a => a.nome === nome)[0] || { vendas: 0, valor: 0, comAfi: 0, reembolsos: 0 };
     periodos[p] = {
       visitas: v.visitas, visitantes: v.visitantes, tempoMedio: v.tempoMedio, pessoasCheckout: v.pessoasCheckout, conversao: v.conversao,
-      vendas: vd.vendas, valor: Math.round(vd.valor * 100) / 100, reembolsos: vd.reembolsos,
+      vendas: vd.vendas, valor: Math.round(vd.valor * 100) / 100, comissao: Math.round(vd.comAfi * 100) / 100, reembolsos: vd.reembolsos,
       convVendas: v.visitas ? Math.round(vd.vendas / v.visitas * 1000) / 10 : 0
     };
   });
@@ -253,8 +255,10 @@ function afiliadoEntrar_(d) {
     .filter(r => String(r[5]).toLowerCase() === nome)
     .filter(r => { const k = r[10] + '|' + r[1]; if (r[10] && vistos[k]) return false; vistos[k] = 1; return true; })
     .slice(-30).reverse()
-    .map(r => ({ quando: r[0] instanceof Date ? r[0].toISOString() : String(r[0]), status: r[1], produto: r[2], valor: r[3], email: mascara_(r[9]) }));
-  return { ok: true, afiliado: nome, periodos: periodos, dias: dias, vendas: vendas };
+    .map(r => ({ quando: r[0] instanceof Date ? r[0].toISOString() : String(r[0]), status: r[1], produto: r[2], valor: r[3], comissao: comAfi_(r), email: mascara_(r[9]) }));
+  /* Quantas pessoas estão na página dele agora */
+  const vivo = (s.aoVivo.afiliados.filter(a => a.nome === nome)[0] || { pessoas: 0 }).pessoas;
+  return { ok: true, afiliado: nome, aoVivo: vivo, periodos: periodos, dias: dias, vendas: vendas };
 }
 
 /* Junta nome e ID de todos os produtos que aparecem no pedido (produto principal e bumps) */
@@ -473,11 +477,15 @@ function aoVivo_() {
 
 /* ---------- VENDAS ---------- */
 const ABA_VENDAS = 'Vendas';
-const CAB_VENDAS = ['data', 'status', 'produto', 'valor', 'sua comissao', 'afiliado', 'pagina', 'origem', 'campanha', 'email', 'pedido'];
+const CAB_VENDAS = ['data', 'status', 'produto', 'valor', 'sua comissao', 'afiliado', 'pagina', 'origem', 'campanha', 'email', 'pedido', 'comissao afiliado'];
+/* Comissão do afiliado na venda: a que a Kiwify informou. Vendas antigas (antes de guardarmos esse valor)
+   com afiliado: comissão de 50%, então a parte dele é igual à sua comissão. */
+const comAfi_ = r => r[11] !== '' && r[11] != null ? (+r[11] || 0) : (r[5] ? (+r[4] || 0) : 0);
 function abaVendas_() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   let sh = ss.getSheetByName(ABA_VENDAS);
   if (!sh) { sh = ss.insertSheet(ABA_VENDAS); sh.appendRow(CAB_VENDAS); sh.setFrozenRows(1); }
+  else if (sh.getRange(1, CAB_VENDAS.length).getValue() === '') sh.getRange(1, CAB_VENDAS.length).setValue(CAB_VENDAS[CAB_VENDAS.length - 1]);
   return sh;
 }
 /* A Kiwify manda valores em centavos (ex.: 4700 = R$ 47,00) */
@@ -496,7 +504,9 @@ function registrarVenda_(d, novo, email) {
     reais_(com.my_commission != null ? com.my_commission : ''),
     src && src !== 'principal' ? src : (afi ? String(afi).toLowerCase() : ''),
     src, String(tr.utm_source || '').toLowerCase(), String(tr.utm_campaign || ''), email,
-    d.order_id || d.order_ref || ''
+    d.order_id || d.order_ref || '',
+    /* Comissão que a Kiwify pagou ao afiliado nesta venda */
+    reais_(lojas.filter(s => /affiliate|afiliad/i.test(s.type || '')).map(s => s.value != null ? s.value : s.commission)[0] || 0)
   ];
   const lock = LockService.getScriptLock();
   lock.waitLock(10000);
@@ -533,7 +543,9 @@ function estatisticas_() {
   const agora = new Date();
   const hoje0 = new Date(agora.getFullYear(), agora.getMonth(), agora.getDate()).getTime();
   const DIA = 86400000;
-  const periodos = { hoje: hoje0, '7d': hoje0 - 6 * DIA, '30d': hoje0 - 29 * DIA, total: 0 };
+  const periodos = { hoje: hoje0, ontem: hoje0 - DIA, '7d': hoje0 - 6 * DIA, '30d': hoje0 - 29 * DIA, total: 0 };
+  /* Ontem vai só até a meia-noite de hoje; os outros períodos vão até agora */
+  const fimDe = p => p === 'ontem' ? hoje0 : Infinity;
 
   const novo = () => ({ visitas: 0, visitantes: {}, cliques: 0, segundos: 0, fins: 0, checkouts: 0, visitasCheckout: {} });
   const fecha = a => {
@@ -554,11 +566,11 @@ function estatisticas_() {
 
   const saida = {};
   Object.keys(periodos).forEach(p => {
-    const ini = periodos[p];
+    const ini = periodos[p], fim = fimDe(p);
     const tot = novo(), afi = {}, ori = {}, pag = {};
     rows.forEach(r => {
       const t = r[0] instanceof Date ? r[0].getTime() : new Date(r[0]).getTime();
-      if (t < ini) return;
+      if (t < ini || t >= fim) return;
       soma(tot, r);
       const a = r[3] || '(sem afiliado)';
       soma(afi[a] = afi[a] || novo(), r);
@@ -596,16 +608,17 @@ function estatisticas_() {
   });
   const tempo = x => x instanceof Date ? x.getTime() : new Date(x).getTime();
   Object.keys(periodos).forEach(p => {
-    const ini = periodos[p];
-    const soma = { vendas: 0, valor: 0, comissao: 0, reembolsos: 0 };
+    const ini = periodos[p], fim = fimDe(p);
+    const soma = { vendas: 0, valor: 0, comissao: 0, comAfi: 0, reembolsos: 0 };
     const afi = {}, ori = {};
     const conta = (obj, k, r) => {
-      const a = obj[k] = obj[k] || { vendas: 0, valor: 0, comissao: 0, reembolsos: 0 };
-      if (r[1] === 'aprovada') { a.vendas++; a.valor += +r[3] || 0; a.comissao += +r[4] || 0; } else a.reembolsos++;
+      const a = obj[k] = obj[k] || { vendas: 0, valor: 0, comissao: 0, comAfi: 0, reembolsos: 0 };
+      if (r[1] === 'aprovada') { a.vendas++; a.valor += +r[3] || 0; a.comissao += +r[4] || 0; a.comAfi += comAfi_(r); } else { a.reembolsos++; a.comAfi -= comAfi_(r); }
     };
     vendas.forEach(r => {
-      if (tempo(r[0]) < ini) return;
-      if (r[1] === 'aprovada') { soma.vendas++; soma.valor += +r[3] || 0; soma.comissao += +r[4] || 0; } else soma.reembolsos++;
+      const tt = tempo(r[0]);
+      if (tt < ini || tt >= fim) return;
+      if (r[1] === 'aprovada') { soma.vendas++; soma.valor += +r[3] || 0; soma.comissao += +r[4] || 0; soma.comAfi += comAfi_(r); } else { soma.reembolsos++; soma.comAfi -= comAfi_(r); }
       conta(afi, r[5] || '(sem afiliado)', r);
       conta(ori, r[7] || '(direto)', r);
     });
