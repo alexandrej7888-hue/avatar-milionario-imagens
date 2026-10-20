@@ -408,8 +408,14 @@ const CFG=window.AM_CFG||{};
 const CHECKOUT=CFG.checkout||'https://pay.kiwify.com.br/ZAeyDnS';
 /* Preço da oferta (afiliado pode ter preço próprio, ex.: AM_CFG.preco='19,90') */
 const PRECO=CFG.preco||'47';
-document.querySelectorAll('.precoTxt').forEach(e=>e.textContent=PRECO);
-if(CFG.preco){const pg=document.getElementById('pagaTxt');if(pg)pg.textContent='Fez 1 vídeo, economizou R$ 32: mais do que os R$ '+PRECO+' que você investe no curso. Do segundo vídeo em diante, é tudo economia.';document.querySelectorAll('.paga h3').forEach(e=>e.textContent='Com 1 vídeo o curso já se pagou')}
+/* Escreve o preço em todos os lugares da página (preço abaixo de R$ 32 = o curso se paga com 1 vídeo) */
+function aplicarPreco(p){
+  document.querySelectorAll('.precoTxt').forEach(e=>e.textContent=p);
+  const pg=document.getElementById('pagaTxt'),um=parseFloat(String(p).replace(',','.'))<32;
+  if(pg)pg.textContent=um?'Fez 1 vídeo, economizou R$ 32: mais do que os R$ '+p+' que você investe no curso. Do segundo vídeo em diante, é tudo economia.':'Fez 2 vídeos, economizou R$ 64: mais do que os R$ '+p+' que você investe no curso. Do terceiro vídeo em diante, é tudo economia.';
+  document.querySelectorAll('.paga h3').forEach(e=>e.textContent=um?'Com 1 vídeo o curso já se pagou':'Com 2 vídeos o curso já se pagou');
+}
+aplicarPreco(PRECO);
 const IMG='https://cdn.jsdelivr.net/gh/alexandrej7888-hue/avatar-milionario-imagens@'+(window.AM_VER||'main')+'/';
 const GARANTIA=30;
 /* Planos: link do checkout da Kiwify em "link". O plano com dest:true fica em destaque. */
@@ -480,7 +486,7 @@ document.getElementById('receb').innerHTML=RECEB.map(r=>`<div class="card"><div 
 document.getElementById('quem').innerHTML=QUEM.map(q=>`<div>${sv('ok')}${q}</div>`).join('');
 document.getElementById('faq').innerHTML=FAQ.map(f=>`<details><summary>${f[0]}</summary><p>${f[1]}</p></details>`).join('');
 document.getElementById('planos').innerHTML=PLANOS.map(p=>`<div class="card plano ${p.dest?'dest':''}">${p.dest?'<span class="tag">OFERTA DE LANÇAMENTO</span>':''}
- <h3>${p.n}</h3><div class="de">De <s>${p.de}</s> por</div><div class="por"><small>R$</small>${p.p}</div><div class="unico">Pagamento único</div>
+ <h3>${p.n}</h3><div class="de">De <s>${p.de}</s> por</div><div class="por"><small>R$</small><span class="precoTxt">${p.p}</span></div><div class="unico">Pagamento único</div>
  <ul>${p.itens.map(i=>`<li class="${i[0]?'':'off'}">${sv(i[0]?'ok':'no')}${i[1]}</li>`).join('')}</ul>
  <a class="btn ${p.dest?'btn-g':'btn-o'}" href="${p.link}">Quero meu acesso agora ${sv('arrow')}</a></div>`).join('');
 /* resultados */
@@ -523,6 +529,20 @@ document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
 /* botão fixo no celular depois do topo */
 const fixo=document.getElementById('fixo'),oferta=document.getElementById('oferta');
 addEventListener('scroll',()=>{const r=oferta.getBoundingClientRect();fixo.classList.toggle('on',scrollY>600&&!(r.top<innerHeight&&r.bottom>0))},{passive:true});
+/* Página de afiliado: o link de compra e o preço que o afiliado salvou no painel dele valem por cima do AM_CFG.
+   Troca os links de compra mantendo a marcação de origem (src/utm) que o rastreio colocou. */
+if(CFG.afiliado){
+  fetch('https://script.google.com/macros/s/AKfycbyw-PCFL5Ed1hpDJp18ZlNqYBeUs3GD_D3gMnNuYYyof5XHwb54WJCqd70FAVkwBSL_/exec?cfg='+encodeURIComponent(CFG.afiliado))
+  .then(r=>r.json()).then(c=>{
+    if(!c||!c.ok)return;
+    if(c.preco)aplicarPreco(c.preco);
+    if(c.checkout)document.querySelectorAll('a[href*="kiwify"]').forEach(a=>{
+      try{const velho=new URL(a.href),novo=new URL(c.checkout);
+        velho.searchParams.forEach((v,k)=>{if(!novo.searchParams.has(k)&&(k==='src'||k.indexOf('utm_')===0))novo.searchParams.set(k,v)});
+        a.href=novo.toString()}catch(x){}
+    });
+  }).catch(()=>{});
+}
 </script>
 <!-- Contador de visitas: o nome do afiliado vem de AM_CFG. O carregador da página informa a versão (AM_VER) para o rastreio vir da mesma versão. -->
 <script>window.AM_AFILIADO=(window.AM_CFG||{}).afiliado||'';

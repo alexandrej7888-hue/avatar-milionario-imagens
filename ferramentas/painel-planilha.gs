@@ -115,6 +115,13 @@ function listar_() {
 function painel_(d) {
   /* Painel do afiliado: entra com o nome e a senha dele e vê só os números dele */
   if (d.acao === 'afiliado_entrar') return json_(afiliadoEntrar_(d));
+  if (d.acao === 'afiliado_salvar') {
+    const nome = String(d.afiliado || '').trim().toLowerCase();
+    const ok = senhasAfi_().filter(a => a.nome === nome && a.senha && a.senha === String(d.senhaAfiliado || ''))[0];
+    if (!ok) { Utilities.sleep(1500); return json_({ ok: false, erro: 'senha' }); }
+    const erro = salvarConfigAfi_(nome, d.checkout, d.preco);
+    return json_(erro ? { ok: false, erro: erro } : { ok: true, config: configAfi_(nome) });
+  }
   if (!SENHA_PAINEL || d.senha !== SENHA_PAINEL) {
     Utilities.sleep(1500);
     return json_({ ok: false, erro: 'senha' });
@@ -179,13 +186,36 @@ const ABA_AFI = 'Afiliados';
 function abaAfi_() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
   let sh = ss.getSheetByName(ABA_AFI);
-  if (!sh) { sh = ss.insertSheet(ABA_AFI); sh.appendRow(['afiliado', 'senha', 'atualizado em']); sh.setFrozenRows(1); }
+  if (!sh) { sh = ss.insertSheet(ABA_AFI); sh.appendRow(CAB_AFI); sh.setFrozenRows(1); }
+  else if (sh.getRange(1, CAB_AFI.length).getValue() === '') sh.getRange(1, 1, 1, CAB_AFI.length).setValues([CAB_AFI]);
   return sh;
 }
+const CAB_AFI = ['afiliado', 'senha', 'atualizado em', 'link de compra', 'preco', 'pagina'];
 function senhasAfi_() {
   const sh = abaAfi_();
   const n = sh.getLastRow();
-  return n < 2 ? [] : sh.getRange(2, 1, n - 1, 3).getValues().map((r, i) => ({ linha: i + 2, nome: String(r[0]).trim().toLowerCase(), senha: String(r[1]), quando: r[2] }));
+  return n < 2 ? [] : sh.getRange(2, 1, n - 1, CAB_AFI.length).getValues().map((r, i) => ({
+    linha: i + 2, nome: String(r[0]).trim().toLowerCase(), senha: String(r[1]), quando: r[2],
+    checkout: String(r[3] || '').trim(), preco: String(r[4] || '').trim(), pagina: String(r[5] || '').trim()
+  }));
+}
+/* Link de compra, preço e página de vendas de um afiliado (o que a página dele usa) */
+function configAfi_(nome) {
+  const a = senhasAfi_().filter(x => x.nome === nome)[0];
+  return a ? { checkout: a.checkout, preco: a.preco, pagina: a.pagina } : { checkout: '', preco: '', pagina: '' };
+}
+/* O afiliado troca o link de compra e o preço pelo painel dele. Só aceita link da Kiwify. */
+function salvarConfigAfi_(nome, checkout, preco) {
+  checkout = String(checkout || '').trim();
+  preco = String(preco || '').trim().replace(/^R\$\s*/i, '').replace('.', ',');
+  if (!/^https:\/\/pay\.kiwify\.com\.br\/[A-Za-z0-9]+(\?[^\s<>"']*)?$/.test(checkout)) return 'O link precisa ser um link de compra da Kiwify (começa com https://pay.kiwify.com.br/).';
+  if (!/^\d{1,4}(,\d{1,2})?$/.test(preco)) return 'Escreva o preço só com números, ex.: 19,90 ou 47.';
+  if (preco.indexOf(',') > 0 && preco.split(',')[1].length === 1) preco += '0';
+  const a = senhasAfi_().filter(x => x.nome === nome)[0];
+  if (!a) return 'Afiliado não encontrado.';
+  abaAfi_().getRange(a.linha, 4, 1, 2).setValues([[checkout, preco]]);
+  CacheService.getScriptCache().remove('cfg_' + nome);
+  return '';
 }
 function salvarSenhaAfiliado_(nome, senha) {
   const lock = LockService.getScriptLock();
@@ -258,7 +288,7 @@ function afiliadoEntrar_(d) {
     .map(r => ({ quando: r[0] instanceof Date ? r[0].toISOString() : String(r[0]), status: r[1], produto: r[2], valor: r[3], comissao: comAfi_(r), email: mascara_(r[9]) }));
   /* Quantas pessoas estão na página dele agora */
   const vivo = (s.aoVivo.afiliados.filter(a => a.nome === nome)[0] || { pessoas: 0 }).pessoas;
-  return { ok: true, afiliado: nome, aoVivo: vivo, periodos: periodos, dias: dias, vendas: vendas };
+  return { ok: true, afiliado: nome, aoVivo: vivo, config: configAfi_(nome), periodos: periodos, dias: dias, vendas: vendas };
 }
 
 /* Junta nome e ID de todos os produtos que aparecem no pedido (produto principal e bumps) */
@@ -780,6 +810,14 @@ function verIps() { console.log(JSON.stringify(resumoIps_(), null, 2)); }
 /* Área de membros -> planilha: ?email=fulano@x.com&ip=1.2.3.4 responde se tem acesso e se tem o bump */
 function doGet(e) {
   const p = (e && e.parameter) || {};
+  /* Página de vendas do afiliado: ?cfg=nome devolve o link de compra e o preço que ele salvou (com cache de 5 min) */
+  if (p.cfg) {
+    const nome = String(p.cfg).trim().toLowerCase().slice(0, 40);
+    const cache = CacheService.getScriptCache(), k = 'cfg_' + nome;
+    let c = cache.get(k);
+    if (!c) { const x = configAfi_(nome); c = JSON.stringify({ ok: true, checkout: x.checkout, preco: x.preco }); cache.put(k, c, 300); }
+    return ContentService.createTextOutput(c).setMimeType(ContentService.MimeType.JSON);
+  }
   const email = String(p.email || '').trim().toLowerCase();
   if (!email) return json_({ ok: true, servico: 'acesso avatar milionario' });
   const sh = aba_();

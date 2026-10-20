@@ -50,6 +50,12 @@ h2{font-size:17px;margin:22px 0 10px}
 .vivo i{width:10px;height:10px;border-radius:50%;background:var(--red);box-shadow:0 0 0 0 rgba(248,113,113,.7);animation:pulso 1.6s infinite}
 .vivo.on i{background:var(--g3);box-shadow:0 0 0 0 rgba(74,222,128,.7)}
 @keyframes pulso{70%{box-shadow:0 0 0 9px rgba(0,0,0,0)}100%{box-shadow:0 0 0 0 rgba(0,0,0,0)}}
+.linkpg{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:8px 0 12px}
+.linkpg a{color:var(--g3);font-weight:800;word-break:break-all;text-decoration:none}
+.cfg{display:grid;grid-template-columns:1fr 140px auto;gap:10px;align-items:end}
+.cfg label{font-size:12px;color:var(--mut);font-weight:700}.cfg .inp{margin:4px 0 0}
+.cfg .btn{height:46px}
+@media(max-width:700px){.cfg{grid-template-columns:1fr}}
 .kpi.ouro{border-color:rgba(250,204,21,.45)}.kpi.ouro b{color:var(--gold)}
 .kpi em{display:block;font-style:normal;color:var(--mut);font-size:12px;margin-top:2px}
 @media(max-width:700px){.kpis{grid-template-columns:repeat(2,1fr)}.kpi b{font-size:22px}}
@@ -72,6 +78,16 @@ h2{font-size:17px;margin:22px 0 10px}
   <div class="top">
    <div class="logo"><i>★</i><div><small>PAINEL DO AFILIADO</small><span id="nomeAfi"></span></div></div>
    <div style="display:flex;gap:8px"><button class="btn o" id="btnAtualizar">Atualizar</button><button class="btn o" id="btnSair">Sair</button></div>
+  </div>
+  <div class="card" id="cfgCard" style="margin-bottom:14px">
+   <b style="font-size:15px">Sua página de vendas</b>
+   <div class="linkpg"><a id="cfgPagina" href="#" target="_blank" rel="noopener"></a><button class="btn o" type="button" id="btnCopiarPg">Copiar link</button></div>
+   <div class="cfg">
+    <label>Seu link de compra (Kiwify)<input class="inp" id="cfgCheckout" placeholder="https://pay.kiwify.com.br/..." autocapitalize="none"></label>
+    <label>Preço (R$)<input class="inp" id="cfgPreco" placeholder="19,90" inputmode="decimal"></label>
+    <button class="btn" type="button" id="btnSalvarCfg">Salvar</button>
+   </div>
+   <div class="mut" id="cfgMsg" style="min-height:18px"></div>
   </div>
   <div class="vivo"><i></i><b id="vivoN">0</b>&nbsp;<span id="vivoTxt">pessoas na sua página agora</span></div>
   <div class="per" id="per"><button data-p="hoje">Hoje</button><button data-p="ontem">Ontem</button><button data-p="7d" class="on">7 dias</button><button data-p="30d">30 dias</button><button data-p="total">Tudo</button></div>
@@ -102,12 +118,22 @@ function entrar(u,s,quieto){
   return chamar({acao:'afiliado_entrar',afiliado:USU,senhaAfiliado:SEN}).then(r=>{
     if(!r.ok){$('msg').innerText=r.erro==='senha'?'Usuário ou senha incorretos.':'Não foi possível entrar. Tente de novo.';try{sessionStorage.removeItem('am_afi')}catch(x){}return}
     try{sessionStorage.am_afi=JSON.stringify([USU,SEN])}catch(x){}
-    DADOS=r;$('fLogin').style.display='none';$('app').style.display='';$('nomeAfi').innerText=r.afiliado;desenhar();mostrarVivo(r.aoVivo);
+    DADOS=r;$('fLogin').style.display='none';$('app').style.display='';$('nomeAfi').innerText=r.afiliado;desenhar();mostrarVivo(r.aoVivo);mostrarCfg(r.config);
     clearInterval(window._vivo);window._vivo=setInterval(()=>{if(document.hidden)return;chamar({acao:'afiliado_entrar',afiliado:USU,senhaAfiliado:SEN,soVivo:1}).then(x=>{if(x.ok)mostrarVivo(x.aoVivo)}).catch(()=>{})},30000);
   }).catch(()=>{if(!quieto)$('msg').innerText='Sem conexão. Tente de novo.'}).finally(()=>$('btnEntrar').classList.remove('carregando'));
 }
 $('fLogin').onsubmit=e=>{e.preventDefault();entrar($('usuario').value,$('senha').value)};
 
+/* Sua página: mostra o link da página e deixa trocar o link de compra e o preço */
+function mostrarCfg(c){c=c||{};const pg=c.pagina||'';$('cfgPagina').textContent=pg||'(página ainda não cadastrada)';$('cfgPagina').href=pg||'#';$('btnCopiarPg').style.display=pg?'':'none';$('cfgCheckout').value=c.checkout||'';$('cfgPreco').value=c.preco||''}
+$('btnCopiarPg').onclick=()=>{const t=$('cfgPagina').href;(navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>{$('cfgMsg').style.color='var(--g3)';$('cfgMsg').innerText='Link da página copiado!'}).catch(()=>prompt('Copie o link da sua página:',t))};
+$('btnSalvarCfg').onclick=e=>{
+  const b=e.target;b.classList.add('carregando');$('cfgMsg').style.color='';$('cfgMsg').innerText='Salvando…';
+  chamar({acao:'afiliado_salvar',afiliado:USU,senhaAfiliado:SEN,checkout:$('cfgCheckout').value,preco:$('cfgPreco').value}).then(r=>{
+    if(!r.ok){$('cfgMsg').style.color='var(--red)';$('cfgMsg').innerText=r.erro==='senha'?'Sessão expirou, entre de novo.':r.erro;return}
+    mostrarCfg(r.config);$('cfgMsg').style.color='var(--g3)';$('cfgMsg').innerText='Salvo! Sua página já está com esse link e esse preço.';
+  }).catch(()=>{$('cfgMsg').style.color='var(--red)';$('cfgMsg').innerText='Não foi possível salvar. Tente de novo.'}).finally(()=>b.classList.remove('carregando'));
+};
 /* Pessoas na página do afiliado agora (atualiza sozinho a cada 30s) */
 function mostrarVivo(n){n=+n||0;$('vivoN').innerText=n;$('vivoTxt').innerText=(n===1?'pessoa':'pessoas')+' na sua página agora';document.querySelector('.vivo').classList.toggle('on',n>0)}
 /* Mostra as datas do período escolhido, ex.: "Ontem, 19/10/2026" */
