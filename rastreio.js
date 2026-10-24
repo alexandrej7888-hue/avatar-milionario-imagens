@@ -55,11 +55,12 @@
   ping();
   setInterval(ping, 45000);
 
-  /* Leva a página e a origem para o checkout da Kiwify (aparece na venda: src e utm_source) */
-  [].forEach.call(document.querySelectorAll('a[href*="pay.kiwify.com.br"]'), function (a) {
+  /* Leva a página e a origem para o checkout da Kiwify ou da Cakto (aparece na venda: src/sck e utm_source) */
+  [].forEach.call(document.querySelectorAll('a[href*="pay.kiwify.com.br"], a[href*="pay.cakto.com.br"]'), function (a) {
     try {
       var u = new URL(a.href);
       u.searchParams.set('src', (window.AM_AFILIADO || 'principal').toLowerCase());
+      if (/cakto/.test(u.hostname)) u.searchParams.set('sck', (window.AM_AFILIADO || 'principal').toLowerCase());
       if (!u.searchParams.get('utm_source')) u.searchParams.set('utm_source', origem);
       ['utm_medium', 'utm_campaign', 'utm_content'].forEach(function (k) { if (q.get(k)) u.searchParams.set(k, q.get(k)); });
       a.href = u.toString();
@@ -71,7 +72,7 @@
   document.addEventListener('click', function (e) {
     cliques++;
     var a = e.target.closest && e.target.closest('a[href]');
-    if (a && /pay\.kiwify\.com\.br|kiwify\.app/.test(a.href) && !checkout) { checkout = true; envia('checkout'); }
+    if (a && /pay\.kiwify\.com\.br|kiwify\.app|pay\.cakto\.com\.br/.test(a.href) && !checkout) { checkout = true; envia('checkout'); }
   }, true);
 
   /* Tempo com a página aberta e visível */

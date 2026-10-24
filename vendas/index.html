@@ -405,7 +405,7 @@ footer{border-top:1px solid var(--line);padding:30px 0;text-align:center;color:v
 /* Cada página (principal ou de afiliado) carrega este mesmo arquivo e define antes window.AM_CFG:
    { checkout: link de compra, afiliado: nome do afiliado, banner: imagem do topo (caminho no repositório) } */
 const CFG=window.AM_CFG||{};
-const CHECKOUT=CFG.checkout||'https://pay.kiwify.com.br/ZAeyDnS';
+const CHECKOUT=CFG.checkout||'https://pay.cakto.com.br/3bt2ki4';
 /* Preço da oferta (afiliado pode ter preço próprio, ex.: AM_CFG.preco='19,90') */
 const PRECO=CFG.preco||'47';
 /* Escreve o preço em todos os lugares da página (preço abaixo de R$ 32 = o curso se paga com 1 vídeo) */
@@ -418,7 +418,7 @@ function aplicarPreco(p){
 aplicarPreco(PRECO);
 const IMG='https://cdn.jsdelivr.net/gh/alexandrej7888-hue/avatar-milionario-imagens@'+(window.AM_VER||'main')+'/';
 const GARANTIA=30;
-/* Planos: link do checkout da Kiwify em "link". O plano com dest:true fica em destaque. */
+/* Planos: link do checkout (Cakto ou Kiwify) em "link". O plano com dest:true fica em destaque. */
 const PLANOS=[
  {n:'Acesso completo',de:'R$ 97,00',p:PRECO,link:CHECKOUT,dest:true,itens:[[1,'Curso completo passo a passo'],[1,'Criador de avatar com mais de 50 looks'],[1,'Personagem em pessoa real'],[1,'Prompts prontos'],[1,'Pack de vídeos virais'],[1,'Bônus: vídeos por menos de R$ 2'],[1,'Grupo de networking no WhatsApp'],[1,'Programa de afiliados com 50% de comissão']]}
 ];
@@ -536,9 +536,9 @@ if(CFG.afiliado){
   .then(r=>r.json()).then(c=>{
     if(!c||!c.ok)return;
     if(c.preco)aplicarPreco(c.preco);
-    if(c.checkout)document.querySelectorAll('a[href*="kiwify"]').forEach(a=>{
+    if(c.checkout)document.querySelectorAll('a[href*="kiwify"],a[href*="cakto"]').forEach(a=>{
       try{const velho=new URL(a.href),novo=new URL(c.checkout);
-        velho.searchParams.forEach((v,k)=>{if(!novo.searchParams.has(k)&&(k==='src'||k.indexOf('utm_')===0))novo.searchParams.set(k,v)});
+        velho.searchParams.forEach((v,k)=>{if(!novo.searchParams.has(k)&&(k==='src'||k==='sck'||k.indexOf('utm_')===0))novo.searchParams.set(k,v)});
         a.href=novo.toString()}catch(x){}
     });
   }).catch(()=>{});
