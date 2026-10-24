@@ -79,6 +79,11 @@ h2{font-size:17px;margin:22px 0 10px}
    <div class="logo"><i>★</i><div><small>PAINEL DO AFILIADO</small><span id="nomeAfi"></span></div></div>
    <div style="display:flex;gap:8px"><button class="btn o" id="btnAtualizar">Atualizar</button><button class="btn o" id="btnSair">Sair</button></div>
   </div>
+  <div class="card" id="caktoCard" style="margin-bottom:14px">
+   <b style="font-size:15px">Afiliação na Cakto</b>
+   <p class="mut" style="margin:6px 0 10px">1. Clique no botão e peça a afiliação do Avatar Milionário na Cakto (50% de comissão). 2. Na Cakto, copie o seu link de divulgação. 3. Cole o link no campo "Seu link de compra" logo abaixo e salve.</p>
+   <div class="linkpg"><a class="btn" id="caktoAfi" href="https://app.cakto.com.br/affiliate/invite/f41a562b-f149-4865-95f8-dab0589995c9" target="_blank" rel="noopener" style="color:#03150a">Solicitar afiliação na Cakto</a><button class="btn o" type="button" id="btnCopiarCakto">Copiar link</button></div>
+  </div>
   <div class="card" id="cfgCard" style="margin-bottom:14px">
    <b style="font-size:15px">Sua página de vendas</b>
    <div class="linkpg"><a id="cfgPagina" href="#" target="_blank" rel="noopener"></a><button class="btn o" type="button" id="btnCopiarPg">Copiar link</button></div>
@@ -126,6 +131,7 @@ $('fLogin').onsubmit=e=>{e.preventDefault();entrar($('usuario').value,$('senha')
 
 /* Sua página: mostra o link da página e deixa trocar o link de compra e o preço */
 function mostrarCfg(c){c=c||{};const pg=c.pagina||'';$('cfgPagina').textContent=pg||'(página ainda não cadastrada)';$('cfgPagina').href=pg||'#';$('btnCopiarPg').style.display=pg?'':'none';$('cfgCheckout').value=c.checkout||'';$('cfgPreco').value=c.preco||''}
+$('btnCopiarCakto').onclick=()=>{const t=$('caktoAfi').href;(navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>{$('btnCopiarCakto').innerText='Copiado!'}).catch(()=>prompt('Copie o link de afiliação:',t))};
 $('btnCopiarPg').onclick=()=>{const t=$('cfgPagina').href;(navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>{$('cfgMsg').style.color='var(--g3)';$('cfgMsg').innerText='Link da página copiado!'}).catch(()=>prompt('Copie o link da sua página:',t))};
 $('btnSalvarCfg').onclick=e=>{
   const b=e.target;b.classList.add('carregando');$('cfgMsg').style.color='';$('cfgMsg').innerText='Salvando…';
