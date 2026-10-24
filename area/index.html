@@ -449,10 +449,10 @@ const VID_BASE='https://raw.githubusercontent.com/alexandrej7888-hue/avatar-mili
 /* Aulas: [título, id do vídeo no Panda, duração]. Módulo com lock fica fechado (some quando liberar). */
 /* Módulo dos R$ 2: contas mais baratas pelo contato abaixo. CONTATO_R2 = número com DDI e DDD (ex.: 5538999999999); vazio = botão não aparece. */
 const CONTATO_R2='5511968981961';
-const TEXTO_R2=()=>`<div class="card" style="max-width:720px"><div class="ico-box">${ic('money')}</div><h3>Contas mais baratas para gerar seus vídeos</h3>
- <p>Pessoal, para vocês conseguirem contas mais baratas, estou deixando aqui abaixo um contato.</p>
- <p><b>Corre para garantir:</b> até o dia 31/10 a conta está com <b>geração ilimitada</b>, e para quem vem pelo curso o valor é <b>R$ 40</b>.</p>
- <p>É só chamar o contato no WhatsApp que ele explica certinho, e você recebe a conta já com saldo ilimitado até o dia 31/10.</p>
+const TEXTO_R2=()=>`<div class="card" style="max-width:720px"><div class="ico-box">${ic('money')}</div><h3>Conta com geração ilimitada para os seus vídeos 🔥</h3>
+ <p>Pessoal, assistam a aula acima: é o jeito mais barato de gerar os vídeos do seu avatar. Para quem é aluno do curso eu consegui uma condição especial, e o contato está logo abaixo.</p>
+ <p><b>Corre para garantir:</b> até o dia <b>31/10</b> a conta vem com <b>geração ilimitada</b>, e para quem vem pelo curso o valor é <b>R$ 40</b>.</p>
+ <p>É só chamar o contato no WhatsApp e dizer que veio pelo curso Avatar Milionário. Ele explica tudo certinho e você recebe a conta já com saldo ilimitado até o dia 31/10.</p>
  ${CONTATO_R2?`<a class="btn btn-g" style="margin-top:14px;background:#25d366" target="_blank" rel="noopener" href="https://wa.me/${CONTATO_R2}?text=${encodeURIComponent('Oi! Vim pelo curso Avatar Milionário e quero a conta de R$ 40 com geração ilimitada.')}">Chamar no WhatsApp</a>`:'<p class="dica">O contato do WhatsApp aparece aqui em instantes.</p>'}</div>`;
 const PANDA='https://player-vz-3feffac1-27d.tv.pandavideo.com.br/embed/?v=';
 const MODULOS=[
@@ -469,7 +469,8 @@ const MODULOS=[
   ['Como fazer um vídeo viral com seu avatar','972fd4c8-e1f8-4f0d-917c-6fad75735c76','14:35']]},
  {t:'Monetização',d:'Publis, afiliados e produtos: como transformar views em dinheiro.',aulas:[
   ['Como ganhar dinheiro com seu avatar','3d302edc-94ac-4683-96c1-ef8275d80401','5:48']]},
- {t:'Bônus: vídeos por menos de R$ 2',d:'O jeito de gerar cada vídeo do seu avatar pagando menos de dois reais.',aulas:[],texto:true},
+ {t:'Bônus: vídeos por menos de R$ 2',d:'O jeito de gerar cada vídeo do seu avatar pagando menos de dois reais.',aulas:[
+  ['Contas com geração ilimitada até 31/10','e223f9f3-67b3-4473-b594-317a64134996','4:07']],texto:true},
  {t:'TikTok Shop',d:'Módulo em gravação. Em breve na sua área de membros.',aulas:[],lock:'Em breve'}
 ];
 /* Aulas concluídas ficam salvas no navegador do aluno */
@@ -520,7 +521,7 @@ const cardMod=(m,i)=>{const n=String(i+1).padStart(2,'0'), f=feitasMod(m), a=m.a
 const totalAulas=()=>MODULOS.reduce((s,m)=>s+m.aulas.length,0), feitas=()=>MODULOS.reduce((s,m)=>s+feitasMod(m),0);
 const pct=()=>totalAulas()?Math.round(feitas()/totalAulas()*100):0;
 /* Página do módulo: player do Panda + lista de aulas */
-function telaModulo(i){const m=MODULOS[i];if(m&&!m.lock&&m.texto)return `<div class="ph" style="margin-bottom:20px"><h1>${m.t}</h1><p>Módulo ${String(i+1).padStart(2,'0')}</p></div>${TEXTO_R2()}`;if(!m||m.lock||!m.aulas.length)return P.aulas();
+function telaModulo(i){const m=MODULOS[i];if(m&&!m.lock&&m.texto&&!m.aulas.length)return `<div class="ph" style="margin-bottom:20px"><h1>${m.t}</h1><p>Módulo ${String(i+1).padStart(2,'0')}</p></div>${TEXTO_R2()}`;if(!m||m.lock||!m.aulas.length)return P.aulas();
  if(AULA>=m.aulas.length)AULA=0;const a=m.aulas[AULA], prox=AULA<m.aulas.length-1, n=String(i+1).padStart(2,'0');
  return `<a href="#aulas" class="voltar">← Todos os módulos</a>
  <div class="ph" style="margin-bottom:20px"><h1>${m.t}</h1><p>Módulo ${n} · ${m.aulas.length} ${m.aulas.length>1?'aulas':'aula'}</p></div>
@@ -530,7 +531,7 @@ function telaModulo(i){const m=MODULOS[i];if(m&&!m.lock&&m.texto)return `<div cl
     <button class="btn ${vista(a[1])?'btn-o':'btn-g'}" onclick="concluir('${a[1]}');${prox?`AULA++;rr()`:`rr();toast('Módulo concluído!')`}">${vista(a[1])?'✓ Concluída':'Concluir aula'}${prox?' e ir para a próxima '+ic('arrow'):''}</button></div></div>
   <div class="card lista-card"><h3>${ic('book')} Aulas do módulo</h3><div class="lista">${m.aulas.map((x,j)=>`<button class="li ${j===AULA?'on':''} ${vista(x[1])?'ok':''}" onclick="AULA=${j};rr()"><span class="n">${vista(x[1])?'✓':j+1}</span><span><b>${x[0]}</b><small>${x[2]}</small></span></button>`).join('')}</div>
    ${MODULOS[i+1]&&!MODULOS[i+1].lock&&MODULOS[i+1].aulas.length?`<a class="btn btn-o btn-full" style="margin-top:12px" href="#modulo-${i+2}" onclick="AULA=0">Próximo módulo ${ic('arrow')}</a>`:''}</div>
- </div>`}
+ </div>${m.texto?`<div style="margin-top:22px">${TEXTO_R2()}</div>`:''}`}
 
 const P={
 inicio:()=>`
