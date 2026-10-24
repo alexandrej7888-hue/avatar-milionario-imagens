@@ -451,6 +451,13 @@ const PROMPTS=[
 const VIRAIS=['01','02','03','04','05','06','07','08','09','10','11','12','13','14','15','16','17','18','19','20','21','22','23','24','25','26','27','28','29','30','31','32','33','34','35','36','37','38','39'];
 const VID_BASE='https://raw.githubusercontent.com/alexandrej7888-hue/avatar-milionario-imagens/videos/virais/';
 /* Aulas: [título, id do vídeo no Panda, duração]. Módulo com lock fica fechado (some quando liberar). */
+/* Módulo dos R$ 2: contas mais baratas pelo contato abaixo. CONTATO_R2 = número com DDI e DDD (ex.: 5538999999999); vazio = botão não aparece. */
+const CONTATO_R2='';
+const TEXTO_R2=()=>`<div class="card" style="max-width:720px"><div class="ico-box">${ic('money')}</div><h3>Contas mais baratas para gerar seus vídeos</h3>
+ <p>Pessoal, para vocês conseguirem contas mais baratas, estou deixando aqui abaixo um contato.</p>
+ <p><b>Corre para garantir:</b> até o dia 31/10 a conta está com <b>geração ilimitada</b>, e para quem vem pelo curso o valor é <b>R$ 40</b>.</p>
+ <p>É só chamar o contato no WhatsApp que ele explica certinho, e você recebe a conta já com saldo ilimitado até o dia 31/10.</p>
+ ${CONTATO_R2?`<a class="btn btn-g" style="margin-top:14px;background:#25d366" target="_blank" rel="noopener" href="https://wa.me/${CONTATO_R2}?text=${encodeURIComponent('Oi! Vim pelo curso Avatar Milionário e quero a conta de R$ 40 com geração ilimitada.')}">Chamar no WhatsApp</a>`:'<p class="dica">O contato do WhatsApp aparece aqui em instantes.</p>'}</div>`;
 const PANDA='https://player-vz-3feffac1-27d.tv.pandavideo.com.br/embed/?v=';
 const MODULOS=[
  {t:'Comece por aqui',d:'Boas-vindas e como tirar o máximo do Avatar Milionário.',aulas:[
@@ -466,7 +473,7 @@ const MODULOS=[
   ['Como fazer um vídeo viral com seu avatar','972fd4c8-e1f8-4f0d-917c-6fad75735c76','14:35']]},
  {t:'Monetização',d:'Publis, afiliados e produtos: como transformar views em dinheiro.',aulas:[
   ['Como ganhar dinheiro com seu avatar','3d302edc-94ac-4683-96c1-ef8275d80401','5:48']]},
- {t:'Bônus: vídeos por menos de R$ 2',d:'O jeito de gerar cada vídeo do seu avatar pagando menos de dois reais.',aulas:[],lock:'Libera em 7 dias'},
+ {t:'Bônus: vídeos por menos de R$ 2',d:'O jeito de gerar cada vídeo do seu avatar pagando menos de dois reais.',aulas:[],texto:true},
  {t:'TikTok Shop',d:'Módulo em gravação. Em breve na sua área de membros.',aulas:[],lock:'Em breve'}
 ];
 /* Aulas concluídas ficam salvas no navegador do aluno */
@@ -517,7 +524,7 @@ const cardMod=(m,i)=>{const n=String(i+1).padStart(2,'0'), f=feitasMod(m), a=m.a
 const totalAulas=()=>MODULOS.reduce((s,m)=>s+m.aulas.length,0), feitas=()=>MODULOS.reduce((s,m)=>s+feitasMod(m),0);
 const pct=()=>totalAulas()?Math.round(feitas()/totalAulas()*100):0;
 /* Página do módulo: player do Panda + lista de aulas */
-function telaModulo(i){const m=MODULOS[i];if(!m||m.lock||!m.aulas.length)return P.aulas();
+function telaModulo(i){const m=MODULOS[i];if(m&&!m.lock&&m.texto)return `<div class="ph" style="margin-bottom:20px"><h1>${m.t}</h1><p>Módulo ${String(i+1).padStart(2,'0')}</p></div>${TEXTO_R2()}`;if(!m||m.lock||!m.aulas.length)return P.aulas();
  if(AULA>=m.aulas.length)AULA=0;const a=m.aulas[AULA], prox=AULA<m.aulas.length-1, n=String(i+1).padStart(2,'0');
  return `<a href="#aulas" class="voltar">← Todos os módulos</a>
  <div class="ph" style="margin-bottom:20px"><h1>${m.t}</h1><p>Módulo ${n} · ${m.aulas.length} ${m.aulas.length>1?'aulas':'aula'}</p></div>
