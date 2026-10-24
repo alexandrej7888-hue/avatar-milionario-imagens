@@ -100,6 +100,8 @@ h2{font-size:17px;font-weight:800;margin:22px 0 10px}
  <div class="mut" id="vivoAfi" style="margin:-12px 0 18px"></div>
  <!-- Alunos que entraram de mais IPs que o limite: você decide se bloqueia -->
  <div id="alertaIps" class="card" style="display:none;border-color:rgba(250,204,21,.45);background:rgba(250,204,21,.06);margin-bottom:18px"></div>
+ <!-- E-mails disparados: aberturas vêm da Brevo -->
+ <div class="card nao-imprime" id="cardEmails" style="margin-bottom:18px"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px"><b style="font-size:14px">📧 E-mails disparados</b><button class="btn o" id="btnEmails" style="padding:6px 12px;font-size:13px">↻ Atualizar</button></div><div class="scroll"><table class="tbl" id="tEmails"><tr><td class="mut">Carregando…</td></tr></table></div><div class="mut" style="font-size:12px;margin-top:6px">Aberturas contam cada pessoa uma vez. Alguns celulares (iPhone) contam como aberto ao receber.</div></div>
 
  <section id="tVendas" style="display:none">
   <div class="per" id="perV">
@@ -203,7 +205,7 @@ function logar(e){
     if(!r.ok){$('msgLogin').innerText=r.erro==='senha'?'Senha errada.':'Erro: '+r.erro;return}
     try{sessionStorage.am_painel=SENHA}catch(x){}
     $('entrar').style.display='none';$('app').style.display='block';
-    STATS=r.stats;desenhar();carregarAlunos();vivo(STATS.aoVivo);setInterval(atualizarVivo,30000);
+    STATS=r.stats;desenhar();carregarAlunos();carregarEmails();vivo(STATS.aoVivo);setInterval(atualizarVivo,30000);
   }).catch(()=>$('msgLogin').innerText='Não foi possível conectar. Tente de novo.')
   .finally(()=>$('btnLogin').classList.remove('carregando'));
 }
@@ -386,6 +388,10 @@ document.querySelector('.tabs').onclick=e=>{
 const LINK_AFI='https://minhapagina.pro/painel-afiliado/';
 function gerarSenha(){const c='abcdefghjkmnpqrstuvwxyz23456789';let s='';const a=new Uint32Array(8);crypto.getRandomValues(a);a.forEach(x=>s+=c[x%c.length]);return s.slice(0,4)+'-'+s.slice(4)}
 function listaAfil(l){$('tAfil').innerHTML=!l.length?'<tr><td class="mut">Nenhum afiliado ainda.</td></tr>':'<tr><th>Afiliado</th><th>Página e link de compra</th><th>Senha</th><th></th></tr>'+l.map(a=>{const n=esc(a.nome);return `<tr><td><b>${n}</b></td><td style="font-size:13px;max-width:340px">${a.pagina?`<a href="${esc(a.pagina)}" target="_blank" rel="noopener" style="color:var(--g3);font-weight:700">${esc(a.pagina.replace(/^https?:\/\//,''))}</a>`:'<span class="mut">sem página</span>'}${a.checkout?`<br><span class="mut" style="word-break:break-all">${esc(a.checkout.replace(/^https?:\/\//,''))}</span>`:''}${a.preco?` <b style="color:var(--gold)">R$ ${esc(a.preco)}</b>`:''}</td><td>${a.senha?`<code style="background:var(--card2);padding:3px 8px;border-radius:6px">${esc(a.senha)}</code>`:'<span class="pill x">sem senha</span>'}</td><td style="white-space:nowrap"><button class="btn o s" onclick="$('afNome').value='${n}';$('afSenha').value=gerarSenha();$('afSenha').focus()">${a.senha?'Trocar senha':'Criar senha'}</button> ${a.senha?`<button class="btn o s" onclick="copiarAfi('${n}','${esc(a.senha)}')">Copiar acesso</button> <button class="btn r s" onclick="removerAfi('${n}')">Tirar acesso</button>`:''}</td></tr>`}).join('')}
+/* ---------- E-MAILS DISPARADOS ---------- */
+function carregarEmails(){$('tEmails').innerHTML='<tr><td class="mut">Carregando…</td></tr>';chamar({acao:'emails'}).then(r=>{if(!r.ok){$('tEmails').innerHTML='<tr><td class="mut">Não foi possível carregar.</td></tr>';return}
+  const pc=(a,b)=>b?Math.round(a/b*100)+'%':'-';
+  $('tEmails').innerHTML=linhaTab([['E-mail',x=>esc(x.assunto)],['Quando',x=>new Date(x.quando).toLocaleString('pt-BR',{dateStyle:'short',timeStyle:'short'})],['Enviados',x=>x.enviados,1],['Entregues',x=>x.entregues,1],['Abertos',x=>`<b>${x.abertos}</b> <span class="mut">(${pc(x.abertos,x.enviados)})</span>`,1],['Cliques',x=>`${x.cliques} <span class="mut">(${pc(x.cliques,x.enviados)})</span>`,1]],r.emails||[],'Nenhum e-mail disparado ainda.')}).catch(()=>{$('tEmails').innerHTML='<tr><td class="mut">Não foi possível carregar.</td></tr>'})}
 function carregarAfi(){$('tAfil').innerHTML='<tr><td class="mut">Carregando…</td></tr>';chamar({acao:'afiliados'}).then(r=>{if(r.ok)listaAfil(r.afiliados)})}
 function salvarAfi(){const n=$('afNome').value.trim().toLowerCase(),s=$('afSenha').value.trim();if(!n||!s){$('msgAfi').innerText='Preencha o nome e a senha.';return}$('msgAfi').innerText='Salvando…';chamar({acao:'afiliado_senha',afiliado:n,novaSenha:s}).then(r=>{if(!r.ok){$('msgAfi').innerText=r.erro==='senha'?'Sessão expirou, entre de novo.':r.erro;return}listaAfil(r.afiliados);$('msgAfi').innerText='';aviso('Senha salva para '+n+'. Use Copiar acesso para mandar para ele.',true);$('afNome').value='';$('afSenha').value=''}).catch(()=>$('msgAfi').innerText='Não foi possível salvar. Tente de novo.')}
 function copiarAfi(n,s){const txt='Seu painel de afiliado do Avatar Milionário:\n'+LINK_AFI+'\nUsuário: '+n+'\nSenha: '+s;(navigator.clipboard?navigator.clipboard.writeText(txt):Promise.reject()).then(()=>aviso('Acesso copiado! É só colar no WhatsApp do afiliado.',true)).catch(()=>prompt('Copie e mande para o afiliado:',txt))}
@@ -393,6 +399,7 @@ function removerAfi(n){if(!confirm('Tirar o acesso de '+n+' ao painel do afiliad
 
 /* Lembra a senha só enquanto a aba estiver aberta */
 try{const s=sessionStorage.am_painel;if(s){$('senha').value=s;logar(new Event('submit'))}}catch(x){}
+$('btnEmails').onclick=carregarEmails;
 </script>
 </body>
 </html>
