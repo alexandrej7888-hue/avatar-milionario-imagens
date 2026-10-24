@@ -141,11 +141,8 @@ main{margin-left:var(--sb);padding:76px 40px 60px;max-width:calc(1100px + var(--
 .player-x{position:absolute;top:-14px;right:-14px;z-index:2;width:38px;height:38px;border-radius:50%;background:var(--card2);border:1px solid var(--line2);display:grid;place-items:center;color:var(--txt)}
 
 /* prompts */
-.ex-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:10px 0 16px}
-.ex-grid figure{margin:0;text-align:center}
-.ex-grid img{width:100%;aspect-ratio:3/4;object-fit:cover;border-radius:10px;border:1px solid var(--line);background:#111}
-.ex-grid figure.ref img{border-color:var(--g3)}
-.ex-grid figcaption{font-size:11px;color:var(--mut);margin-top:4px;font-weight:600}
+.ex-img{display:block;width:100%;max-width:260px;aspect-ratio:3/4;object-fit:cover;border-radius:12px;border:1px solid var(--line);background:#111;margin:6px 0 10px}
+.ex-img.ref{border-color:var(--g3)}
 .prompt img.ex{width:100%;aspect-ratio:3/4;object-fit:cover;object-position:top;border-radius:12px;margin-bottom:12px;background:#111}
 .prompt pre{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:14px;font-family:ui-monospace,Consolas,monospace;font-size:12.5px;color:#a7c9b3;white-space:pre-wrap;line-height:1.6;margin-bottom:16px;max-height:140px;overflow:auto}
 
@@ -500,7 +497,7 @@ const AFILIADO='https://dashboard.kiwify.com/join/affiliate/KHW6X7ZN';
 /* ---------- PÁGINAS ---------- */
 const brl=v=>v.toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
 const cardFerr=f=>`<div class="card"><div class="ico-box">${ic(f.i)}</div><h3>${f.n}${f.t?` <span class="pill">${f.t}</span>`:''}</h3><p>${f.d}</p><a class="btn btn-g" href="${f.u}" target="_blank" rel="noopener">Acessar ${ic('ext')}</a></div>`;
-const cardPromptImg=(x,i)=>`<div class="card prompt">${x.ex?`<img class="ex" src="${IMG_BASE}${x.ex}.webp" alt="Exemplo: ${x.t}" loading="lazy">`:''}<h3>${x.t}</h3><p>${x.d}</p><pre>${x.p}</pre><button class="btn btn-g" onclick="copiar(PROMPTS_IMG[${i}].p)">${ic('copy')} Copiar prompt</button></div>`;
+const cardPromptImg=(x,i)=>`<div class="card prompt">${x.ex?`<img class="ex" src="${IMG_BASE}${x.ex}.webp?v=2" alt="Exemplo: ${x.t}" loading="lazy">`:''}<h3>${x.t}</h3><p>${x.d}</p><pre>${x.p}</pre><button class="btn btn-g" onclick="copiar(PROMPTS_IMG[${i}].p)">${ic('copy')} Copiar prompt</button></div>`;
 const cardPrompt=(x,i)=>`<div class="card prompt"><h3>${x.t}</h3><p>${x.d}</p><pre>${x.p}</pre><button class="btn btn-g" onclick="copiar(PROMPTS[${i}].p)">${ic('copy')} Copiar prompt</button></div>`;
 const vid=n=>`<div class="vid" onclick="abrirVideo('${n}')"><img src="${VID_BASE}viral-${n}.jpg" alt="" loading="lazy"><div class="play"><span>${ic('play')}</span></div><button class="vid-dl" onclick="event.stopPropagation();baixarVideo('${n}',this)">${ic('dl')} Baixar</button></div>`;
 function abrirVideo(n){const p=document.getElementById('player');p.querySelector('video').src=VID_BASE+'viral-'+n+'.mp4';p.querySelector('.player-dl').onclick=function(){baixarVideo(n,this)};p.hidden=false;p.querySelector('video').play().catch(()=>{})}
@@ -815,9 +812,9 @@ function telaFoto(){const n=LOOKS_ICONE.length, peca=REF_LOOK>=0&&!LOOKS[REF_LOO
     ${REF_CMODO==='sep'?(peca?corLinha('Cor da peça','REF_CIMA',REF_CIMA):corLinha('Parte de cima (blusa, camisa, jaqueta)','REF_CIMA',REF_CIMA)+corLinha('Parte de baixo (calça, short, saia)','REF_BAIXO',REF_BAIXO)):''}</section>
    <section class="opt passo"><label><span class="num">3</span> Prompts para deixar seu avatar o mais consistente possível</label>
     <p class="dica">Gere sua foto com fundo amarelo. Seu avatar já tem que estar pronto (passo 1 ou 2). No ChatGPT, anexe a imagem do avatar que você fez antes e cole o primeiro prompt (Centro). Depois faça o mesmo com os outros prompts, sempre anexando essa mesma imagem. No fim você tem o rosto de frente, os dois lados e o corpo inteiro, e o avatar fica igual em todos os vídeos.</p>
-    <div class="sub-l">Exemplo: a foto anexada e o que cada prompt gerou</div>
-    <div class="ex-grid"><figure class="ref"><img src="${IMG_BASE}exemplos/fundo-amarelo-referencia.webp" alt="Foto anexada" loading="lazy"><figcaption>Foto anexada</figcaption></figure>${PROMPTS_IMG.map(x=>`<figure><img src="${IMG_BASE}${x.ex}.webp" alt="${x.t}" loading="lazy"><figcaption>${x.t}</figcaption></figure>`).join('')}</div>
-    ${PROMPTS_IMG.map((x,i)=>`<div class="sub-l">${x.t}</div><div class="out" style="min-height:0;max-height:120px">${x.p}</div><button class="btn btn-g" style="margin:8px 0 14px" onclick="copiar(PROMPTS_IMG[${i}].p)">${ic('copy')} Copiar prompt: ${x.t.toLowerCase()}</button>`).join('')}</section>
+    <div class="sub-l">Exemplo: esta foto foi anexada em todos os prompts</div>
+    <img class="ex-img ref" src="${IMG_BASE}exemplos/fundo-amarelo-referencia.webp?v=2" alt="Foto anexada" loading="lazy">
+    ${PROMPTS_IMG.map((x,i)=>`<div class="sub-l" style="margin-top:6px">${x.t}</div><img class="ex-img" src="${IMG_BASE}${x.ex}.webp?v=2" alt="Resultado: ${x.t}" loading="lazy"><div class="out" style="min-height:0;max-height:120px">${x.p}</div><button class="btn btn-g" style="margin:8px 0 14px" onclick="copiar(PROMPTS_IMG[${i}].p)">${ic('copy')} Copiar prompt: ${x.t.toLowerCase()}</button>`).join('')}</section>
   </div>
   <div class="card sticky"><h3>${ic('copy')} Prompt para trocar o look</h3>
    ${REF_LOOK<0?`<div class="vazio">${ic('img')}<b>Escolha um look ao lado</b><span>O prompt para trocar a roupa do seu personagem aparece aqui.</span></div>`:`
