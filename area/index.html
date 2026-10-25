@@ -902,6 +902,7 @@ function entrar(e){
   const b=document.getElementById('btnEntrar'),txt=b.innerHTML;b.disabled=true;b.innerText='Verificando...';
   consultar(email).then(r=>{
     if(r.bloqueioIp){avisoBloqueio(email);return}
+    if(r.proibido){erroLogin('Tente outra vez.');return}
     if(!r.acesso){erroLogin('Não encontramos uma compra com esse e-mail. Use o mesmo e-mail da compra na Kiwify. Se acabou de comprar, aguarde 1 minuto e tente de novo.');return}
     EMAIL=email;TEM_BUMP=!!r.bump;try{localStorage.am_email=email;localStorage.am_bump=TEM_BUMP?'1':'0'}catch(x){}abrir();
   }).catch(()=>erroLogin('Não conseguimos verificar agora. Confira sua internet e tente de novo.'))
