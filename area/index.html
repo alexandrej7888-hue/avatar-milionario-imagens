@@ -484,8 +484,8 @@ let AULA=0;
 const IMG_BASE=/^(localhost|127\.0\.0\.1)$/.test(location.hostname)||location.protocol==='file:'?'':'https://raw.githubusercontent.com/alexandrej7888-hue/avatar-milionario-imagens/main/';
 /* Banner do Início: arquivo capas/banner.webp (16:9). Se não existir, some sozinho. Troque o número para forçar atualizar. */
 const BANNER_V=1;
-/* Comissão do afiliado: 50% do líquido na Kiwify (preço - 8,99% - R$ 2,49) */
-const TAXA_PCT=8.99, TAXA_FIXA=2.49;
+/* Comissão do afiliado: 50% do líquido na Cakto, venda no Pix (preço - 0% - R$ 2,49). No cartão a Cakto cobra 4,99% + R$ 2,49. */
+const TAXA_PCT=0, TAXA_FIXA=2.49;
 const PLANOS=[47,67,97].map(p=>{const c=Math.round(p*100),t=Math.round(c*TAXA_PCT/100),f=Math.round(TAXA_FIXA*100),l=c-t-f;
  return {n:'Plano R$ '+p,p,taxa:t/100,fixa:f/100,liq:l/100,c:Math.round(l/2)/100}});
 let PLANO=1, SIM_N=20;
@@ -493,8 +493,8 @@ const COMISSAO=()=>PLANOS[PLANO].c;
 /* Quantas vendas pagam o curso (no mesmo plano que o aluno comprou) */
 const SE_PAGA=p=>Math.ceil(p.p/p.c);
 const WHATS='https://wa.me/5538999715362';
-/* Convite de afiliado na Kiwify */
-const AFILIADO='https://dashboard.kiwify.com/join/affiliate/KHW6X7ZN';
+/* Convite de afiliado na Cakto (Avatar Milionario sem coprodutor) */
+const AFILIADO='https://app.cakto.com.br/affiliate/invite/f41a562b-f149-4865-95f8-dab0589995c9';
 
 /* ---------- PÁGINAS ---------- */
 const brl=v=>v.toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
@@ -603,11 +603,11 @@ afiliados:()=>`
  <div class="card" style="max-width:640px">
   <span class="pill">PROGRAMA DE AFILIADOS</span>
   <h3 style="font-size:24px;margin-top:12px">Seu curso se paga com <span style="color:var(--g3)">${SE_PAGA(PLANOS[PLANO])} vendas</span></h3>
-  <p>Você recebe 50% do valor líquido de cada venda no PIX pelo seu link (já descontada a taxa da plataforma).</p>
+  <p>A afiliação agora é 100% pela <b>Cakto</b>. Você recebe 50% do valor líquido de cada venda pelo seu link (já descontada a taxa da Cakto). O cálculo abaixo é de venda no Pix.</p>
   <div class="swatches" style="margin:4px 0 0">${PLANOS.map((p,i)=>`<button class="sw ${PLANO===i?'on':''}" style="padding:9px 14px" onclick="PLANO=${i};rr()">${p.n} · ${brl(p.c)} por venda</button>`).join('')}</div>
   ${(()=>{const p=PLANOS[PLANO];return `<div class="conta">
    <div><span>Preço da venda</span><b>${brl(p.p)}</b></div>
-   <div><span>Taxa da Kiwify (${String(TAXA_PCT).replace('.',',')}%)</span><b class="neg">- ${brl(p.taxa)}</b></div>
+   <div><span>Taxa da Cakto no Pix (${String(TAXA_PCT).replace('.',',')}%)</span><b class="neg">- ${brl(p.taxa)}</b></div>
    <div><span>Taxa fixa por venda</span><b class="neg">- ${brl(p.fixa)}</b></div>
    <div><span>Valor líquido</span><b>${brl(p.liq)}</b></div>
    <div class="tot"><span>Sua comissão (50% do líquido)</span><b>${brl(p.c)}</b></div>
@@ -616,8 +616,9 @@ afiliados:()=>`
   <label style="font-size:13px;color:var(--mut);font-weight:700">Simule: quantas vendas por mês?</label>
   <input class="inp" type="number" min="0" value="${SIM_N}" oninput="SIM_N=+this.value||0;sim.innerText=brl(SIM_N*COMISSAO())" style="margin:8px 0 6px">
   <p style="margin-bottom:16px">Você ganharia <b id="sim" style="color:var(--g3)">${brl(COMISSAO()*SIM_N)}</b> por mês. Não é garantia de ganhos.</p>
+  <p class="dica" style="margin:-6px 0 14px">Taxas da Cakto: Pix 0% + R$ 2,49 por venda. Cartão 4,99% + R$ 2,49 por venda, então no cartão a sua comissão fica um pouco menor.</p>
   <div class="warn">${ic('warn')}<div><b>Pediu reembolso, perde a afiliação:</b> a sua página sai do ar e as comissões acabam.</div></div>
-  <a class="btn btn-g btn-full" style="margin-top:16px" href="${AFILIADO}" target="_blank" rel="noopener">Quero me afiliar agora ${ic('ext')}</a>
+  <a class="btn btn-g btn-full" style="margin-top:16px" href="${AFILIADO}" target="_blank" rel="noopener">Quero me afiliar na Cakto ${ic('ext')}</a>
  </div>`,
 
 suporte:()=>`
