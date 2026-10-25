@@ -322,6 +322,8 @@ const dt=x=>new Date(x).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',ho
 /* Situação do último e-mail de boas-vindas */
 const pillMail=m=>!m?'<span class="pill x">—</span>':!m.ok?'<span class="pill no" title="'+esc(m.erro||'')+'">Erro no envio</span>':m.problema?'<span class="pill no" title="'+esc(m.problema)+'">Não entregue</span>':m.aberto?'<span class="pill ok">Aberto '+dt(m.aberto)+'</span>':m.entregue?'<span class="pill ab">Entregue</span>':'<span class="pill x">Enviado '+dt(m.quando)+'</span>';
 function aviso(txt,ok){let a=$('aviso');if(!a){a=document.createElement('div');a.id='aviso';document.body.appendChild(a)}a.className=ok?'ok':'no';a.innerText=txt;clearTimeout(a._t);a._t=setTimeout(()=>a.className='',6000)}
+/* Plataforma da venda: o script grava 'cakto:...' ou 'hotmart:...' no evento */
+const origemAluno=a=>{const ev=String(a.evento||'');if(ev==='manual')return '<span class="mut">manual</span>';const p=ev.indexOf(':')>0?ev.split(':')[0]:'kiwify';return p==='cakto'?'<span class="pill ok">Cakto</span>':p==='hotmart'?'<span class="pill ab">Hotmart</span>':'<span class="mut">Kiwify</span>'};
 const pill=v=>v==='ativo'?'<span class="pill ok">ativo</span>':v==='bloqueado'?'<span class="pill no">bloqueado</span>':'<span class="pill x">—</span>';
 /* Cidades de onde a conta entrou (um item por IP) */
 const locais=a=>(a.listaIps||[]).map(i=>`<div style="font-size:13px;line-height:1.5"><b>${esc(i.local||'local desconhecido')}</b> <span class="mut">· IP ${esc(i.ip)} · ${i.acessos} acesso${i.acessos==1?'':'s'} · último ${dt(i.ultimo)}</span></div>`).join('');
@@ -350,7 +352,7 @@ function listaAlunos(){
     const e=esc(a.email);
     return `<tr><td><b>${esc(a.nome)||'—'}</b><br><span class="mut">${e}</span>${a.observacao?`<br><span style="font-size:12px;color:#facc15">${esc(a.observacao)}</span>`:''}</td><td>${pill(a.acesso)}</td>
     ${TEM_BUMP?`<td>${pill(a.bump)} <button class="btn o s" onclick="acao('${a.bump==='ativo'?'bloquear_bump':'liberar_bump'}','${e}')">${a.bump==='ativo'?'Tirar':'Dar'}</button></td>`:''}
-    <td>${pillIps(a)}</td><td>${pillMail(a.mail)}</td><td class="mut">${a.evento==='manual'?'manual':'Kiwify'}</td><td class="mut">${a.quando?new Date(a.quando).toLocaleString('pt-BR',{dateStyle:'short',timeStyle:'short'}):''}</td>
+    <td>${pillIps(a)}</td><td>${pillMail(a.mail)}</td><td>${origemAluno(a)}</td><td class="mut">${a.quando?new Date(a.quando).toLocaleString('pt-BR',{dateStyle:'short',timeStyle:'short'}):''}</td>
     <td style="white-space:nowrap">${a.acesso==='ativo'||a.bump==='ativo'?`<button class="btn o s" title="Reenviar e-mail de boas-vindas" onclick="acao('reenviar','${e}')">Reenviar e-mail</button> `:''}${a.acesso==='ativo'?`<button class="btn r s" onclick="acao('bloquear','${e}')">Bloquear</button>`:`<button class="btn s" onclick="acao('liberar','${e}')">Liberar</button>`}</td></tr>`}).join('');
 }
 $('busca').oninput=listaAlunos;
