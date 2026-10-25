@@ -449,8 +449,8 @@ const VID_BASE='https://raw.githubusercontent.com/alexandrej7888-hue/avatar-mili
 /* Aulas: [título, id do vídeo no Panda, duração]. Módulo com lock fica fechado (some quando liberar). */
 /* Módulo dos R$ 2: contas mais baratas pelo contato abaixo. CONTATO_R2 = número com DDI e DDD (ex.: 5538999999999); vazio = botão não aparece. */
 const CONTATO_R2='5511968981961';
-const TEXTO_R2=()=>`<div class="card" style="max-width:720px"><div class="ico-box">${ic('money')}</div><h3>Conta com geração ilimitada para os seus vídeos 🔥</h3>
- <p>Pessoal, assistam as aulas acima: é o jeito mais barato de gerar os vídeos do seu avatar. Para quem é aluno do curso eu consegui uma condição especial, e o contato está logo abaixo.</p>
+const TEXTO_R2=()=>`<div class="card" style="max-width:720px"><div class="ico-box">${ic('money')}</div><h3>Contato do fornecedor: gere seus vídeos por menos de R$ 2 🔥</h3>
+ <p>Pessoal, assistam as aulas acima: é o jeito mais barato de gerar os vídeos do seu avatar, saindo por menos de R$ 2 cada. Para quem é aluno do curso eu consegui uma condição especial com o fornecedor, e o contato dele está logo abaixo.</p>
  <p><b>Corre para garantir:</b> até o dia <b>31/10</b> a conta vem com <b>geração ilimitada</b>, e para quem vem pelo curso o valor é <b>R$ 40</b>.</p>
  <p>É só chamar o contato no WhatsApp e dizer que veio pelo curso Avatar Milionário. Ele explica tudo certinho e você recebe a conta já com saldo ilimitado até o dia 31/10.</p>
  ${CONTATO_R2?`<a class="btn btn-g" style="margin-top:14px;background:#25d366" target="_blank" rel="noopener" href="https://wa.me/${CONTATO_R2}?text=${encodeURIComponent('Oi! Vim pelo curso Avatar Milionário e quero a conta de R$ 40 com geração ilimitada.')}">Chamar no WhatsApp</a>`:'<p class="dica">O contato do WhatsApp aparece aqui em instantes.</p>'}</div>`;
@@ -470,8 +470,8 @@ const MODULOS=[
  {t:'Monetização',d:'Publis, afiliados e produtos: como transformar views em dinheiro.',aulas:[
   ['Como ganhar dinheiro com seu avatar','3d302edc-94ac-4683-96c1-ef8275d80401','5:48']]},
  {t:'Bônus: vídeos por menos de R$ 2',d:'O jeito de gerar cada vídeo do seu avatar pagando menos de dois reais.',aulas:[
-  ['Geração por menos de R$ 2','f42d185d-e416-4aa3-bc4f-8b96d46f9c18','9:21'],
-  ['Contas com geração ilimitada até 31/10','e223f9f3-67b3-4473-b594-317a64134996','4:07']],texto:true},
+  ['Contas com geração ilimitada até 31/10','e223f9f3-67b3-4473-b594-317a64134996','4:07'],
+  ['Geração por menos de R$ 2','f42d185d-e416-4aa3-bc4f-8b96d46f9c18','9:21']],texto:true},
  {t:'TikTok Shop',d:'Módulo em gravação. Em breve na sua área de membros.',aulas:[],lock:'Em breve'}
 ];
 /* Aulas concluídas ficam salvas no navegador do aluno */
