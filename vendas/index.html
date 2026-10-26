@@ -285,7 +285,7 @@ footer{border-top:1px solid var(--line);padding:30px 0;text-align:center;color:v
    </div>
    <div class="eco">Você economiza <b id="vEco">R$ 960,00</b> por mês</div>
   </div>
-  <div class="card paga"><div class="ico">💰</div><div><h3>Com 2 vídeos o curso já se pagou</h3><p>Cada vídeo feito pelo método custa R$ 32 a menos do que nas ferramentas caras. <span id="pagaTxt">Fez 2 vídeos, economizou R$ 64: mais do que os R$ 47 que você investe no curso. Do terceiro vídeo em diante, é tudo economia.</span></p></div></div>
+  <div class="card paga"><div class="ico">💰</div><div><h3>Com 4 vídeos o curso já se pagou</h3><p>Cada vídeo feito pelo método custa R$ 32 a menos do que nas ferramentas caras. <span id="pagaTxt">Fez 4 vídeos, economizou R$ 128,00: mais do que os R$ 97 que você investe no curso. Do quinto vídeo em diante, é tudo economia.</span></p></div></div>
  </div>
 </section>
 
@@ -367,7 +367,7 @@ footer{border-top:1px solid var(--line);padding:30px 0;text-align:center;color:v
 <section id="oferta" class="oferta">
  <div class="wrap center reveal">
   <span class="eyebrow">Preço de lançamento</span>
-  <h2>Tudo liberado por <em>R$ <span class="precoTxt">47</span></em></h2>
+  <h2>Tudo liberado por <em>R$ <span class="precoTxt">97</span></em></h2>
   <p class="lead">Pagamento único, sem mensalidade. O acesso chega no seu e-mail assim que o pagamento é aprovado.</p>
  </div>
  <div class="wrap planos reveal" id="planos"></div>
@@ -395,7 +395,7 @@ footer{border-top:1px solid var(--line);padding:30px 0;text-align:center;color:v
 <section class="final">
  <div class="wrap reveal">
   <h2>Seu avatar pode estar postando <em>ainda esta semana</em></h2>
-  <p class="lead" style="margin:0 auto 30px">R$ <span class="precoTxt">47</span> em pagamento único, garantia de <span id="gdias3">30</span> dias e vídeos por menos de R$ 2.</p>
+  <p class="lead" style="margin:0 auto 30px">R$ <span class="precoTxt">97</span> em pagamento único, garantia de <span id="gdias3">30</span> dias e vídeos por menos de R$ 2.</p>
   <a href="#oferta" class="btn btn-g">Quero criar meu avatar agora <svg viewBox="0 0 24 24"><path d="M5 12h14M13 5l7 7-7 7"/></svg></a>
  </div>
 </section>
@@ -411,20 +411,22 @@ footer{border-top:1px solid var(--line);padding:30px 0;text-align:center;color:v
 const CFG=window.AM_CFG||{};
 const CHECKOUT=CFG.checkout||'https://pay.cakto.com.br/ru2xz6h';
 /* Preço da oferta (afiliado pode ter preço próprio, ex.: AM_CFG.preco='19,90') */
-const PRECO=CFG.preco||'47';
-/* Escreve o preço em todos os lugares da página (preço abaixo de R$ 32 = o curso se paga com 1 vídeo) */
+const PRECO=CFG.preco||'97';
+/* Escreve o preço em todos os lugares da página. Cada vídeo economiza R$ 32, então o curso se paga com o primeiro número de vídeos que passa do preço (19,90 = 1, 47 = 2, 97 = 4). */
+const ORD=['primeiro','segundo','terceiro','quarto','quinto','sexto','sétimo','oitavo','nono','décimo'];
 function aplicarPreco(p){
   document.querySelectorAll('.precoTxt').forEach(e=>e.textContent=p);
-  const pg=document.getElementById('pagaTxt'),um=parseFloat(String(p).replace(',','.'))<32;
-  if(pg)pg.textContent=um?'Fez 1 vídeo, economizou R$ 32: mais do que os R$ '+p+' que você investe no curso. Do segundo vídeo em diante, é tudo economia.':'Fez 2 vídeos, economizou R$ 64: mais do que os R$ '+p+' que você investe no curso. Do terceiro vídeo em diante, é tudo economia.';
-  document.querySelectorAll('.paga h3').forEach(e=>e.textContent=um?'Com 1 vídeo o curso já se pagou':'Com 2 vídeos o curso já se pagou');
+  const n=Math.floor(parseFloat(String(p).replace(',','.'))/32)+1,vid=n===1?'1 vídeo':n+' vídeos';
+  const pg=document.getElementById('pagaTxt');
+  if(pg)pg.textContent='Fez '+vid+', economizou R$ '+(n*32)+',00: mais do que os R$ '+p+' que você investe no curso. Do '+(ORD[n]||(n+1)+'º')+' vídeo em diante, é tudo economia.';
+  document.querySelectorAll('.paga h3').forEach(e=>e.textContent='Com '+vid+' o curso já se pagou');
 }
 aplicarPreco(PRECO);
 const IMG='https://cdn.jsdelivr.net/gh/alexandrej7888-hue/avatar-milionario-imagens@'+(window.AM_VER||'main')+'/';
 const GARANTIA=30;
 /* Planos: link do checkout (Cakto ou Kiwify) em "link". O plano com dest:true fica em destaque. */
 const PLANOS=[
- {n:'Acesso completo',de:'R$ 97,00',p:PRECO,link:CHECKOUT,dest:true,itens:[[1,'Curso completo passo a passo'],[1,'Criador de avatar com mais de 50 looks'],[1,'Personagem em pessoa real'],[1,'Prompts prontos'],[1,'Pack de vídeos virais'],[1,'Bônus: vídeos por menos de R$ 2'],[1,'Grupo de networking no WhatsApp'],[1,'Programa de afiliados com 50% de comissão']]}
+ {n:'Acesso completo',de:'R$ 197,00',p:PRECO,link:CHECKOUT,dest:true,itens:[[1,'Curso completo passo a passo'],[1,'Criador de avatar com mais de 50 looks'],[1,'Personagem em pessoa real'],[1,'Prompts prontos'],[1,'Pack de vídeos virais'],[1,'Bônus: vídeos por menos de R$ 2'],[1,'Grupo de networking no WhatsApp'],[1,'Programa de afiliados com 50% de comissão']]}
 ];
 const MODS=[['Comece por aqui','Boas-vindas e área de membros'],['Ferramentas','Tudo que você vai usar'],['Criando seu avatar','Do zero ou a partir de uma referência'],['Vídeos virais com IA','Seu avatar no vídeo viral'],['Monetização','Como ganhar dinheiro com o avatar'],['Bônus: menos de R$ 2','O jeito barato de gerar os vídeos'],['TikTok Shop','Em breve na área de membros']];
 const RECEB=[
