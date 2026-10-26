@@ -458,6 +458,8 @@ const REELS=[
  ['DeFlBFgoDiy',5312343,544575,7609],['DeeqtJgRV2a',1191824,138837,1298],['DdrEbnrMO74',6124267,932304,3730],
  ['DeUjiFssy0P',614297,13500,1700],['DeXQ2fqsI2F',3495303,475629,1680],['gru-vector',1700000,78300,830],['DeOMoJgtZfx',2276315,241274,2414]
 ];
+/* Afiliado com vídeo próprio (AM_CFG.reel=[nome, visualizações, curtidas, comentários], arquivos em resultados/): entra no lugar do vídeo do Chaves */
+if(Array.isArray(CFG.reel)&&/^[\w-]{1,40}$/.test(CFG.reel[0])){const i=REELS.findIndex(r=>r[0]==='DeQ6tBUtw2n');REELS[i<0?0:i]=CFG.reel}
 /* Fotos da faixa que passa (pasta faixa/ no GitHub) */
 const RETRATOS=['p13','p06','p03','p15','p01','p10','p08','p05','p09','p16','p11','p02','p14','p04','p12','p07'];
 const TILES=['cabelo-topete','f-cabelo-black','barba-bigode-enrolado','oculos-redondo-dourado','corpo-bombadao','f-make-batom','roupa-funkeiro','colar-correntao','cabelo-mullet','f-roupa-y2k','calcado-tenis-branco','chapeu-country'];
