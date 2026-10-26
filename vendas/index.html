@@ -357,7 +357,7 @@ footer{border-top:1px solid var(--line);padding:30px 0;text-align:center;color:v
     <h2>Seu curso <em>se paga com 3 vendas</em></h2>
     <p class="lead">Todo aluno pode virar afiliado e ganhar 50% de cada venda pelo próprio link. Indicou três pessoas, o curso já saiu de graça. O resto é lucro.</p>
    </div>
-   <div class="num"><div><small>Por venda</small><b>R$ 20,14</b></div><div><small>3 vendas</small><b>R$ 60,42</b></div><div><small>10 vendas</small><b>R$ 201,40</b></div>
+   <div class="num"><div><small>Por venda</small><b id="afi1">R$ 42,89</b></div><div><small>3 vendas</small><b id="afi3">R$ 128,67</b></div><div><small>10 vendas</small><b id="afi10">R$ 428,90</b></div>
     <p style="grid-column:1/-1;color:var(--mut);font-size:13px;text-align:center;margin-top:4px">Comissão de 50% sobre o valor líquido, já descontada a taxa da plataforma.</p></div>
   </div>
  </div>
@@ -420,6 +420,10 @@ function aplicarPreco(p){
   const pg=document.getElementById('pagaTxt');
   if(pg)pg.textContent='Fez '+vid+', economizou R$ '+(n*32)+',00: mais do que os R$ '+p+' que você investe no curso. Do '+(ORD[n]||(n+1)+'º')+' vídeo em diante, é tudo economia.';
   document.querySelectorAll('.paga h3').forEach(e=>e.textContent='Com '+vid+' o curso já se pagou');
+  /* Comissão do afiliado: 50% do valor líquido, depois da taxa da plataforma (8,99% + R$ 2,49) */
+  const v=parseFloat(String(p).replace(',','.')),com=Math.round((v-(v*.0899+2.49))/2*100)/100;
+  const real=x=>'R$ '+x.toFixed(2).replace('.',',').replace(/\B(?=(\d{3})+,)/g,'.');
+  [[1,'afi1'],[3,'afi3'],[10,'afi10']].forEach(([q,id])=>{const e=document.getElementById(id);if(e)e.textContent=real(com*q)});
 }
 aplicarPreco(PRECO);
 const IMG='https://cdn.jsdelivr.net/gh/alexandrej7888-hue/avatar-milionario-imagens@'+(window.AM_VER||'main')+'/';
