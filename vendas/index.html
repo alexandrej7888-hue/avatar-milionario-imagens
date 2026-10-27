@@ -550,6 +550,8 @@ if(CFG.afiliado){
   .then(r=>r.json()).then(c=>{
     if(!c||!c.ok)return;
     if(c.preco)aplicarPreco(c.preco);
+    /* Capa que o afiliado enviou pelo painel dele (fica no Google Drive do dono) */
+    if(/^https:\/\/lh3\.googleusercontent\.com\/d\/[\w-]+$/.test(c.capa||''))document.querySelector('.hero-banner img').src=c.capa;
     if(c.checkout)document.querySelectorAll('a[href*="kiwify"],a[href*="cakto"]').forEach(a=>{
       try{const velho=new URL(a.href),novo=new URL(c.checkout);
         velho.searchParams.forEach((v,k)=>{if(!novo.searchParams.has(k)&&(k==='src'||k==='sck'||k.indexOf('utm_')===0))novo.searchParams.set(k,v)});
