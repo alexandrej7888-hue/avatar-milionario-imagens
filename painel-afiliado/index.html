@@ -94,13 +94,6 @@ h2{font-size:17px;margin:22px 0 10px}
    </div>
    <div class="mut" id="cfgMsg" style="min-height:18px"></div>
   </div>
-  <div class="card" id="capaCard" style="margin-bottom:14px">
-   <b style="font-size:15px">Capa da sua página</b>
-   <p class="mut" style="margin:6px 0 10px">A imagem que aparece no topo da sua página. Use PNG com fundo transparente para ficar com o brilho verde em volta. Depois de salvar, a página muda em até 5 minutos.</p>
-   <img id="capaVer" alt="" style="display:none;max-width:220px;width:100%;border-radius:12px;margin:0 auto 10px;background:#0d0d12">
-   <div class="linkpg"><label class="btn" style="color:#03150a;cursor:pointer">Escolher imagem<input type="file" id="capaArq" accept="image/png,image/jpeg,image/webp" hidden></label><button class="btn o" type="button" id="btnTirarCapa" style="display:none">Voltar para a capa padrão</button></div>
-   <div class="mut" id="capaMsg" style="min-height:18px"></div>
-  </div>
   <div class="vivo"><i></i><b id="vivoN">0</b>&nbsp;<span id="vivoTxt">pessoas na sua página agora</span></div>
   <div class="per" id="per"><button data-p="hoje">Hoje</button><button data-p="ontem">Ontem</button><button data-p="7d" class="on">7 dias</button><button data-p="30d">30 dias</button><button data-p="total">Tudo</button></div>
   <p class="mut" id="perData" style="margin:-6px 0 12px"></p>
@@ -137,7 +130,7 @@ function entrar(u,s,quieto){
 $('fLogin').onsubmit=e=>{e.preventDefault();entrar($('usuario').value,$('senha').value)};
 
 /* Sua página: mostra o link da página e deixa trocar o link de compra e o preço */
-function mostrarCfg(c){c=c||{};mostrarCapa(c.capa);const pg=c.pagina||'';$('cfgPagina').textContent=pg||'(página ainda não cadastrada)';$('cfgPagina').href=pg||'#';$('btnCopiarPg').style.display=pg?'':'none';$('cfgCheckout').value=c.checkout||'';$('cfgPreco').value=c.preco||''}
+function mostrarCfg(c){c=c||{};const pg=c.pagina||'';$('cfgPagina').textContent=pg||'(página ainda não cadastrada)';$('cfgPagina').href=pg||'#';$('btnCopiarPg').style.display=pg?'':'none';$('cfgCheckout').value=c.checkout||'';$('cfgPreco').value=c.preco||''}
 $('btnCopiarCakto').onclick=()=>{const t=$('caktoAfi').href;(navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>{$('btnCopiarCakto').innerText='Copiado!'}).catch(()=>prompt('Copie o link de afiliação:',t))};
 $('btnCopiarPg').onclick=()=>{const t=$('cfgPagina').href;(navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>{$('cfgMsg').style.color='var(--g3)';$('cfgMsg').innerText='Link da página copiado!'}).catch(()=>prompt('Copie o link da sua página:',t))};
 $('btnSalvarCfg').onclick=e=>{
@@ -147,28 +140,6 @@ $('btnSalvarCfg').onclick=e=>{
     mostrarCfg(r.config);$('cfgMsg').style.color='var(--g3)';$('cfgMsg').innerText='Salvo! Sua página já está com esse link e esse preço.';
   }).catch(()=>{$('cfgMsg').style.color='var(--red)';$('cfgMsg').innerText='Não foi possível salvar. Tente de novo.'}).finally(()=>b.classList.remove('carregando'));
 };
-/* Capa da página: o afiliado escolhe a imagem, ela é reduzida aqui (até 1000px, WebP mantém o fundo transparente) e vai para o Google Drive do dono */
-function mostrarCapa(u){$('capaVer').style.display=u?'block':'none';if(u)$('capaVer').src=u;$('btnTirarCapa').style.display=u?'':'none'}
-function msgCapa(t,cor){$('capaMsg').style.color=cor||'';$('capaMsg').innerText=t}
-function enviarCapa(corpo){
-  msgCapa('Salvando…');
-  return chamar(Object.assign({acao:'afiliado_capa',afiliado:USU,senhaAfiliado:SEN},corpo)).then(r=>{
-    if(!r.ok){msgCapa(r.erro==='senha'?'Sessão expirou, entre de novo.':r.erro,'var(--red)');return}
-    mostrarCapa(r.config&&r.config.capa);msgCapa(corpo.remover?'Pronto, sua página voltou para a capa padrão.':'Salvo! Sua página vai mostrar essa capa em até 5 minutos.','var(--g3)');
-  }).catch(()=>msgCapa('Não foi possível salvar. Tente de novo.','var(--red)'));
-}
-$('capaArq').onchange=e=>{
-  const f=e.target.files[0];e.target.value='';if(!f)return;
-  if(!/^image\/(png|jpeg|webp)$/.test(f.type)){msgCapa('Escolha uma imagem PNG, JPG ou WebP.','var(--red)');return}
-  const im=new Image();im.onload=()=>{
-    const k=Math.min(1,1000/Math.max(im.width,im.height)),cv=document.createElement('canvas');
-    cv.width=Math.round(im.width*k);cv.height=Math.round(im.height*k);cv.getContext('2d').drawImage(im,0,0,cv.width,cv.height);
-    URL.revokeObjectURL(im.src);enviarCapa({imagem:cv.toDataURL('image/webp',.9)});
-  };
-  im.onerror=()=>msgCapa('Não consegui abrir essa imagem.','var(--red)');
-  im.src=URL.createObjectURL(f);
-};
-$('btnTirarCapa').onclick=()=>enviarCapa({remover:1});
 /* Pessoas na página do afiliado agora (atualiza sozinho a cada 30s) */
 function mostrarVivo(n){n=+n||0;$('vivoN').innerText=n;$('vivoTxt').innerText=(n===1?'pessoa':'pessoas')+' na sua página agora';document.querySelector('.vivo').classList.toggle('on',n>0)}
 /* Mostra as datas do período escolhido, ex.: "Ontem, 19/10/2026" */

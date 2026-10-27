@@ -488,8 +488,6 @@ window.AM_AFILIADO = 'cirilorj';
  esteira(document.getElementById('alunos'),AL,function(r){return '<div class="reel"><video muted loop playsinline preload="none" poster="'+RB+r[0]+'.webp" data-src="'+RB+r[0]+'.mp4"></video><span class="sd">🔇</span><span class="vw">👁 '+k(r[1])+'<small>❤ '+k(r[2])+'</small></span></div>'});
  /* Link de compra que o Cirilo salvou no painel dele (vale por cima do link fixo do botão) */
  fetch('https://script.google.com/macros/s/AKfycbyw-PCFL5Ed1hpDJp18ZlNqYBeUs3GD_D3gMnNuYYyof5XHwb54WJCqd70FAVkwBSL_/exec?cfg=cirilorj').then(function(r){return r.json()}).then(function(c){
-  /* capa enviada pelo afiliado no painel dele (Google Drive do dono) */
-  if(c&&c.ok&&/^https:\/\/lh3\.googleusercontent\.com\/d\/[\w-]+$/.test(c.capa||''))[].forEach.call(document.querySelectorAll('.hero-img,.oferta img'),function(im){im.src=c.capa;im.removeAttribute('height')});
   if(!c||!c.ok||!/^https:\/\/pay\.(kiwify|cakto)\.com\.br\//.test(c.checkout||''))return;
   [].forEach.call(document.querySelectorAll('a[href*="pay.kiwify.com.br"],a[href*="pay.cakto.com.br"]'),function(a){
    var velho=new URL(a.href),novo=new URL(c.checkout);
