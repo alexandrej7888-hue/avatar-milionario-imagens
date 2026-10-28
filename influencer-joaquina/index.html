@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Avatar Milionário | Crie seu influencer viral com IA</title>
+<meta name="description" content="Aprenda a criar seu próprio influencer com inteligência artificial: vídeos ultrarrealistas, sem aparecer e sem experiência.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@800;900&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0d0d12;--bg2:#15151c;--card:#1a1a22;--card2:#22222c;--line:#2c2c38;--txt:#f4f4f6;--mut:#a3a3b2;--g:#c4ff40;--g2:#a8e61e;--rosa:#ff3d71}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--txt);font-family:Inter,system-ui,sans-serif;line-height:1.5;-webkit-font-smoothing:antialiased;overflow-x:hidden;padding-bottom:84px}
+img,video{display:block;max-width:100%}
+a{color:inherit;text-decoration:none}
+.wrap{max-width:560px;margin:0 auto;padding:0 18px}
+section{padding:56px 0;position:relative}
+.alt{background:linear-gradient(180deg,#121219,#0d0d12)}
+h1,h2,.big{font-family:Archivo,'Arial Narrow',sans-serif;font-weight:900;text-transform:uppercase;line-height:.98;letter-spacing:-.5px}
+h1{font-size:clamp(38px,11vw,60px);text-align:center}
+h2{font-size:clamp(30px,8.4vw,46px);text-align:center}
+.g{color:var(--g)}
+.tag{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:2px;color:var(--g);text-align:center;text-transform:uppercase;margin-bottom:10px}
+.chip{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);background:rgba(255,255,255,.03);border-radius:30px;padding:8px 16px;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:2px;color:#d8d8e0}
+.chip:before{content:"";width:7px;height:7px;border-radius:50%;background:var(--g);box-shadow:0 0 10px var(--g)}
+.lead{color:#d0d0da;text-align:center;font-size:17px;margin-top:16px}
+.btn{display:flex;align-items:center;justify-content:center;width:100%;background:var(--g);color:#0d0d12;font-family:Archivo,sans-serif;font-weight:900;font-size:18px;text-transform:uppercase;border-radius:60px;padding:20px 22px;text-align:center;box-shadow:0 10px 40px rgba(196,255,64,.25);transition:transform .15s}
+.btn:active{transform:scale(.98)}
+.selos{display:flex;flex-wrap:wrap;justify-content:center;gap:6px 18px;margin-top:14px;color:#cfcfd8;font-size:14px}
+.pills{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:22px 0}
+.pill{border:1px solid var(--line);background:var(--bg2);border-radius:30px;padding:9px 16px;font-size:15px;font-weight:600}
+/* HERO */
+.hero{padding-top:18px;background:radial-gradient(ellipse at 50% 0,rgba(196,255,64,.14),transparent 60%),radial-gradient(ellipse at 80% 70%,rgba(255,61,113,.08),transparent 55%)}
+.hero-img{width:min(340px,86vw);height:auto;margin:0 auto 14px;filter:drop-shadow(0 18px 40px rgba(196,255,64,.22))}
+.hero .chip{margin:0 auto 18px;display:flex;width:max-content}
+/* REELS */
+.perfil{display:flex;justify-content:center;margin:18px 0}
+.perfil a{display:flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--bg2);border-radius:30px;padding:5px 14px 5px 5px;font-family:'JetBrains Mono',monospace;font-size:13px}
+.perfil img{width:30px;height:30px;border-radius:50%;border:2px solid var(--g)}
+.badge{display:inline-flex;align-items:center;gap:8px;background:var(--g);color:#0d0d12;border-radius:40px;padding:8px 18px;font-family:Archivo;font-weight:900;font-size:20px;text-transform:uppercase}
+.palco{position:relative;max-width:320px;margin:0 auto}
+.reel{position:relative;border-radius:22px;overflow:hidden;background:#000;aspect-ratio:9/16;border:1px solid var(--line)}
+.reel video{width:100%;height:100%;object-fit:cover}
+.lado{position:absolute;right:10px;bottom:70px;display:flex;flex-direction:column;gap:14px;align-items:center;font-size:12px;font-weight:800;text-shadow:0 1px 4px #000}
+.lado svg{width:26px;height:26px;fill:#fff;filter:drop-shadow(0 1px 3px #000)}
+.lado .lk svg{fill:var(--rosa)}
+.som{position:absolute;left:12px;bottom:12px;width:42px;height:42px;border-radius:50%;background:rgba(0,0,0,.55);border:0;color:#fff;font-size:18px;cursor:pointer}
+.vtag{position:absolute;right:12px;top:12px;background:var(--g);color:#0d0d12;border-radius:12px;padding:5px 10px;text-align:center;font-family:Archivo;font-weight:900;font-size:22px;line-height:1}
+.vtag small{display:block;font-family:'JetBrains Mono';font-size:8px;letter-spacing:1px}
+.cora{position:absolute;width:34px;height:34px;border-radius:50%;background:var(--card2);display:grid;place-items:center;color:var(--rosa);font-size:15px;animation:boia 3s ease-in-out infinite}
+@keyframes boia{50%{transform:translateY(-8px)}}
+@media(max-width:440px){.cora{display:none}}
+.mini{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:16px}
+.mini button{position:relative;border:2px solid var(--line);border-radius:12px;overflow:hidden;aspect-ratio:9/16;background:#000;cursor:pointer;padding:0}
+.mini button.on{border-color:var(--g)}
+.mini img{width:100%;height:100%;object-fit:cover}
+.mini span{position:absolute;left:0;right:0;bottom:0;padding:14px 4px 5px;background:linear-gradient(transparent,rgba(0,0,0,.85));color:#fff;font-size:12px;font-weight:800}
+/* CARROSSEL */
+.esteira{display:flex;gap:14px;overflow-x:auto;padding:14px 18px 18px;scrollbar-width:none;cursor:grab;-webkit-mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent)}
+.esteira::-webkit-scrollbar{display:none}
+.esteira .reel{cursor:pointer;transition:transform .25s,border-color .25s,box-shadow .25s}
+.esteira .reel:after{content:"";position:absolute;inset:0;background:linear-gradient(transparent 55%,rgba(0,0,0,.85));pointer-events:none}
+.esteira .reel.ligado{border-color:var(--g);box-shadow:0 0 0 2px var(--g),0 18px 40px -12px rgba(196,255,64,.45);transform:translateY(-4px)}
+.esteira .sd{position:absolute;top:10px;left:10px;z-index:2;width:32px;height:32px;border-radius:50%;background:rgba(0,0,0,.55);display:grid;place-items:center;font-size:14px}
+.trilho{margin-top:22px}
+.trilho .reel{flex:0 0 230px;border:1px solid rgba(196,255,64,.35);box-shadow:0 14px 40px -14px rgba(196,255,64,.35)}
+.trilho .vtag{z-index:2;animation:brilha 2.4s ease-in-out infinite}
+.rod{position:absolute;left:12px;right:12px;bottom:12px;z-index:2;display:flex;gap:14px;font-weight:800;font-size:14px}
+.rod span{display:flex;align-items:center;gap:5px}
+.rod svg{width:18px;height:18px;fill:#fff}
+.rod span:first-child svg{fill:var(--rosa)}
+/* animações */
+.voa{position:absolute;bottom:90px;z-index:3;pointer-events:none;animation:voa 2.2s ease-out forwards;filter:drop-shadow(0 2px 6px rgba(0,0,0,.5))}
+@keyframes voa{0%{transform:translate(0,0) scale(.3);opacity:0}12%{transform:translate(0,-20px) scale(1.25);opacity:1}100%{transform:translate(var(--dx),-330px) scale(.8);opacity:0}}
+.pula{animation:pula .45s ease}
+@keyframes pula{40%{transform:scale(1.25)}}
+@keyframes brilha{50%{box-shadow:0 0 22px rgba(196,255,64,.75)}}
+.badge{animation:brilha 2.2s ease-in-out infinite}
+.btn{position:relative;overflow:hidden}
+.btn:after{content:"";position:absolute;top:0;left:-60%;width:40%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.55),transparent);transform:skewX(-20deg);animation:reflexo 3.2s ease-in-out infinite}
+@keyframes reflexo{0%,55%{left:-60%}100%{left:130%}}
+.reel#principal{box-shadow:0 0 0 2px rgba(196,255,64,.5),0 30px 70px -20px rgba(196,255,64,.35)}
+.hero-img{animation:flutua 4s ease-in-out infinite}
+@keyframes flutua{50%{transform:translateY(-8px)}}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:26px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:20px 12px;text-align:center}
+.stat b{display:block;font-family:Archivo;font-weight:900;font-size:34px;color:var(--g);line-height:1}
+.stat span{color:#cfcfd8;font-size:14px;display:block;margin-top:8px}
+.nota{color:#7c7c8c;font-size:12px;text-align:center;margin-top:18px}
+/* ALUNOS */
+.alunos{margin-top:12px}
+.alunos .reel{flex:0 0 200px}
+.alunos .vw{position:absolute;left:12px;bottom:12px;z-index:1;font-weight:800;font-size:20px;display:flex;align-items:center;gap:6px}
+.alunos .vw small{display:block;font-size:12px;color:#e0ffd0;font-weight:700}
+
+/* DUVIDA */
+.balao{display:inline-block;background:var(--card2);border-radius:20px;padding:14px 24px;font-family:Archivo;font-weight:900;font-size:clamp(34px,10vw,48px);margin:18px auto 0}
+.coments{display:grid;gap:12px;margin-top:24px}
+.coment{background:#fff;color:#111;border-radius:18px;padding:14px 16px;display:flex;gap:12px;align-items:flex-start;box-shadow:0 10px 30px rgba(0,0,0,.35)}
+.coment i{flex:0 0 36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#ccc,#888);filter:blur(1px)}
+.coment small{display:block;width:90px;height:10px;background:#ddd;border-radius:6px;margin:4px 0 8px;filter:blur(1.5px)}
+.coment p{font-size:18px;font-weight:600;line-height:1.25}
+/* PASSOS */
+.passos{display:grid;gap:14px;margin-top:28px}
+.passo{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:20px;position:relative;overflow:hidden}
+.passo .n{position:absolute;right:14px;top:6px;font-family:Archivo;font-weight:900;font-size:64px;color:rgba(196,255,64,.08)}
+.passo em{font-style:normal;font-family:'JetBrains Mono';font-size:11px;letter-spacing:2px;color:var(--g)}
+.passo h3{font-family:Archivo;font-weight:900;text-transform:uppercase;font-size:24px;margin:6px 0 8px}
+.passo p{color:#c8c8d2;font-size:15px}
+.passo ul{list-style:none;margin-top:12px;display:grid;gap:6px}
+.passo li{font-size:14px;color:#dcdce4;padding-left:22px;position:relative}
+.passo li:before{content:"✓";position:absolute;left:0;color:var(--g);font-weight:900}
+/* LINHA DO TEMPO */
+.tempo{margin-top:28px;border-left:2px solid var(--line);padding-left:20px;display:grid;gap:22px}
+.tempo div{position:relative}
+.tempo div:before{content:"";position:absolute;left:-28px;top:4px;width:14px;height:14px;border-radius:50%;background:var(--card2);border:2px solid var(--line)}
+.tempo .agora:before{background:var(--g);border-color:var(--g);box-shadow:0 0 14px var(--g)}
+.tempo em{font-style:normal;font-family:'JetBrains Mono';font-size:11px;letter-spacing:2px;color:var(--mut)}
+.tempo .agora em{color:var(--g)}
+.tempo h4{font-family:Archivo;font-weight:900;text-transform:uppercase;font-size:20px;margin:2px 0 4px}
+.tempo p{color:#c8c8d2;font-size:15px}
+.aqui{display:inline-block;background:var(--g);color:#0d0d12;font-weight:800;font-size:12px;border-radius:20px;padding:3px 10px;margin-top:6px}
+/* MODULOS */
+.mods{display:grid;gap:10px;margin:28px 0}
+.mod{background:var(--card);border:1px solid var(--line);border-radius:18px;overflow:hidden}
+.mod summary{list-style:none;display:flex;align-items:center;gap:14px;padding:16px;cursor:pointer}
+.mod summary::-webkit-details-marker{display:none}
+.mod .num{flex:0 0 46px;height:46px;border-radius:12px;background:var(--card2);display:grid;place-items:center;font-family:Archivo;font-weight:900;font-size:20px;color:var(--g)}
+.mod small{display:block;font-family:'JetBrains Mono';font-size:10px;letter-spacing:2px;color:var(--mut)}
+.mod b{font-family:Archivo;font-weight:900;text-transform:uppercase;font-size:17px;line-height:1.1}
+.mod summary:after{content:"+";margin-left:auto;font-size:24px;color:var(--g)}
+.mod[open] summary:after{content:"–"}
+.mod .corpo{padding:0 16px 16px 76px;color:#c8c8d2;font-size:15px}
+.mod .corpo li{margin-left:16px;margin-top:4px}
+.mod.extra .num{background:var(--g);color:#0d0d12}
+/* PARA QUEM */
+.cont{text-align:center;font-family:'JetBrains Mono';color:var(--g);font-size:14px;margin-top:16px}
+.checks{display:grid;gap:10px;margin-top:16px}
+.check{display:flex;gap:12px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:15px;font-size:15px;font-weight:600;cursor:pointer;text-align:left;color:var(--txt);width:100%}
+.check i{flex:0 0 24px;height:24px;border-radius:7px;border:2px solid var(--line);display:grid;place-items:center;font-style:normal;font-weight:900;color:#0d0d12}
+.check.on{border-color:var(--g);background:rgba(196,255,64,.07)}
+.check.on i{background:var(--g);border-color:var(--g)}
+.check.on i:after{content:"✓"}
+/* CAMINHOS */
+.caminhos{display:grid;gap:10px;margin-top:26px}
+.cam{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;display:flex;gap:14px;align-items:flex-start}
+.cam span{font-size:26px;line-height:1}
+.cam b{font-family:Archivo;font-weight:900;text-transform:uppercase;font-size:17px;display:block}
+.cam p{color:#c8c8d2;font-size:14px}
+/* OFERTA */
+.oferta{background:linear-gradient(180deg,var(--card2),var(--card));border:2px solid var(--g);border-radius:26px;padding:26px 20px;margin-top:26px;box-shadow:0 0 60px rgba(196,255,64,.12);text-align:center}
+.oferta img{width:170px;height:auto;margin:0 auto 10px}
+.oferta ul{list-style:none;text-align:left;display:grid;gap:9px;margin:16px 0 20px}
+.oferta li{padding-left:28px;position:relative;font-size:15px;font-weight:600}
+.oferta li:before{content:"✓";position:absolute;left:0;top:0;width:20px;height:20px;border-radius:50%;background:var(--g);color:#0d0d12;font-size:12px;font-weight:900;display:grid;place-items:center}
+.oferta li.bonus:before{content:"★"}
+.preco{font-family:Archivo;font-weight:900;font-size:72px;line-height:1;color:var(--g)}
+.preco small{font-size:26px;vertical-align:top;margin-right:4px;color:var(--txt)}
+.de{color:var(--mut);text-decoration:line-through;font-size:16px}
+.unico{font-family:'JetBrains Mono';font-size:11px;letter-spacing:1.5px;color:#cfcfd8;margin:6px 0 18px}
+.seg{font-size:12px;color:var(--mut);margin-top:12px}
+/* GARANTIA */
+.garantia{text-align:center;background:var(--card);border:1px solid var(--line);border-radius:26px;padding:28px 20px}
+.selo{width:130px;height:130px;margin:0 auto 16px;border-radius:50%;border:3px dashed var(--g);display:grid;place-items:center;font-family:Archivo;font-weight:900;color:var(--g);line-height:.9}
+.selo b{font-size:56px;display:block}
+.garantia ul{list-style:none;display:grid;gap:6px;margin:16px 0;font-size:15px;font-weight:600}
+.garantia p{color:#c8c8d2;font-size:15px}
+/* FAQ */
+.faq{display:grid;gap:10px;margin-top:26px}
+.faq details{background:var(--card);border:1px solid var(--line);border-radius:16px}
+.faq summary{list-style:none;padding:16px 44px 16px 16px;font-weight:700;cursor:pointer;position:relative}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary:after{content:"+";position:absolute;right:16px;top:12px;font-size:22px;color:var(--g)}
+.faq details[open] summary:after{content:"–"}
+.faq p{padding:0 16px 16px;color:#c8c8d2;font-size:15px}
+/* FINAL */
+.final{text-align:center;background:radial-gradient(ellipse at 50% 100%,rgba(196,255,64,.14),transparent 60%)}
+.final .vs{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:24px 0}
+.final .vs div{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px}
+.final .vs em{font-style:normal;font-family:'JetBrains Mono';font-size:11px;letter-spacing:2px;color:var(--mut)}
+.final .vs .hj{border-color:var(--g)}
+.final .vs .hj em{color:var(--g)}
+footer{text-align:center;color:#6c6c7a;font-size:12px;padding:26px 18px}
+/* BARRA FIXA */
+.fixo{position:fixed;left:0;right:0;bottom:0;z-index:50;padding:12px 16px calc(12px + env(safe-area-inset-bottom));background:linear-gradient(transparent,rgba(13,13,18,.92) 30%);transform:translateY(110%);transition:transform .3s}
+.fixo.on{transform:none}
+.fixo .btn{max-width:528px;margin:0 auto;padding:17px}
+.rv{opacity:0;transform:translateY(24px);transition:opacity .6s,transform .6s}
+.rv.vis{opacity:1;transform:none}
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<section class="hero">
+ <div class="wrap">
+  <img class="hero-img" src="https://cdn.jsdelivr.net/gh/alexandrej7888-hue/avatar-milionario-imagens@57834fa8de7db2e791310fd229e9e00add1327f9/influencer-lf/capa.webp" alt="Avatar Milionário" width="340" height="336">
+  <div class="chip">PERSONAGEM CRIADO COM IA</div>
+  <h1>Crie seu próprio <span class="g">influencer viral</span> com IA.</h1>
+  <div class="pills"><span class="pill">✨ Vídeos ultrarrealistas</span><span class="pill">🙈 Sem aparecer</span><span class="pill">🎓 Sem experiência</span></div>
+  <a class="btn" href="#comprar">Quero aprender agora</a>
+  <div class="selos"><span>🔒 Pagamento único</span><span>♾️ Acesso vitalício</span><span>🛡️ Garantia de 7 dias</span></div>
+ </div>
+</section>
+
+<!-- ALUNOS -->
+<section>
+ <div class="wrap">
+  <div class="tag">Resultados de quem usa o método</div>
+  <h2 class="rv">Vídeos de quem usa o método que <span class="g">passam de <span data-n="79" data-s=" milhões">79 milhões</span></span> de visualizações</h2>
+  <p class="lead">Personagens criados com o método, viralizando no Instagram. Arraste para o lado e toque no vídeo para ouvir.</p>
+ </div>
+ <div class="esteira alunos" id="alunos"></div>
+</section>
+
+<!-- DUVIDA -->
+<section class="alt">
+ <div class="wrap" style="text-align:center">
+  <div class="tag">A pergunta que mais aparece</div>
+  <h2 class="rv">Tão real que <span class="g">ninguém acredita</span></h2>
+  <div class="balao rv">ISSO É REAL? 🤔</div>
+  <p class="lead">Nos comentários é sempre a mesma coisa: uns juram que é uma criança de verdade, outros querem descobrir como o vídeo foi feito.</p>
+  <div class="coments">
+   <div class="coment rv"><i></i><div><small></small><p>Como vocês fazem esses vídeos com IA? 😳</p></div></div>
+   <div class="coment rv"><i></i><div><small></small><p>Mano, isso é IA mesmo??</p></div></div>
+   <div class="coment rv"><i></i><div><small></small><p>Ensina a fazer um desse por favor 🙏</p></div></div>
+  </div>
+ </div>
+</section>
+
+<!-- COMO -->
+<section>
+ <div class="wrap">
+  <div class="tag">Como é feito</div>
+  <h2 class="rv">O que está por trás <span class="g">desses vídeos?</span></h2>
+  <p class="lead">Sem câmera, sem estúdio e sem ator. Só as ferramentas certas de IA e um passo a passo bem definido.</p>
+  <div class="passos">
+   <div class="passo rv"><span class="n">01</span><em>PASSO 01</em><h3>Crie seu personagem</h3><p>Monte um influencer com rosto, estilo e personalidade próprios.</p><ul><li>Rosto, roupa e acessórios marcantes</li><li>Mesmo rosto em todos os vídeos</li><li>Do zero ou a partir de uma referência</li></ul></div>
+   <div class="passo rv"><span class="n">02</span><em>PASSO 02</em><h3>Escolha a cena</h3><p>Pegue um vídeo base com o movimento e o cenário que você quer.</p><ul><li>Gravação sua ou autorizada</li><li>Dancinhas, trends e situações do dia a dia</li><li>Enquadramentos que facilitam a troca</li></ul></div>
+   <div class="passo rv"><span class="n">03</span><em>PASSO 03</em><h3>Transforme com IA</h3><p>Coloque o seu personagem no lugar de quem aparece no vídeo, mantendo a cena.</p><ul><li>Troca do protagonista pelo personagem</li><li>Prompts prontos para copiar e colar</li><li>Geração barata: menos de R$ 2 por vídeo</li></ul></div>
+   <div class="passo rv"><span class="n">04</span><em>PASSO 04</em><h3>Poste e monetize</h3><p>Finalize, publique e transforme as visualizações em dinheiro.</p><ul><li>Ajustes de realismo</li><li>Formato certo para Reels e TikTok</li><li>Caminhos para ganhar com o perfil</li></ul></div>
+  </div>
+  <div style="margin-top:26px"><a class="btn" href="#comprar">Quero criar o meu</a></div>
+ </div>
+</section>
+
+<!-- LINHA DO TEMPO -->
+<section class="alt">
+ <div class="wrap">
+  <div class="tag">De qual lado você está?</div>
+  <h2 class="rv">Enquanto uns assistem, <span class="g">outros estão criando!</span></h2>
+  <div class="tempo">
+   <div class="rv"><em>ANTES</em><h4>Precisava de produção inteira</h4><p>Ator, câmera, figurino e edição profissional para ter um personagem em vídeo.</p></div>
+   <div class="rv"><em>DEPOIS</em><h4>A IA entrou no jogo</h4><p>As ferramentas passaram a gerar rostos e movimentos cada vez mais reais.</p></div>
+   <div class="rv"><em>AGORA</em><h4>Personagens que não existem bombando no feed</h4><p>Perfis com personagens de IA juntam milhões de visualizações por semana.</p><span class="aqui">VOCÊ ESTÁ AQUI</span></div>
+   <div class="agora rv"><em>SUA VEZ</em><h4>Criar o seu influencer</h4><p>Com o método certo, você cria o seu personagem mesmo começando do zero.</p></div>
+  </div>
+ </div>
+</section>
+
+<!-- MODULOS -->
+<section>
+ <div class="wrap">
+  <div class="tag">Você não precisa ser especialista</div>
+  <h2 class="rv">Do zero ao seu <span class="g">influencer de IA!</span></h2>
+  <p class="lead">Um treinamento passo a passo para criar o seu personagem, produzir vídeos que viralizam e ganhar dinheiro com eles.</p>
+  <div class="mods">
+   <details class="mod" open><summary><span class="num">01</span><div><small>MÓDULO 01</small><b>O formato que viraliza</b></div></summary><div class="corpo">Por que esses vídeos prendem a atenção e como escolher um personagem que rende muitos vídeos.<ul><li>O que os perfis virais têm em comum</li><li>Escolhendo o conceito do seu personagem</li></ul></div></details>
+   <details class="mod"><summary><span class="num">02</span><div><small>MÓDULO 02</small><b>Criando seu personagem</b></div></summary><div class="corpo">Monte o rosto, o estilo e a identidade do seu influencer, com e sem foto de referência.<ul><li>Criador de avatar com mais de 50 looks</li><li>Personagem a partir de pessoa real</li></ul></div></details>
+   <details class="mod"><summary><span class="num">03</span><div><small>MÓDULO 03</small><b>Gerando os vídeos</b></div></summary><div class="corpo">As ferramentas, os prompts e as configurações para colocar seu personagem em qualquer cena.<ul><li>Prompts prontos para copiar</li><li>Como gerar cada vídeo por menos de R$ 2</li></ul></div></details>
+   <details class="mod"><summary><span class="num">04</span><div><small>MÓDULO 04</small><b>Postagem e crescimento</b></div></summary><div class="corpo">Acabamento, legendas e a forma certa de postar para o algoritmo entregar.</div></details>
+   <details class="mod"><summary><span class="num">05</span><div><small>MÓDULO 05</small><b>Monetização</b></div></summary><div class="corpo">Os caminhos para transformar seguidores e visualizações em dinheiro.</div></details>
+   <details class="mod extra"><summary><span class="num">+</span><div><small>BÔNUS</small><b>Pack de vídeos virais</b></div></summary><div class="corpo">Vídeos base prontos para você trocar pelo seu personagem e já começar a postar.</div></details>
+  </div>
+  <a class="btn" href="#comprar">Quero aprender agora</a>
+ </div>
+</section>
+
+<!-- PARA QUEM -->
+<section class="alt">
+ <div class="wrap">
+  <div class="tag">Feito para quem começa do zero</div>
+  <h2 class="rv">O Avatar Milionário <span class="g">é para você que…</span></h2>
+  <div class="cont"><span id="nCk">0</span>/6 · TOQUE NO QUE COMBINA COM VOCÊ</div>
+  <div class="checks" id="checks">
+   <button class="check"><i></i>Nunca usou inteligência artificial para criar vídeos.</button>
+   <button class="check"><i></i>Quer viralizar sem precisar aparecer.</button>
+   <button class="check"><i></i>Já posta e quer testar um formato novo.</button>
+   <button class="check"><i></i>Quer vender vídeos com IA para marcas e negócios.</button>
+   <button class="check"><i></i>Tem uma ideia de personagem e não sabe por onde começar.</button>
+   <button class="check"><i></i>Quer ganhar dinheiro na internet usando IA.</button>
+  </div>
+ </div>
+</section>
+
+<!-- CAMINHOS -->
+<section>
+ <div class="wrap">
+  <div class="tag">Não é só viralizar</div>
+  <h2 class="rv">É uma habilidade que <span class="g">pode gerar renda!</span></h2>
+  <div class="caminhos">
+   <div class="cam rv"><span>📱</span><div><b>Perfis de IA</b><p>Crie e cresça perfis próprios com seu personagem.</p></div></div>
+   <div class="cam rv"><span>💰</span><div><b>Monetização das redes</b><p>Programas de bônus por visualização, seguindo as regras de cada rede.</p></div></div>
+   <div class="cam rv"><span>🔗</span><div><b>Afiliados</b><p>Indique produtos e ganhe comissão em cada venda.</p></div></div>
+   <div class="cam rv"><span>📣</span><div><b>Publicidade</b><p>Faça publis para marcas com o seu personagem.</p></div></div>
+   <div class="cam rv"><span>🎬</span><div><b>Vídeos para clientes</b><p>Venda a criação de vídeos com IA como serviço.</p></div></div>
+  </div>
+  <p class="nota">São possibilidades, não promessa de ganho. O resultado depende da sua execução e das regras de cada plataforma.</p>
+ </div>
+</section>
+
+<!-- OFERTA -->
+<section class="alt" id="comprar">
+ <div class="wrap">
+  <div class="tag">Acesso liberado hoje</div>
+  <h2 class="rv">Chegou a sua vez de <span class="g">criar o seu!</span></h2>
+  <div class="oferta">
+   <img src="https://cdn.jsdelivr.net/gh/alexandrej7888-hue/avatar-milionario-imagens@57834fa8de7db2e791310fd229e9e00add1327f9/influencer-lf/capa-p.webp" alt="" width="170" height="168" loading="lazy">
+   <div class="tag" style="margin:0">O que você leva</div>
+   <ul>
+    <li>Curso completo passo a passo</li>
+    <li>Criador de avatar com mais de 50 looks</li>
+    <li>Personagem a partir de pessoa real</li>
+    <li>Prompts prontos para copiar e colar</li>
+    <li>Geração de vídeo por menos de R$ 2</li>
+    <li>Caminhos de monetização</li>
+    <li class="bonus">BÔNUS: pack de vídeos virais</li>
+    <li>Acesso vitalício</li>
+   </ul>
+   <div class="de">De R$ 197,00 por apenas</div>
+   <div class="preco"><small>R$</small>97<span style="font-size:40px">,00</span></div>
+   <div class="unico">PAGAMENTO ÚNICO • SEM MENSALIDADE</div>
+   <a class="btn" href="https://pay.cakto.com.br/bpvhmr9?affiliate=hE9ojH2S">Quero garantir meu acesso</a>
+   <div class="seg">🔒 Pagamento seguro processado pela Cakto · Pix ou cartão</div>
+  </div>
+ </div>
+</section>
+
+<!-- GARANTIA -->
+<section>
+ <div class="wrap">
+  <div class="garantia rv">
+   <div class="selo"><div><b>7</b>DIAS</div></div>
+   <h2 style="font-size:32px">Garantia de 7 dias</h2>
+   <ul><li>✓ Prazo de 7 dias após a compra</li><li>✓ 100% do valor de volta</li><li>✓ Pedido simples, sem burocracia</li></ul>
+   <p>Entre, assista às aulas e crie o seu primeiro personagem. Se em até 7 dias você achar que não é para você, é só pedir o reembolso e devolvemos todo o valor pago.</p>
+  </div>
+ </div>
+</section>
+
+<!-- FAQ -->
+<section class="alt">
+ <div class="wrap">
+  <h2 class="rv">Tudo o que você precisa <span class="g">saber antes</span></h2>
+  <div class="faq">
+   <details><summary>Preciso aparecer nos vídeos?</summary><p>Não. Quem aparece é o seu personagem criado com IA. Você não precisa mostrar o rosto em nenhum momento.</p></details>
+   <details><summary>Nunca usei IA. Consigo fazer?</summary><p>Sim. As aulas começam do zero e mostram cada clique, com prompts prontos para copiar.</p></details>
+   <details><summary>Preciso de computador?</summary><p>Dá para fazer quase tudo pelo celular. O computador ajuda, mas não é obrigatório.</p></details>
+   <details><summary>Quanto custa gerar cada vídeo?</summary><p>No curso você aprende a gerar vídeos por menos de R$ 2 cada. Algumas ferramentas de IA têm planos ou créditos cobrados à parte.</p></details>
+   <details><summary>Em quanto tempo faço meu primeiro vídeo?</summary><p>Seguindo as aulas, dá para criar o personagem e o primeiro vídeo no mesmo dia.</p></details>
+   <details><summary>É pagamento único?</summary><p>Sim. Você paga uma vez só e tem acesso vitalício, sem mensalidade.</p></details>
+   <details><summary>Como recebo o acesso?</summary><p>Assim que o pagamento é aprovado, o acesso chega no seu e-mail. No Pix a liberação é na hora.</p></details>
+   <details><summary>E se eu não gostar?</summary><p>Você tem 7 dias de garantia. Pede o reembolso e recebe 100% do valor de volta.</p></details>
+  </div>
+ </div>
+</section>
+
+<!-- FINAL -->
+<section class="final">
+ <div class="wrap">
+  <h2 class="rv">O próximo influencer viral <span class="g">pode ser o seu.</span></h2>
+  <div class="vs"><div><em>ANTES</em><p>Câmera, ator, estúdio e equipe</p></div><div class="hj"><em>HOJE</em><p>Só você, a IA e o método</p></div></div>
+  <a class="btn" href="#comprar">Entrar agora · R$ 97</a>
+  <div class="selos"><span>🔒 Pagamento único</span><span>♾️ Acesso vitalício</span><span>🛡️ Garantia de 7 dias</span></div>
+ </div>
+</section>
+
+<footer>Avatar Milionário · Todos os direitos reservados.<br>Este site não é afiliado ao Instagram, TikTok ou Meta.</footer>
+
+<div class="fixo" id="fixo"><a class="btn" href="#comprar">Quero aprender agora</a></div>
+
+<script>
+window.AM_AFILIADO = 'joaquina';
+(function(){
+ function k(n){return n>=1e6?(n/1e6).toFixed(1).replace('.',',').replace(',0','')+' mi':n>=1e3?Math.round(n/1e3)+' mil':String(n)}
+ /* Números contando quando aparecem na tela */
+ function conta(el){
+  var alvo=parseFloat(el.dataset.n),suf=el.dataset.s||'',dec=+(el.dataset.d||0),pre=el.dataset.p||'',t0=null;
+  function passo(t){if(!t0)t0=t;var f=Math.min(1,(t-t0)/1600),e=1-Math.pow(1-f,3),x=alvo*e;el.textContent=pre+x.toFixed(dec).replace('.',',')+suf;if(f<1)requestAnimationFrame(passo)}
+  requestAnimationFrame(passo);
+ }
+ if('IntersectionObserver' in window){
+  var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting){e.target.classList.add('vis');if(e.target.dataset.n)conta(e.target);io.unobserve(e.target)}})},{threshold:.3});
+  [].forEach.call(document.querySelectorAll('.rv,[data-n]'),function(e){io.observe(e)});
+ }else [].forEach.call(document.querySelectorAll('.rv'),function(e){e.classList.add('vis')});
+ /* Esteira de vídeos que gira sozinha; dá para arrastar e tocar no vídeo liga o som só dele */
+ function esteira(el,itens,card){
+  el.innerHTML=itens.concat(itens).map(card).join('');
+  var pos=0,pausa=0,arr=false,ini=null;
+  (function gira(){if(Date.now()>pausa&&!ini){pos+=.6;var meio=el.scrollWidth/2;if(pos>=meio)pos-=meio;el.scrollLeft=pos}requestAnimationFrame(gira)})();
+  el.addEventListener('pointerdown',function(e){ini={x:e.clientX,s:el.scrollLeft};arr=false});
+  addEventListener('pointermove',function(e){if(!ini)return;var d=e.clientX-ini.x;if(Math.abs(d)>6)arr=true;el.scrollLeft=ini.s-d;pos=el.scrollLeft});
+  addEventListener('pointerup',function(){if(ini){ini=null;pausa=Date.now()+2500;setTimeout(function(){arr=false},50)}});
+  el.addEventListener('touchstart',function(){pausa=Date.now()+4000},{passive:true});
+  el.addEventListener('scroll',function(){if(Date.now()<pausa)pos=el.scrollLeft},{passive:true});
+  [].forEach.call(el.querySelectorAll('.reel'),function(d){d.onclick=function(){if(arr)return;var x=d.querySelector('video'),lig=x.muted;[].forEach.call(document.querySelectorAll('.esteira .reel'),function(o){o.querySelector('video').muted=true;o.querySelector('.sd').textContent='🔇';o.classList.remove('ligado')});if(lig){x.muted=false;x.play();d.querySelector('.sd').textContent='🔊';d.classList.add('ligado')}}});
+  if('IntersectionObserver' in window){var iv=new IntersectionObserver(function(es){es.forEach(function(e){var x=e.target;if(e.isIntersecting){if(!x.src)x.src=x.dataset.src;x.play().catch(function(){})}else x.pause()})},{threshold:.3});[].forEach.call(el.querySelectorAll('video'),function(x){iv.observe(x)})}
+ }
+ var COR='<svg viewBox="0 0 24 24"><path d="M12 21s-7.5-4.6-9.6-9.2C.9 8.6 3 5 6.6 5c2 0 3.4 1.1 4.2 2.4h.4C12 6.1 13.4 5 15.4 5 19 5 21.1 8.6 19.6 11.8 17.5 16.4 12 21 12 21z"/></svg>',
+  BAL='<svg viewBox="0 0 24 24"><path d="M12 3C6.5 3 2 6.8 2 11.5c0 2.4 1.2 4.6 3.1 6.1L4 21l4.2-2c1.2.4 2.5.6 3.8.6 5.5 0 10-3.8 10-8.5S17.5 3 12 3z"/></svg>';
+ /* Vídeos de quem usa o método: os mesmos do site principal (pasta resultados/) [arquivo, visualizações, curtidas] */
+ var RB='https://cdn.jsdelivr.net/gh/alexandrej7888-hue/avatar-milionario-imagens@5908ae191fc4f39b13a907028feca205fed77733/resultados/';
+ var AL=[['gru-espelho',7200000,380000],['Ddb0QUyqnhG',19358993,1712362],['DeT1wGyRC6r',294029,21446],['DeBwwYiIO-F',8600000,267000],['derek-extra',7100000,77100],['DeQ6tBUtw2n',296691,41684],['DeFlBFgoDiy',5312343,544575],['DeeqtJgRV2a',1191824,138837],['DdrEbnrMO74',6124267,932304],['DeUjiFssy0P',614297,13500],['DeXQ2fqsI2F',3495303,475629],['gru-vector',1700000,78300],['DeOMoJgtZfx',2276315,241274]];
+ esteira(document.getElementById('alunos'),AL,function(r){return '<div class="reel"><video muted loop playsinline preload="none" poster="'+RB+r[0]+'.webp" data-src="'+RB+r[0]+'.mp4"></video><span class="sd">🔇</span><span class="vw">👁 '+k(r[1])+'<small>❤ '+k(r[2])+'</small></span></div>'});
+ /* Link de compra que o afiliado salvou no painel dele (vale por cima do link fixo do botão) */
+ fetch('https://script.google.com/macros/s/AKfycbyw-PCFL5Ed1hpDJp18ZlNqYBeUs3GD_D3gMnNuYYyof5XHwb54WJCqd70FAVkwBSL_/exec?cfg=joaquina').then(function(r){return r.json()}).then(function(c){
+  if(!c||!c.ok||!/^https:\/\/pay\.(kiwify|cakto)\.com\.br\//.test(c.checkout||''))return;
+  [].forEach.call(document.querySelectorAll('a[href*="pay.kiwify.com.br"],a[href*="pay.cakto.com.br"]'),function(a){
+   var velho=new URL(a.href),novo=new URL(c.checkout);
+   velho.searchParams.forEach(function(v,k){if(k!=='afid'&&k!=='affiliate'&&!novo.searchParams.has(k))novo.searchParams.set(k,v)});
+   a.href=novo.toString();
+  });
+ }).catch(function(){});
+ var n=0,nc=document.getElementById('nCk');
+ [].forEach.call(document.querySelectorAll('.check'),function(b){b.onclick=function(){b.classList.toggle('on');n+=b.classList.contains('on')?1:-1;nc.textContent=n}});
+ var fx=document.getElementById('fixo'),of=document.getElementById('comprar');
+ addEventListener('scroll',function(){var r=of.getBoundingClientRect();fx.classList.toggle('on',scrollY>500&&(r.top>innerHeight||r.bottom<0))},{passive:true});
+})();
+</script>
+<script src="https://cdn.jsdelivr.net/gh/alexandrej7888-hue/avatar-milionario-imagens@5e1f99ecd595712a777501107be0a57fb47c66ef/rastreio.js"></script>
+</body>
+</html>
