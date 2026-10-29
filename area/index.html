@@ -479,9 +479,6 @@ const MODULOS=[
   ['Como fazer um vídeo viral com seu avatar','972fd4c8-e1f8-4f0d-917c-6fad75735c76','14:35']]},
  {t:'Monetização',d:'Publis, afiliados e produtos: como transformar views em dinheiro.',aulas:[
   ['Como ganhar dinheiro com seu avatar','3d302edc-94ac-4683-96c1-ef8275d80401','5:48']]},
- {t:'Bônus: vídeos por menos de R$ 2',d:'O jeito de gerar cada vídeo do seu avatar pagando menos de dois reais.',aulas:[
-  ['Contas com geração ilimitada até 31/10','e1e4bf51-9013-4739-bc13-6d19a55425a6','4:07'],
-  ['Geração por menos de R$ 2','141d2bfa-a890-437e-bbe9-a427aa017b20','9:21']],texto:true},
  /* TikTok Shop tirado por enquanto (capa guardada em capas/tiktok-shop.webp):
  {t:'TikTok Shop',d:'Módulo em gravação. Em breve na sua área de membros.',aulas:[],lock:'Em breve'}, */
  {t:'Recupere sua conta do Instagram',bonus:1,d:'Dicas para não perder sua conta do Instagram e o que fazer se ela cair.',aulas:[
@@ -528,7 +525,7 @@ function fecharVideo(){const p=document.getElementById('player');const v=p.query
 const cardMod=(m,i)=>{const n=String(i+1).padStart(2,'0'), f=feitasMod(m), a=m.aulas.length;
  const badge=m.lock?`<span class="badge gold">${m.lock}</span>`:a&&f===a?'<span class="badge ok">✓ Concluído</span>':f>0?'<span class="badge">Em andamento</span>':'';
  return `<div class="mc ${m.lock?'locked':''}" title="${m.d}" onclick="${m.lock?`toast('Módulo ${n}: ${m.lock}')`:`AULA=0;location.hash='modulo-${i+1}'`}">
-  <div class="cover"><div class="fb"><small>MÓDULO ${n}</small><strong>${m.t}</strong></div><img src="${IMG_BASE}capas/modulo-${n}.webp?v=2" alt="Módulo ${n}: ${m.t}" loading="lazy" onerror="this.remove()">
+  <div class="cover"><div class="fb"><small>MÓDULO ${n}</small><strong>${m.t}</strong></div><img src="${IMG_BASE}capas/modulo-${n}.webp?v=3" alt="Módulo ${n}: ${m.t}" loading="lazy" onerror="this.remove()">
    <div class="hov"><span>${m.lock?ic('lock'):'<svg viewBox="0 0 24 24" class="pl"><path d="M6 4l14 8-14 8z"/></svg>'}</span></div>
    ${m.lock||!a?'':`<div class="bar"><i style="width:${f/a*100}%"></i></div>`}</div>
   <div class="info2"><b>${m.t}</b><small>${m.bonus?'Bônus':'Módulo '+n}</small>${badge}</div></div>`};
@@ -540,7 +537,7 @@ function telaModulo(i){const m=MODULOS[i];if(m&&!m.lock&&m.texto&&!m.aulas.lengt
  return `<a href="#aulas" class="voltar">← Todos os módulos</a>
  <div class="ph" style="margin-bottom:20px"><h1>${m.t}</h1><p>${m.bonus?'Bônus':'Módulo '+n} · ${m.aulas.length} ${m.aulas.length>1?'aulas':'aula'}</p></div>
  <div class="aula-wrap">
-  <div><div class="pv">${/^https:/.test(a[1])?`<video id="pv" src="${a[1]}" controls playsinline preload="metadata" poster="${IMG_BASE}capas/modulo-${n}.webp?v=2" style="width:100%;height:100%;background:#000"></video>`:`<iframe id="pv" src="${PANDA+a[1]}" allow="accelerometer;gyroscope;autoplay;encrypted-media;picture-in-picture" allowfullscreen fetchpriority="high"></iframe>`}</div>
+  <div><div class="pv">${/^https:/.test(a[1])?`<video id="pv" src="${a[1]}" controls playsinline preload="metadata" poster="${IMG_BASE}capas/modulo-${n}.webp?v=3" style="width:100%;height:100%;background:#000"></video>`:`<iframe id="pv" src="${PANDA+a[1]}" allow="accelerometer;gyroscope;autoplay;encrypted-media;picture-in-picture" allowfullscreen fetchpriority="high"></iframe>`}</div>
    <div class="aula-info"><div><small>Aula ${AULA+1} de ${m.aulas.length}</small><h2>${a[0]}</h2></div>
     <button class="btn ${vista(a[1])?'btn-o':'btn-g'}" onclick="concluir('${a[1]}');${prox?`AULA++;rr()`:`rr();toast('Módulo concluído!')`}">${vista(a[1])?'✓ Concluída':'Concluir aula'}${prox?' e ir para a próxima '+ic('arrow'):''}</button></div></div>
   <div class="card lista-card"><h3>${ic('book')} Aulas do módulo</h3><div class="lista">${m.aulas.map((x,j)=>`<button class="li ${j===AULA?'on':''} ${vista(x[1])?'ok':''}" onclick="AULA=${j};rr()"><span class="n">${vista(x[1])?'✓':j+1}</span><span><b>${x[0]}</b><small>${x[2]}</small></span></button>`).join('')}</div>
