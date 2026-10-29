@@ -266,7 +266,7 @@ footer{border-top:1px solid var(--line);padding:30px 0;text-align:center;color:v
 <section style="background:var(--bg2);border-block:1px solid var(--line)">
  <div class="wrap center reveal">
   <span class="eyebrow">O grande diferencial</span>
-  <h2>Pare de pagar caro. <em>Vídeo de 8 s por menos de R$ 5,50.</em></h2>
+  <h2>Pare de pagar caro por vídeo. <em>Por menos de R$ 5,50.</em></h2>
   <p class="lead">A maioria das pessoas desiste porque acha que precisa de plano caro em dólar para fazer esses vídeos. Não precisa. Você vai aprender o caminho barato que eu uso todo dia.</p>
  </div>
  <div class="wrap reveal">
@@ -358,7 +358,7 @@ footer{border-top:1px solid var(--line);padding:30px 0;text-align:center;color:v
     <h2>Seu curso <em>se paga com 3 vendas</em></h2>
     <p class="lead">Todo aluno pode virar afiliado e ganhar 50% de cada venda pelo próprio link. Indicou três pessoas, o curso já saiu de graça. O resto é lucro.</p>
    </div>
-   <div class="num"><div><small>Por venda</small><b id="afi1">R$ 42,89</b></div><div><small>3 vendas</small><b id="afi3">R$ 128,67</b></div><div><small>10 vendas</small><b id="afi10">R$ 428,90</b></div>
+   <div class="num"><div><small>Por venda</small><b id="afi1">R$ 47,26</b></div><div><small>3 vendas</small><b id="afi3">R$ 141,78</b></div><div><small>10 vendas</small><b id="afi10">R$ 472,60</b></div>
     <p style="grid-column:1/-1;color:var(--mut);font-size:13px;text-align:center;margin-top:4px">Comissão de 50% sobre o valor líquido, já descontada a taxa da plataforma.</p></div>
   </div>
  </div>
@@ -423,8 +423,8 @@ function aplicarPreco(p){
   const pg=document.getElementById('pagaTxt');
   if(pg)pg.textContent='Fez '+vid+', economizou '+brlTxt(n*(CARO-BARATO))+': mais do que os R$ '+p+' que você investe no curso. Do '+(ORD[n]||(n+1)+'º')+' vídeo em diante, é tudo economia.';
   document.querySelectorAll('.paga h3').forEach(e=>e.textContent='Com '+vid+' o curso já se pagou');
-  /* Comissão do afiliado: 50% do valor líquido, depois da taxa da plataforma (8,99% + R$ 2,49) */
-  const v=parseFloat(String(p).replace(',','.')),com=Math.round((v-(v*.0899+2.49))/2*100)/100;
+  /* Comissão do afiliado: 50% do valor líquido, depois da taxa da plataforma. Cakto no Pix: 0% + R$ 2,49; Kiwify: 8,99% + R$ 2,49 */
+  const v=parseFloat(String(p).replace(',','.')),taxa=/kiwify/.test(CHECKOUT)?v*.0899+2.49:2.49,com=Math.round((v-taxa)/2*100)/100;
   const real=x=>'R$ '+x.toFixed(2).replace('.',',').replace(/\B(?=(\d{3})+,)/g,'.');
   [[1,'afi1'],[3,'afi3'],[10,'afi10']].forEach(([q,id])=>{const e=document.getElementById(id);if(e)e.textContent=real(com*q)});
 }
@@ -433,9 +433,9 @@ const IMG='https://cdn.jsdelivr.net/gh/alexandrej7888-hue/avatar-milionario-imag
 const GARANTIA=30;
 /* Planos: link do checkout (Cakto ou Kiwify) em "link". O plano com dest:true fica em destaque. */
 const PLANOS=[
- {n:'Acesso completo',de:'R$ 197,00',p:PRECO,link:CHECKOUT,dest:true,itens:[[1,'Curso completo passo a passo'],[1,'Criador de avatar com mais de 50 looks'],[1,'Personagem em pessoa real'],[1,'Prompts prontos'],[1,'Pack de vídeos virais'],[1,'Bônus: recupere sua conta do Instagram'],[1,'Grupo de networking no WhatsApp'],[1,'Programa de afiliados com 50% de comissão']]}
+ {n:'Acesso completo',de:'R$ 197,00',p:PRECO,link:CHECKOUT,dest:true,itens:[[1,'Curso completo passo a passo'],[1,'Criador de avatar com mais de 50 looks'],[1,'Personagem em pessoa real'],[1,'Prompts prontos'],[1,'Pack de vídeos virais'],[1,'Bônus: recupere sua conta do Instagram'],[1,'Bônus: como eu consegui mil seguidores (libera 7 dias após a compra)'],[1,'Grupo de networking no WhatsApp'],[1,'Programa de afiliados com 50% de comissão']]}
 ];
-const MODS=[['Comece por aqui','Boas-vindas e área de membros'],['Ferramentas','Tudo que você vai usar'],['Criando seu avatar','Do zero ou a partir de uma referência'],['Vídeos virais com IA','Seu avatar no vídeo viral'],['Monetização','Como ganhar dinheiro com o avatar'],['Bônus: recupere sua conta','Dicas para não perder sua conta do Instagram']];
+const MODS=[['Comece por aqui','Boas-vindas e área de membros'],['Ferramentas','Tudo que você vai usar'],['Criando seu avatar','Do zero ou a partir de uma referência'],['Vídeos virais com IA','Seu avatar no vídeo viral'],['Monetização','Como ganhar dinheiro com o avatar'],['Bônus: recupere sua conta','Dicas para não perder sua conta do Instagram'],['Bônus: mil seguidores','A estratégia que me deu mil seguidores (libera em 7 dias)']];
 const RECEB=[
  ['book','Curso passo a passo','Da criação do personagem até o vídeo pronto para postar.'],
  ['wand','Criador de avatar','Monte o personagem clicando e copie o prompt pronto.'],

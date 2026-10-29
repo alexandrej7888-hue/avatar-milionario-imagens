@@ -482,7 +482,9 @@ const MODULOS=[
  /* TikTok Shop tirado por enquanto (capa guardada em capas/tiktok-shop.webp):
  {t:'TikTok Shop',d:'Módulo em gravação. Em breve na sua área de membros.',aulas:[],lock:'Em breve'}, */
  {t:'Recupere sua conta do Instagram',bonus:1,d:'Dicas para não perder sua conta do Instagram e o que fazer se ela cair.',aulas:[
-  ['Como não perder (e recuperar) sua conta do Instagram','https://raw.githubusercontent.com/alexandrej7888-hue/avatar-milionario-imagens/videos/aulas/recuperar-conta.mp4','5:30']],texto:TEXTO_CONTA}
+  ['Como não perder (e recuperar) sua conta do Instagram','https://raw.githubusercontent.com/alexandrej7888-hue/avatar-milionario-imagens/videos/aulas/recuperar-conta.mp4','5:30']],texto:TEXTO_CONTA},
+ /* Libera 7 dias completos depois da compra: o script devolve bonusLibera (data) e bonusMil (vídeo) só quando já passou o prazo */
+ {t:'Como eu consegui mil seguidores',bonus:1,mil:1,d:'A estratégia que me deu mil seguidores. Libera 7 dias depois da compra.',aulas:[],lock:'Libera 7 dias depois da compra'}
 ];
 /* Aulas concluídas ficam salvas no navegador do aluno */
 let VISTAS=[];try{VISTAS=JSON.parse(localStorage.am_vistas||'[]')}catch(x){}
@@ -524,8 +526,8 @@ async function baixarVideo(n,btn){
 function fecharVideo(){const p=document.getElementById('player');const v=p.querySelector('video');v.pause();v.removeAttribute('src');v.load();p.hidden=true}
 const cardMod=(m,i)=>{const n=String(i+1).padStart(2,'0'), f=feitasMod(m), a=m.aulas.length;
  const badge=m.lock?`<span class="badge gold">${m.lock}</span>`:a&&f===a?'<span class="badge ok">✓ Concluído</span>':f>0?'<span class="badge">Em andamento</span>':'';
- return `<div class="mc ${m.lock?'locked':''}" title="${m.d}" onclick="${m.lock?`toast('Módulo ${n}: ${m.lock}')`:`AULA=0;location.hash='modulo-${i+1}'`}">
-  <div class="cover"><div class="fb"><small>MÓDULO ${n}</small><strong>${m.t}</strong></div><img src="${IMG_BASE}capas/modulo-${n}.webp?v=3" alt="Módulo ${n}: ${m.t}" loading="lazy" onerror="this.remove()">
+ return `<div class="mc ${m.lock?'locked':''}" title="${m.d}" onclick="${m.lock?`toast('${m.bonus?'Bônus':'Módulo '+n}: ${m.lock}')`:`AULA=0;location.hash='modulo-${i+1}'`}">
+  <div class="cover"><div class="fb"><small>MÓDULO ${n}</small><strong>${m.t}</strong></div><img src="${IMG_BASE}capas/modulo-${n}.webp?v=4" alt="Módulo ${n}: ${m.t}" loading="lazy" onerror="this.remove()">
    <div class="hov"><span>${m.lock?ic('lock'):'<svg viewBox="0 0 24 24" class="pl"><path d="M6 4l14 8-14 8z"/></svg>'}</span></div>
    ${m.lock||!a?'':`<div class="bar"><i style="width:${f/a*100}%"></i></div>`}</div>
   <div class="info2"><b>${m.t}</b><small>${m.bonus?'Bônus':'Módulo '+n}</small>${badge}</div></div>`};
@@ -537,7 +539,7 @@ function telaModulo(i){const m=MODULOS[i];if(m&&!m.lock&&m.texto&&!m.aulas.lengt
  return `<a href="#aulas" class="voltar">← Todos os módulos</a>
  <div class="ph" style="margin-bottom:20px"><h1>${m.t}</h1><p>${m.bonus?'Bônus':'Módulo '+n} · ${m.aulas.length} ${m.aulas.length>1?'aulas':'aula'}</p></div>
  <div class="aula-wrap">
-  <div><div class="pv">${/^https:/.test(a[1])?`<video id="pv" src="${a[1]}" controls playsinline preload="metadata" poster="${IMG_BASE}capas/modulo-${n}.webp?v=3" style="width:100%;height:100%;background:#000"></video>`:`<iframe id="pv" src="${PANDA+a[1]}" allow="accelerometer;gyroscope;autoplay;encrypted-media;picture-in-picture" allowfullscreen fetchpriority="high"></iframe>`}</div>
+  <div><div class="pv">${/^https:/.test(a[1])?`<video id="pv" src="${a[1]}" controls playsinline preload="metadata" poster="${IMG_BASE}capas/modulo-${n}.webp?v=4" style="width:100%;height:100%;background:#000"></video>`:`<iframe id="pv" src="${PANDA+a[1]}" allow="accelerometer;gyroscope;autoplay;encrypted-media;picture-in-picture" allowfullscreen fetchpriority="high"></iframe>`}</div>
    <div class="aula-info"><div><small>Aula ${AULA+1} de ${m.aulas.length}</small><h2>${a[0]}</h2></div>
     <button class="btn ${vista(a[1])?'btn-o':'btn-g'}" onclick="concluir('${a[1]}');${prox?`AULA++;rr()`:`rr();toast('Módulo concluído!')`}">${vista(a[1])?'✓ Concluída':'Concluir aula'}${prox?' e ir para a próxima '+ic('arrow'):''}</button></div></div>
   <div class="card lista-card"><h3>${ic('book')} Aulas do módulo</h3><div class="lista">${m.aulas.map((x,j)=>`<button class="li ${j===AULA?'on':''} ${vista(x[1])?'ok':''}" onclick="AULA=${j};rr()"><span class="n">${vista(x[1])?'✓':j+1}</span><span><b>${x[0]}</b><small>${x[2]}</small></span></button>`).join('')}</div>
@@ -890,6 +892,11 @@ function travaVirais(){return `
   <a href="${CHECKOUT_VIRAIS}" target="_blank" rel="noopener" class="btn btn-g">Liberar o pack por R$ 19,90 ${ic('arrow')}</a></div>`}
 /* Módulos com bump:true só abrem para quem comprou o order bump */
 let TEM_BUMP=false;try{TEM_BUMP=localStorage.am_bump==='1'}catch(x){}
+/* Bônus "mil seguidores": abre quando o script manda o vídeo (7 dias completos depois da compra) */
+function aplicarMil(r){const m=MODULOS.find(x=>x.mil);if(!m||!r)return;
+ if(r.bonusMil){m.aulas=[['Como eu consegui mil seguidores',r.bonusMil,'']];m.lock=''}
+ else{m.aulas=[];const d=r.bonusLibera?new Date(r.bonusLibera):null;m.lock=d&&d>new Date()?'Libera em '+d.toLocaleDateString('pt-BR')+' às '+d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}):'Em breve'}
+ if(document.getElementById('nav').innerHTML)menu()}
 function aplicarBump(){MODULOS.forEach(m=>{if(!m.bump)return;if(m._lock===undefined)m._lock=m.lock||'';m.lock=TEM_BUMP?m._lock:'Exclusivo de quem levou o bônus'});if(document.getElementById('nav').innerHTML)menu()}
 /* IP de quem está entrando (a planilha conta quantos IPs diferentes cada e-mail usa). Só IPv4: o IPv6 muda sozinho o tempo todo. */
 const IP=Promise.race([
@@ -914,7 +921,7 @@ function entrar(e){
     if(r.bloqueioIp){avisoBloqueio(email);return}
     if(r.proibido){erroLogin('Tente outra vez.');return}
     if(!r.acesso){erroLogin('Não encontramos uma compra com esse e-mail. Use o mesmo e-mail da compra na Kiwify. Se acabou de comprar, aguarde 1 minuto e tente de novo.');return}
-    EMAIL=email;TEM_BUMP=!!r.bump;try{localStorage.am_email=email;localStorage.am_bump=TEM_BUMP?'1':'0'}catch(x){}abrir();
+    EMAIL=email;TEM_BUMP=!!r.bump;try{localStorage.am_email=email;localStorage.am_bump=TEM_BUMP?'1':'0'}catch(x){}aplicarMil(r);abrir();
   }).catch(()=>erroLogin('Não conseguimos verificar agora. Confira sua internet e tente de novo.'))
   .finally(()=>{b.disabled=false;b.innerHTML=txt});
 }
@@ -924,7 +931,8 @@ function reconferir(){
   consultar(e).then(r=>{
     if(r.bloqueioIp){try{localStorage.am_bloqueio=e}catch(x){}sair();return}
     if(!r.acesso){sair();return}
-    const b=!!r.bump;if(b!==TEM_BUMP){TEM_BUMP=b;try{localStorage.am_bump=b?'1':'0'}catch(x){}aplicarBump();render()}
+    const b=!!r.bump;if(b!==TEM_BUMP){TEM_BUMP=b;try{localStorage.am_bump=b?'1':'0'}catch(x){}aplicarBump()}
+    aplicarMil(r);render();
   }).catch(()=>{});
 }
 function abrir(){
