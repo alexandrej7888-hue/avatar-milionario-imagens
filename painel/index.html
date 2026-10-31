@@ -169,7 +169,7 @@ h2{font-size:17px;font-weight:800;margin:22px 0 10px}
  <section id="tAfiliados" style="display:none">
   <div class="card">
    <b style="font-size:15px">Painel do afiliado</b>
-   <p class="mut" style="margin:4px 0 12px">Cada afiliado entra em <b style="color:var(--g3)">minhapagina.pro/painel-afiliado</b> com o nome dele e a senha que você criar aqui. Ele vê só os números dele (visitas, cliques no checkout e vendas), nada de alunos.</p>
+   <p class="mut" style="margin:4px 0 12px">Cada afiliado entra em <b style="color:var(--g3)">avatarmilionario.com/painel-afiliado</b> com o nome dele e a senha que você criar aqui. Ele vê só os números dele (visitas, cliques no checkout e vendas), nada de alunos.</p>
    <div class="form">
     <input class="inp" id="afNome" placeholder="Nome do afiliado (ex.: jasdobaile)">
     <input class="inp" id="afSenha" placeholder="Senha para ele">
@@ -387,7 +387,7 @@ document.querySelector('.tabs').onclick=e=>{
 };
 
 /* ---------- AFILIADOS (senhas do painel do afiliado) ---------- */
-const LINK_AFI='https://minhapagina.pro/painel-afiliado/';
+const LINK_AFI='https://avatarmilionario.com/painel-afiliado/';
 function gerarSenha(){const c='abcdefghjkmnpqrstuvwxyz23456789';let s='';const a=new Uint32Array(8);crypto.getRandomValues(a);a.forEach(x=>s+=c[x%c.length]);return s.slice(0,4)+'-'+s.slice(4)}
 function listaAfil(l){$('tAfil').innerHTML=!l.length?'<tr><td class="mut">Nenhum afiliado ainda.</td></tr>':'<tr><th>Afiliado</th><th>Página e link de compra</th><th>Senha</th><th></th></tr>'+l.map(a=>{const n=esc(a.nome);return `<tr><td><b>${n}</b></td><td style="font-size:13px;max-width:340px">${a.pagina?`<a href="${esc(a.pagina)}" target="_blank" rel="noopener" style="color:var(--g3);font-weight:700">${esc(a.pagina.replace(/^https?:\/\//,''))}</a>`:'<span class="mut">sem página</span>'}${a.checkout?`<br><span class="mut" style="word-break:break-all">${esc(a.checkout.replace(/^https?:\/\//,''))}</span>`:''}${a.preco?` <b style="color:var(--gold)">R$ ${esc(a.preco)}</b>`:''}</td><td>${a.senha?`<code style="background:var(--card2);padding:3px 8px;border-radius:6px">${esc(a.senha)}</code>`:'<span class="pill x">sem senha</span>'}</td><td style="white-space:nowrap"><button class="btn o s" onclick="$('afNome').value='${n}';$('afSenha').value=gerarSenha();$('afSenha').focus()">${a.senha?'Trocar senha':'Criar senha'}</button> ${a.senha?`<button class="btn o s" onclick="copiarAfi('${n}','${esc(a.senha)}')">Copiar acesso</button> <button class="btn r s" onclick="removerAfi('${n}')">Tirar acesso</button>`:''}</td></tr>`}).join('')}
 /* ---------- E-MAILS DISPARADOS ---------- */

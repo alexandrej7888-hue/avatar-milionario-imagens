@@ -332,7 +332,7 @@ const corta_ = (v, n) => String(v || '').slice(0, n);
 const BREVO_KEY = '';
 const REMETENTE = { name: 'Avatar Milionário', email: 'contato@avatarmilionario.com' };
 const RESPONDER_PARA = 'alexandrej7888@gmail.com';
-const AREA_MEMBROS = 'https://minhapagina.pro/area-de-membros/';
+const AREA_MEMBROS = 'https://avatarmilionario.com/area-de-membros/';
 const WHATS_SUPORTE = '5538999715362';
 const IMG_EMAIL = 'https://cdn.jsdelivr.net/gh/alexandrej7888-hue/avatar-milionario-imagens@c8bb30b1cdc0463cc9c411e0ede26f1fc676f2b9/capas/email-boasvindas.jpg';
 function estado_(email) {
