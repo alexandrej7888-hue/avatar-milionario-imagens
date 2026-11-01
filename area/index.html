@@ -422,7 +422,7 @@ const MENU=[
 const FERRAMENTAS=[
  {grupo:'Para criar',itens:[
   {n:'ChatGPT',d:'Use os prompts do curso para criar o seu avatar e trocar o look dele.',u:'https://chatgpt.com',i:'chat',t:'Essencial'},
-  {n:'CriaCena IA',d:'Coloque o seu influencer de IA nos vídeos virais e gere os vídeos gastando pouco.',u:'https://criacena.com/',i:'film',t:'Essencial',c:'BEMVINDO'}
+  {n:'CriaCena IA',d:'Coloque o seu influencer de IA nos vídeos virais e gere os vídeos gastando pouco.',u:'https://app.criacena.com/r/curso',i:'film',t:'Essencial',c:'BEMVINDO'}
  ]},
  {grupo:'Para baixar vídeos de referência',itens:[
   {n:'Video DownloadHelper',d:'Extensão para o navegador que baixa os vídeos de referência do TikTok, Instagram e outros sites.',u:'https://downloadhelper.net/',i:'dl',t:'Principal'},
@@ -464,6 +464,12 @@ const TEXTO_CONTA=()=>`<div class="card" style="max-width:720px;border:2px solid
  <p>Na aula acima você vê as dicas para não perder sua conta do Instagram. Se ela já caiu, chame o contato no WhatsApp dizendo que veio pelo curso Avatar Milionário. Ele te explica tudo certinho.</p>
  <p><b>WhatsApp: +55 11 96639-6664</b></p>
  <a class="btn btn-g" style="margin-top:14px;background:#25d366" target="_blank" rel="noopener" href="https://wa.me/${CONTATO_CONTA}?text=${encodeURIComponent('Oi! Vim pelo curso Avatar Milionário e preciso recuperar minha conta.')}">Chamar no WhatsApp</a></div>`;
+/* Módulo Ferramentas: link da CriaCena IA com o cupom, embaixo das aulas */
+const LINK_CRIACENA='https://app.criacena.com/r/curso';
+const TEXTO_CRIACENA=()=>`<div class="card" style="max-width:720px;border:1px solid var(--g)"><div class="ico-box">${ic('film')}</div><h3>CriaCena IA: a IA que usamos nas aulas</h3>
+ <p>É com ela que você coloca o seu influencer nos vídeos virais, gastando pouco. Use o cupom de aluno na hora de assinar.</p>
+ <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:6px 0 14px;padding:10px 12px;border:1px dashed var(--g);border-radius:12px;background:rgba(34,197,94,.08)"><span style="font-size:13px">Cupom de aluno:</span><b style="font-size:18px;letter-spacing:1px;color:var(--g3)">BEMVINDO</b><button class="btn btn-o" style="padding:6px 12px;font-size:13px" onclick="copiar('BEMVINDO')">${ic('copy')} Copiar</button></div>
+ <a class="btn btn-g" href="${LINK_CRIACENA}" target="_blank" rel="noopener">Acessar a CriaCena IA ${ic('ext')}</a></div>`;
 const PANDA='https://player-vz-3feffac1-27d.tv.pandavideo.com.br/embed/?v=';
 const MODULOS=[
  {t:'Comece por aqui',d:'Boas-vindas e como tirar o máximo do Avatar Milionário.',aulas:[
@@ -471,7 +477,7 @@ const MODULOS=[
   ['Conhecendo a área de membros','f2e71cd5-5b45-488a-8fec-31a23c27d42c','5:34']]},
  {t:'Ferramentas',d:'Conheça as ferramentas e a IA que você vai usar no curso.',aulas:[
   ['As ferramentas que você vai usar','33bbf6f1-9ed5-44a5-bf66-a617a5fa4543','10:04'],
-  ['A melhor IA para criar vídeos baratos e bons','ff2391fa-dba3-4dde-b0ac-74e44eed4503','7:07']]},
+  ['A melhor IA para criar vídeos baratos e bons','ff2391fa-dba3-4dde-b0ac-74e44eed4503','7:07']],texto:TEXTO_CRIACENA},
  {t:'Criando seu avatar',d:'Crie o seu personagem de IA passo a passo.',aulas:[
   ['Criando o seu avatar','dcb9aa6e-7882-49da-8d43-d447e3687d50','8:55']]},
  {t:'Vídeos virais com IA',d:'Pegue um vídeo de referência e coloque seu avatar no lugar.',aulas:[
