@@ -573,7 +573,7 @@ inicio:()=>`
  <div class="card" style="display:flex;gap:18px;align-items:center;flex-wrap:wrap;border-color:rgba(250,204,21,.35)">
   <div class="ico-box" style="margin:0">${ic('lock')}</div>
   <div style="flex:1;min-width:220px"><h3>Pack Vídeos Virais</h3><p style="margin:0">Vídeos que já viralizaram, prontos para baixar e colocar o seu avatar. Libere agora e poste todo dia sem procurar ideia.</p></div>
-  <a href="${CHECKOUT_VIRAIS}" target="_blank" rel="noopener" class="btn btn-g">Liberar por R$ 19,90 ${ic('arrow')}</a></div>`}
+  <a href="${CHECKOUT_VIRAIS}" target="_blank" rel="noopener" class="btn btn-g">Liberar por R$ 9,90 ${ic('arrow')}</a></div>`}
  <div class="sec-h"><h2>Prompts</h2><a href="#prompts">Ver mais ${ic('arrow')}</a></div>
  <div class="grid">${PROMPTS.slice(0,3).map(cardPrompt).join('')}</div>`,
 
@@ -889,12 +889,12 @@ let tt;function toast(m){const e=document.getElementById('toast');e.querySelecto
 /* URL do script da planilha (termina em /exec). Vazio = qualquer e-mail entra. */
 const API='https://script.google.com/macros/s/AKfycbyw-PCFL5Ed1hpDJp18ZlNqYBeUs3GD_D3gMnNuYYyof5XHwb54WJCqd70FAVkwBSL_/exec';
 /* Checkout do pack Vídeos Virais (order bump), para quem não levou na compra */
-const CHECKOUT_VIRAIS='https://pay.kiwify.com.br/rxUekt8';
+const CHECKOUT_VIRAIS='https://pay.cakto.com.br/333u29f';
 function travaVirais(){return `
  <div class="ph"><h1>Pack de vídeos virais</h1><p>Vídeos virais prontos para baixar e recriar com o seu avatar.</p></div>
  <div class="card" style="max-width:600px"><div class="ico-box">${ic('lock')}</div><h3>Exclusivo do pack Vídeos Virais</h3>
   <p>Esse conteúdo é liberado para quem levou o pack Vídeos Virais junto com a compra. Se você comprou e não está vendo, saia e entre de novo com o mesmo e-mail da compra.</p>
-  <a href="${CHECKOUT_VIRAIS}" target="_blank" rel="noopener" class="btn btn-g">Liberar o pack por R$ 19,90 ${ic('arrow')}</a></div>`}
+  <a href="${CHECKOUT_VIRAIS}" target="_blank" rel="noopener" class="btn btn-g">Liberar o pack por R$ 9,90 ${ic('arrow')}</a></div>`}
 /* Módulos com bump:true só abrem para quem comprou o order bump */
 let TEM_BUMP=false;try{TEM_BUMP=localStorage.am_bump==='1'}catch(x){}
 /* Bônus "mil seguidores": abre quando o script manda o vídeo (7 dias completos depois da compra) */
@@ -947,7 +947,7 @@ function abrir(){
 }
 function sair(){try{localStorage.removeItem('am_email');localStorage.removeItem('am_bump')}catch(x){}location.hash='';location.reload()}
 
-function menu(){document.getElementById('nav').innerHTML=MENU.map(m=>{const tag=m[0]==='virais'&&!TEM_BUMP?'R$ 19,90':m[3];return `<a href="#${m[0]}" class="nav-i" data-p="${m[0]}">${ic(m[0]==='virais'&&!TEM_BUMP?'lock':m[2])}${m[1]}${tag?`<span class="tag">${tag}</span>`:''}</a>`}).join('')}
+function menu(){document.getElementById('nav').innerHTML=MENU.map(m=>{const tag=m[0]==='virais'&&!TEM_BUMP?'R$ 9,90':m[3];return `<a href="#${m[0]}" class="nav-i" data-p="${m[0]}">${ic(m[0]==='virais'&&!TEM_BUMP?'lock':m[2])}${m[1]}${tag?`<span class="tag">${tag}</span>`:''}</a>`}).join('')}
 menu();
 window.addEventListener('hashchange',render);
 /* Com API vazia, qualquer e-mail entra. Com API, só quem está "ativo" na planilha. */
