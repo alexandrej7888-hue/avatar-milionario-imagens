@@ -411,8 +411,8 @@ footer{border-top:1px solid var(--line);padding:30px 0;text-align:center;color:v
    { checkout: link de compra, afiliado: nome do afiliado, banner: imagem do topo (caminho no repositório) } */
 const CFG=window.AM_CFG||{};
 const CHECKOUT=CFG.checkout||'https://pay.cakto.com.br/ru2xz6h';
-/* Preço da oferta (afiliado pode ter preço próprio, ex.: AM_CFG.preco='19,90') */
-const PRECO=CFG.preco||'97';
+/* Preço da oferta: R$ 14,90 em todas as páginas (principal e afiliados), por cima do AM_CFG.preco e do preço salvo no painel do afiliado */
+const PRECO='14,90';
 /* Escreve o preço em todos os lugares da página. Cada vídeo de 8 s economiza R$ 14,84 (R$ 20 no concorrente - R$ 5,16), então o curso se paga com o primeiro número de vídeos que passa do preço (97 = 7). */
 const brlTxt=v=>'R$ '+v.toFixed(2).replace('.',',');
 const CARO=20, BARATO=5.16;
@@ -552,7 +552,6 @@ if(CFG.afiliado){
   fetch('https://script.google.com/macros/s/AKfycbyw-PCFL5Ed1hpDJp18ZlNqYBeUs3GD_D3gMnNuYYyof5XHwb54WJCqd70FAVkwBSL_/exec?cfg='+encodeURIComponent(CFG.afiliado))
   .then(r=>r.json()).then(c=>{
     if(!c||!c.ok)return;
-    if(c.preco)aplicarPreco(c.preco);
     if(c.checkout)document.querySelectorAll('a[href*="kiwify"],a[href*="cakto"]').forEach(a=>{
       try{const velho=new URL(a.href),novo=new URL(c.checkout);
         velho.searchParams.forEach((v,k)=>{if(!novo.searchParams.has(k)&&(k==='src'||k==='sck'||k.indexOf('utm_')===0))novo.searchParams.set(k,v)});
