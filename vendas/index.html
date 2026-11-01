@@ -410,9 +410,13 @@ footer{border-top:1px solid var(--line);padding:30px 0;text-align:center;color:v
 /* Cada página (principal ou de afiliado) carrega este mesmo arquivo e define antes window.AM_CFG:
    { checkout: link de compra, afiliado: nome do afiliado, banner: imagem do topo (caminho no repositório) } */
 const CFG=window.AM_CFG||{};
-const CHECKOUT=CFG.checkout||'https://pay.cakto.com.br/ru2xz6h';
-/* Preço da oferta: R$ 14,90 em todas as páginas (principal e afiliados), por cima do AM_CFG.preco e do preço salvo no painel do afiliado */
-const PRECO='14,90';
+/* Avatar Milionario •C voltou ao preço normal (R$ 97 com 197 riscado). O link principal do •C (6km86xk) cobra o valor do produto (197),
+   então vai para a oferta de 97 (34nrxy9), mantendo o ?affiliate= do afiliado */
+const PRODUTO_C=/pay\.cakto\.com\.br\/(6km86xk|3bt2ki4|vec5rrk|34nrxy9)/;
+const linkC=u=>String(u).replace(/pay\.cakto\.com\.br\/6km86xk(_\d+)?/,'pay.cakto.com.br/34nrxy9');
+const CHECKOUT=linkC(CFG.checkout||'https://pay.cakto.com.br/ru2xz6h');
+/* Preço da oferta: R$ 97 nas páginas do •C, R$ 14,90 nas outras (por cima do AM_CFG.preco e do preço salvo no painel do afiliado) */
+const PRECO=PRODUTO_C.test(CHECKOUT)?'97':'14,90';
 /* Escreve o preço em todos os lugares da página. Cada vídeo de 8 s economiza R$ 14,84 (R$ 20 no concorrente - R$ 5,16), então o curso se paga com o primeiro número de vídeos que passa do preço (97 = 7). */
 const brlTxt=v=>'R$ '+v.toFixed(2).replace('.',',');
 const CARO=20, BARATO=5.16;
@@ -553,10 +557,11 @@ if(CFG.afiliado){
   .then(r=>r.json()).then(c=>{
     if(!c||!c.ok)return;
     if(c.checkout)document.querySelectorAll('a[href*="kiwify"],a[href*="cakto"]').forEach(a=>{
-      try{const velho=new URL(a.href),novo=new URL(c.checkout);
+      try{const velho=new URL(a.href),novo=new URL(linkC(c.checkout));
         velho.searchParams.forEach((v,k)=>{if(!novo.searchParams.has(k)&&(k==='src'||k==='sck'||k.indexOf('utm_')===0))novo.searchParams.set(k,v)});
         a.href=novo.toString()}catch(x){}
     });
+    if(c.checkout&&PRODUTO_C.test(c.checkout)!==PRODUTO_C.test(CHECKOUT))aplicarPreco(PRODUTO_C.test(c.checkout)?'97':'14,90');
   }).catch(()=>{});
 }
 </script>
