@@ -422,7 +422,7 @@ const MENU=[
 const FERRAMENTAS=[
  {grupo:'Para criar',itens:[
   {n:'ChatGPT',d:'Use os prompts do curso para criar o seu avatar e trocar o look dele.',u:'https://chatgpt.com',i:'chat',t:'Essencial'},
-  {n:'CriaCena IA',d:'Coloque o seu influencer de IA nos vídeos virais e gere os vídeos gastando pouco.',u:'https://criacena.com/',i:'film',t:'Essencial'}
+  {n:'CriaCena IA',d:'Coloque o seu influencer de IA nos vídeos virais e gere os vídeos gastando pouco.',u:'https://criacena.com/',i:'film',t:'Essencial',c:'BEMVINDO'}
  ]},
  {grupo:'Para baixar vídeos de referência',itens:[
   {n:'Video DownloadHelper',d:'Extensão para o navegador que baixa os vídeos de referência do TikTok, Instagram e outros sites.',u:'https://downloadhelper.net/',i:'dl',t:'Principal'},
@@ -509,7 +509,7 @@ const AFILIADO='https://app.cakto.com.br/affiliate/invite/f41a562b-f149-4865-95f
 
 /* ---------- PÁGINAS ---------- */
 const brl=v=>v.toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
-const cardFerr=f=>`<div class="card"><div class="ico-box">${ic(f.i)}</div><h3>${f.n}${f.t?` <span class="pill">${f.t}</span>`:''}</h3><p>${f.d}</p><a class="btn btn-g" href="${f.u}" target="_blank" rel="noopener">Acessar ${ic('ext')}</a></div>`;
+const cardFerr=f=>`<div class="card"><div class="ico-box">${ic(f.i)}</div><h3>${f.n}${f.t?` <span class="pill">${f.t}</span>`:''}</h3><p>${f.d}</p>${f.c?`<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:4px 0 14px;padding:10px 12px;border:1px dashed var(--g);border-radius:12px;background:rgba(34,197,94,.08)"><span style="font-size:13px">Cupom de aluno:</span><b style="font-size:18px;letter-spacing:1px;color:var(--g3)">${f.c}</b><button class="btn btn-o" style="padding:6px 12px;font-size:13px" onclick="copiar('${f.c}')">${ic('copy')} Copiar</button></div>`:''}<a class="btn btn-g" href="${f.u}" target="_blank" rel="noopener">Acessar ${ic('ext')}</a></div>`;
 const cardPromptImg=(x,i)=>`<div class="card prompt">${x.ex?`<img class="ex" src="${IMG_BASE}${x.ex}.webp?v=2" alt="Exemplo: ${x.t}" loading="lazy">`:''}<h3>${x.t}</h3><p>${x.d}</p><pre>${x.p}</pre><button class="btn btn-g" onclick="copiar(PROMPTS_IMG[${i}].p)">${ic('copy')} Copiar prompt</button></div>`;
 const cardPrompt=(x,i)=>`<div class="card prompt"><h3>${x.t}</h3><p>${x.d}</p><pre>${x.p}</pre><button class="btn btn-g" onclick="copiar(PROMPTS[${i}].p)">${ic('copy')} Copiar prompt</button></div>`;
 const vid=n=>`<div class="vid" onclick="abrirVideo('${n}')"><img src="${VID_BASE}viral-${n}.jpg" alt="" loading="lazy"><div class="play"><span>${ic('play')}</span></div><button class="vid-dl" onclick="event.stopPropagation();baixarVideo('${n}',this)">${ic('dl')} Baixar</button></div>`;
