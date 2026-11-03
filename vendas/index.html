@@ -271,22 +271,22 @@ footer{border-top:1px solid var(--line);padding:30px 0;text-align:center;color:v
  </div>
  <div class="wrap reveal">
   <div class="custo">
-   <div class="card ruim"><small>Do jeito caro</small><div class="v">R$ 20</div><p style="color:var(--mut)">por vídeo de 8 segundos com som (Veo 3.1 no Higgsfield, plataforma gringa cobrada em dólar)</p>
+   <div class="card ruim"><small>Do jeito caro</small><div class="v">R$ 21,60</div><p style="color:var(--mut)">por vídeo de 8 segundos trocando o personagem (Genjutsu no Higgsfield, plataforma gringa cobrada em dólar)</p>
     <ul><li><svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg>Assinatura mensal que pesa no bolso</li><li><svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg>Preço muda com o dólar</li><li><svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg>Créditos acabam rápido</li></ul></div>
-   <div class="card bom"><small>Com o Avatar Milionário</small><div class="v">R$ 5,16</div><p style="color:var(--mut)">por vídeo de 8 segundos, no plano mais completo</p>
-    <ul><li><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>Quase 4x mais barato que o concorrente</li><li><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>Mesmo tempo de vídeo: 8 segundos</li><li><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>Dá para postar todo dia sem medo</li></ul></div>
+   <div class="card bom"><small>Com o Avatar Milionário</small><div class="v">R$ 5,16</div><p style="color:var(--mut)">por vídeo de 8 segundos com o Jutsu, no plano mais completo</p>
+    <ul><li><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>Mais de 4x mais barato que o concorrente</li><li><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>Mesmo tempo de vídeo: 8 segundos</li><li><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>Dá para postar todo dia sem medo</li></ul></div>
   </div>
-  <p style="text-align:center;color:var(--mut);font-size:13px;margin:14px 0 18px">Comparação de outubro de 2026: vídeo de 8 s com som no Veo 3.1 pelo plano Plus do Higgsfield = 80 créditos, cerca de US$ 3,93 (R$ 20 com o dólar a R$ 5,15).</p>
+  <p style="text-align:center;color:var(--mut);font-size:13px;margin:14px 0 18px">Comparação de novembro de 2026: vídeo de 8 s no Genjutsu do Higgsfield (720p) = cerca de 56 créditos; no plano Starter (US$ 15 por 200 créditos) sai cerca de US$ 4,20 (R$ 21,60 com o dólar a R$ 5,15).</p>
   <div class="card sim">
    <div class="sim-top"><span>Arraste: quantos vídeos você quer postar por mês?</span><b id="qtd">30 vídeos</b></div>
    <input type="range" min="5" max="120" step="5" value="30" id="rng" aria-label="Vídeos por mês">
    <div class="barras">
-    <div class="barra ruim"><div class="bl"><span>No concorrente (Veo 3.1 no Higgsfield)</span><b id="vCaro">R$ 1.020,00</b></div><div class="bt"><i id="bCaro"></i></div></div>
-    <div class="barra bom"><div class="bl"><span>Com o Avatar Milionário</span><b id="vBom">R$ 60,00</b></div><div class="bt"><i id="bBom"></i></div></div>
+    <div class="barra ruim"><div class="bl"><span>No concorrente (Genjutsu no Higgsfield)</span><b id="vCaro">R$ 648,00</b></div><div class="bt"><i id="bCaro"></i></div></div>
+    <div class="barra bom"><div class="bl"><span>Com o Avatar Milionário</span><b id="vBom">R$ 154,80</b></div><div class="bt"><i id="bBom"></i></div></div>
    </div>
-   <div class="eco">Você economiza <b id="vEco">R$ 960,00</b> por mês</div>
+   <div class="eco">Você economiza <b id="vEco">R$ 493,20</b> por mês</div>
   </div>
-  <div class="card paga"><div class="ico">💰</div><div><h3>Com 4 vídeos o curso já se pagou</h3><p>Cada vídeo de 8 s feito pelo método custa R$ 14,84 a menos do que no concorrente. <span id="pagaTxt">Fez 4 vídeos, economizou R$ 128,00: mais do que os R$ 97 que você investe no curso. Do quinto vídeo em diante, é tudo economia.</span></p></div></div>
+  <div class="card paga"><div class="ico">💰</div><div><h3>Com 4 vídeos o curso já se pagou</h3><p>Cada vídeo de 8 s feito pelo método custa R$ 16,44 a menos do que no concorrente. <span id="pagaTxt">Fez 4 vídeos, economizou R$ 128,00: mais do que os R$ 97 que você investe no curso. Do quinto vídeo em diante, é tudo economia.</span></p></div></div>
  </div>
 </section>
 
@@ -417,9 +417,9 @@ const linkC=u=>String(u).replace(/pay\.cakto\.com\.br\/6km86xk(_\d+)?/,'pay.cakt
 const CHECKOUT=linkC(CFG.checkout||'https://pay.cakto.com.br/ru2xz6h');
 /* Preço da oferta: R$ 97 nas páginas do •C, R$ 14,90 nas outras (por cima do AM_CFG.preco e do preço salvo no painel do afiliado) */
 const PRECO=PRODUTO_C.test(CHECKOUT)?'97':'14,90';
-/* Escreve o preço em todos os lugares da página. Cada vídeo de 8 s economiza R$ 14,84 (R$ 20 no concorrente - R$ 5,16), então o curso se paga com o primeiro número de vídeos que passa do preço (97 = 7). */
+/* Escreve o preço em todos os lugares da página. Cada vídeo de 8 s economiza R$ 16,44 (R$ 21,60 no Genjutsu do Higgsfield - R$ 5,16), então o curso se paga com o primeiro número de vídeos que passa do preço (97 = 7). */
 const brlTxt=v=>'R$ '+v.toFixed(2).replace('.',',');
-const CARO=20, BARATO=5.16;
+const CARO=21.6, BARATO=5.16;
 const ORD=['primeiro','segundo','terceiro','quarto','quinto','sexto','sétimo','oitavo','nono','décimo'];
 function aplicarPreco(p){
   document.querySelectorAll('.precoTxt').forEach(e=>e.textContent=p);
@@ -456,7 +456,7 @@ const FAQ=[
  ['Preciso saber mexer com IA?','Não. As aulas começam do zero e mostram cada clique na tela. Se você sabe usar o celular, consegue acompanhar.'],
  ['Funciona no celular?','Sim. A área de membros e as ferramentas funcionam no celular, no tablet e no computador.'],
  ['Vou precisar aparecer nos vídeos?','Nunca. Quem aparece é o seu avatar. Você não precisa gravar a sua voz nem o seu rosto.'],
- ['Quanto custa cada vídeo?','Cada vídeo de 8 segundos sai por R$ 5,16 no plano mais completo, menos de R$ 5,50. No concorrente (Veo 3.1 com som no Higgsfield) o mesmo vídeo de 8 s sai por cerca de R$ 20. O passo a passo com os custos está dentro do curso.'],
+ ['Quanto custa cada vídeo?','Cada vídeo de 8 segundos sai por R$ 5,16 no plano mais completo, menos de R$ 5,50. No concorrente (Genjutsu no Higgsfield) o mesmo vídeo de 8 s sai por cerca de R$ 21,60. O passo a passo com os custos está dentro do curso.'],
  ['Os vídeos vão viralizar com certeza?','Ninguém pode garantir viralização. O que o método faz é colocar o seu avatar em formatos que já provaram que viralizam, o que aumenta muito as suas chances.'],
  ['É mensalidade?','Não. É pagamento único no Pix ou no cartão.'],
  ['Como recebo o acesso?','Assim que o pagamento é aprovado, você recebe o acesso no e-mail usado na compra.'],
