@@ -410,8 +410,10 @@ footer{border-top:1px solid var(--line);padding:30px 0;text-align:center;color:v
 /* Cada página (principal ou de afiliado) carrega este mesmo arquivo e define antes window.AM_CFG:
    { checkout: link de compra, afiliado: nome do afiliado, banner: imagem do topo (caminho no repositório) } */
 const CFG=window.AM_CFG||{};
-/* O link principal do Avatar Milionario •C (6km86xk) cobra o valor do produto (197), então vai para a oferta de 97 (34nrxy9), mantendo o ?affiliate= do afiliado */
-const linkC=u=>String(u).replace(/pay\.cakto\.com\.br\/6km86xk(_\d+)?/,'pay.cakto.com.br/34nrxy9');
+/* Os links principais dos produtos cobram o valor do produto (197), então vão para a oferta de 97 do mesmo produto, mantendo o ?affiliate= do afiliado:
+   •C 6km86xk → 34nrxy9 · Avatar Milionario zb45j3a → ru2xz6h · • Avatar Milionario • e3t6766 → bpvhmr9 · Influencer Viral 3de8bdf → e39bg7z */
+const OFERTA97={'6km86xk':'34nrxy9',zb45j3a:'ru2xz6h',e3t6766:'bpvhmr9','3de8bdf':'e39bg7z'};
+const linkC=u=>String(u).replace(/pay\.cakto\.com\.br\/(6km86xk|zb45j3a|e3t6766|3de8bdf)(_\d+)?/,(m,c)=>'pay.cakto.com.br/'+OFERTA97[c]);
 const CHECKOUT=linkC(CFG.checkout||'https://pay.cakto.com.br/ru2xz6h');
 /* Preço da oferta: R$ 97 em todas as páginas (por cima do AM_CFG.preco e do preço salvo no painel do afiliado) */
 const PRECO='97';
